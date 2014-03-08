@@ -1,6 +1,6 @@
 .PHONY:all
 all:
-	python test.py
+	python game.py
 
 .PHONY:clean
 clean:

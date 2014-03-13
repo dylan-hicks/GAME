@@ -1,0 +1,4 @@
+$ cat .gitignore
+parsetab.py
+*.out
+*.pyc

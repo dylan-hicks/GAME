@@ -1,4 +1,5 @@
 import sys
+import re
 
 reserved = {
    'if' : 'IF',
@@ -13,45 +14,28 @@ reserved = {
 }
 
 tokens = [
-    'NAME','NUMBER',
+    'NAME','NUMBER','EQ','EXCL',
     'PLUS','MINUS','TIMES','DIVIDE', 'MOD',
     'LPAREN','RPAREN', 'NL' , 'LBRACK', 'RBRACK', 
-    'COMMA', 'GT', 'LT', 'NOTEQ' , 'GTEQ', 'LTEQ',
-    'EQEQ',
+    'COMMA', 'GT', 'LT',
     ] + list(reserved.values())
 
 # Tokens
-
 t_PLUS    = r'\+'
 t_MINUS   = r'-'
 t_TIMES   = r'\*'
 t_DIVIDE  = r'/'
 t_MOD     = r'%'
-t_EQEQ    = r'=='
-#t_EQ      = r'='
-t_GTEQ    = r'>='
-t_LTEQ    = r'<='
-t_NOTEQ   = r'!='
+t_EQ      = r'='
 t_LPAREN  = r'\('
 t_RPAREN  = r'\)'
-t_NAME    = r'[a-zA-Z_][a-zA-Z0-9_]{0, 99}'
 t_NL      = r'\n+'
 t_LBRACK  = r'\{'
 t_RBRACK  = r'\}'
 t_COMMA   = r'\,'
 t_GT      = r'>'
 t_LT      = r'<'
-# should be a better way to do this
-t_IF      = r'if' 
-t_ELSE    = r'else'
-t_LOOP    = r'loop'
-t_START   = r'start'
-t_WHILE   = r'while'
-t_SET     = r'set'
-t_AND     = r'and'
-t_OR      = r'or'
-t_NOT     = r'not'
-
+t_EXCL    = r'!'
 
 def t_NUMBER(t):
     r'\d+'
@@ -62,6 +46,15 @@ def t_NUMBER(t):
         t.value = 0
     return t
 
+def t_ID(t):
+    r'[a-zA-Z_][a-zA-Z_0-9]*'
+    t.type = reserved.get(t.value,'NAME')    # Check for reserved words
+    if(t.type=='NAME'):
+        p = re.compile('[a-zA-Z_][a-zA-Z0-9_]{0, 99}')
+        if(not p.match(t.value)):
+            t.value = ""
+    return t
+
 # Ignored characters
 t_ignore = " \t"
 
@@ -69,15 +62,6 @@ def t_error(t):
     print("Illegal character '%s'" % t.value[0])
     t.lexer.skip(1)
     
-###
-#This code is to differentiate between variables and reserved words
-#
-#def t_ID(t):
-#    r'[a-zA-Z_][a-zA-Z_0-9]*'
-#    t.type = reserved.get(t.value,'ID')    # Check for reserved words
-#    return t
-###
-
 # Build the lexer
 import ply.lex as lex
 lex.lex()
@@ -144,11 +128,11 @@ def p_expression_binop(t):
 
 def p_expression_conditional(t):
     '''expression : expression GT expression
-                  | expression GTEQ expression
+                  | expression GT EQ expression %prec GTEQ
                   | expression LT expression
-                  | expression LTEQ expression
-                  | expression EQEQ expression
-                  | expression NOTEQ expression
+                  | expression LT EQ expression %prec LTEQ
+                  | expression EQ EQ expression %prec EQEQ
+                  | expression EXCL EQ expression %prec NOTEQ
                   | expression AND expression
                   | expression OR expression
                   | NOT expression'''

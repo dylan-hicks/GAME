@@ -10,14 +10,16 @@ reserved = {
    'set' : 'SET',
    'and' : 'AND',
    'or' : 'OR',
-   'not' : 'NOT'
+   'not' : 'NOT',
+   'number' : 'NUMBER_TYPE',
+   'text' : 'TEXT_TYPE'
 }
 
 tokens = [
     'NAME','NUMBER','EQ','EXCL',
     'PLUS','MINUS','TIMES','DIVIDE', 'MOD',
     'LPAREN','RPAREN', 'NL' , 'LBRACK', 'RBRACK', 
-    'COMMA', 'GT', 'LT',
+    'COMMA', 'GT', 'LT', 'EQEQ'
     ] + list(reserved.values())
 
 # Tokens
@@ -26,6 +28,7 @@ t_MINUS   = r'-'
 t_TIMES   = r'\*'
 t_DIVIDE  = r'/'
 t_MOD     = r'%'
+t_EQEQ    = r'=='
 t_EQ      = r'='
 t_LPAREN  = r'\('
 t_RPAREN  = r'\)'
@@ -76,6 +79,7 @@ precedence = (
     ('left','PLUS','MINUS'),
     ('left','TIMES','DIVIDE', 'MOD'),
     ('right','UMINUS','NOT'),
+    ('right','ASSIGN'),
     ('left','COMMA'),
     )
 
@@ -90,7 +94,8 @@ def p_lines(t):
 def p_statement(t):
     '''statement : expression
                  | loop
-                 | if_statement'''
+                 | if_statement
+                 | def_variable'''
 
 def p_opt_statement(t):
     '''opt_statement : statement
@@ -98,10 +103,6 @@ def p_opt_statement(t):
                  
 def p_loop(t):
     '''loop : LOOP LPAREN loop_expression RPAREN LBRACK lines opt_statement RBRACK'''
-
-#def p_newlines(t):
-#    '''newlines : newlines NL
-#                | '''
 
 def p_loop_expression(t):
     '''loop_expression : loop_expression COMMA loop_expression
@@ -119,7 +120,8 @@ def p_expression_binop(t):
                   | expression MINUS expression
                   | expression TIMES expression
                   | expression DIVIDE expression
-                  | expression MOD expression'''
+                  | expression MOD expression
+                  | NAME EQ expression %prec ASSIGN'''
 #    if t[2] == '+'  : t[0] = t[1] + t[3]  
 #    elif t[2] == '-': t[0] = t[1] - t[3]
 #    elif t[2] == '*': t[0] = t[1] * t[3]
@@ -131,11 +133,11 @@ def p_expression_conditional(t):
                   | expression GT EQ expression %prec GTEQ
                   | expression LT expression
                   | expression LT EQ expression %prec LTEQ
-                  | expression EQ EQ expression %prec EQEQ
+                  | expression EQEQ expression
                   | expression EXCL EQ expression %prec NOTEQ
                   | expression AND expression
                   | expression OR expression
-                  | NOT expression'''
+                  | NOT expression %prec NOT'''
 #    if t[2] == '>'  : t[0] = t[1] > t[3]
 #    elif t[2] == '<': t[0] = t[1] < t[3]
 #    elif t[2] == '>=': t[0] = t[1] >= t[4]
@@ -159,12 +161,21 @@ def p_expression_number(t):
 
 def p_expression_name(t):
     'expression : NAME'
+
 #    try:
 #        t[0] = names[t[1]]
 #    except LookupError:
 #        print("Undefined name '%s'" % t[1])
 #        t[0] = 0
    
+def p_def_variable(t):
+    '''def_variable : var_type NAME
+                    | var_type NAME EQ expression'''
+
+def p_var_type(t):
+    '''var_type : NUMBER_TYPE
+                | TEXT_TYPE'''
+
 def p_error(t):
 #    print("Syntax error at '%s'" % t.value)
     print("syntax error")

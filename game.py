@@ -12,7 +12,8 @@ reserved = {
    'or' : 'OR',
    'not' : 'NOT',
    'number' : 'NUMBER_TYPE',
-   'text' : 'TEXT_TYPE'
+   'text' : 'TEXT_TYPE',
+   'class' : 'CLASS'
 }
 
 tokens = [
@@ -92,10 +93,14 @@ def p_lines(t):
              | '''
 
 def p_statement(t):
-    '''statement : expression
+    '''statement : start_expression
                  | loop
-                 | if_statement
-                 | def_variable'''
+                 | if_statement'''
+
+
+def p_start_expression(t):
+    '''start_expression : expression
+                        | def_variable'''
 
 def p_opt_statement(t):
     '''opt_statement : statement
@@ -106,9 +111,9 @@ def p_loop(t):
 
 def p_loop_expression(t):
     '''loop_expression : loop_expression COMMA loop_expression
-                       | START LPAREN expression RPAREN
-                       | WHILE LPAREN expression RPAREN
-                       | SET LPAREN expression RPAREN
+                       | START start_expression
+                       | WHILE expression
+                       | SET expression
                        | '''
 
 def p_if_statement(t):

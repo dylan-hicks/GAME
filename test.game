@@ -1,5 +1,7 @@
 number x = y = 2*z
 3+3%6
-if(2){
+loop(start number x = 3){
+}
+if(x = 3)  {
 bla
 3}

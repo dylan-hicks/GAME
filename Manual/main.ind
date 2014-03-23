@@ -1,0 +1,60 @@
+\begin{theindex}
+\vspace*{0.5cm}\nopagebreak
+\tikz\node at (0pt,0pt) [rounded corners=5pt,draw=ocre,fill=ocre!10,line width=1pt,inner sep=5pt]{\parbox{\linewidth-2\fboxsep-2\fboxrule-2pt}{\centering\large\sffamily\bfseries\textcolor{black}{A}}};\vspace*{0.2cm}\nopagebreak
+
+  \item Advanced Features\dotfill 6
+
+  \indexspace
+\vspace*{0.5cm}\nopagebreak
+\tikz\node at (0pt,0pt) [rounded corners=5pt,draw=ocre,fill=ocre!10,line width=1pt,inner sep=5pt]{\parbox{\linewidth-2\fboxsep-2\fboxrule-2pt}{\centering\large\sffamily\bfseries\textcolor{black}{C}}};\vspace*{0.2cm}\nopagebreak
+
+  \item Clarification\dotfill 6
+  \item Classes\dotfill 6
+
+  \indexspace
+\vspace*{0.5cm}\nopagebreak
+\tikz\node at (0pt,0pt) [rounded corners=5pt,draw=ocre,fill=ocre!10,line width=1pt,inner sep=5pt]{\parbox{\linewidth-2\fboxsep-2\fboxrule-2pt}{\centering\large\sffamily\bfseries\textcolor{black}{F}}};\vspace*{0.2cm}\nopagebreak
+
+  \item File Reading (and writing)\dotfill 6
+  \item Functions\dotfill 6
+
+  \indexspace
+\vspace*{0.5cm}\nopagebreak
+\tikz\node at (0pt,0pt) [rounded corners=5pt,draw=ocre,fill=ocre!10,line width=1pt,inner sep=5pt]{\parbox{\linewidth-2\fboxsep-2\fboxrule-2pt}{\centering\large\sffamily\bfseries\textcolor{black}{G}}};\vspace*{0.2cm}\nopagebreak
+
+  \item Getting Started\dotfill 5
+
+  \indexspace
+\vspace*{0.5cm}\nopagebreak
+\tikz\node at (0pt,0pt) [rounded corners=5pt,draw=ocre,fill=ocre!10,line width=1pt,inner sep=5pt]{\parbox{\linewidth-2\fboxsep-2\fboxrule-2pt}{\centering\large\sffamily\bfseries\textcolor{black}{I}}};\vspace*{0.2cm}\nopagebreak
+
+  \item Introduction\dotfill 5
+
+  \indexspace
+\vspace*{0.5cm}\nopagebreak
+\tikz\node at (0pt,0pt) [rounded corners=5pt,draw=ocre,fill=ocre!10,line width=1pt,inner sep=5pt]{\parbox{\linewidth-2\fboxsep-2\fboxrule-2pt}{\centering\large\sffamily\bfseries\textcolor{black}{L}}};\vspace*{0.2cm}\nopagebreak
+
+  \item Lexical Conventions\dotfill 7
+    \subitem Comments\dotfill 7
+    \subitem Tokens\dotfill 7
+  \item Lists\dotfill 6
+
+  \indexspace
+\vspace*{0.5cm}\nopagebreak
+\tikz\node at (0pt,0pt) [rounded corners=5pt,draw=ocre,fill=ocre!10,line width=1pt,inner sep=5pt]{\parbox{\linewidth-2\fboxsep-2\fboxrule-2pt}{\centering\large\sffamily\bfseries\textcolor{black}{M}}};\vspace*{0.2cm}\nopagebreak
+
+  \item Major Standard Library Methods/ Classes\dotfill 6
+
+  \indexspace
+\vspace*{0.5cm}\nopagebreak
+\tikz\node at (0pt,0pt) [rounded corners=5pt,draw=ocre,fill=ocre!10,line width=1pt,inner sep=5pt]{\parbox{\linewidth-2\fboxsep-2\fboxrule-2pt}{\centering\large\sffamily\bfseries\textcolor{black}{T}}};\vspace*{0.2cm}\nopagebreak
+
+  \item The For Loop\dotfill 6
+
+  \indexspace
+\vspace*{0.5cm}\nopagebreak
+\tikz\node at (0pt,0pt) [rounded corners=5pt,draw=ocre,fill=ocre!10,line width=1pt,inner sep=5pt]{\parbox{\linewidth-2\fboxsep-2\fboxrule-2pt}{\centering\large\sffamily\bfseries\textcolor{black}{V}}};\vspace*{0.2cm}\nopagebreak
+
+  \item Variables and Arithmetic Expressions\dotfill 6
+
+\end{theindex}

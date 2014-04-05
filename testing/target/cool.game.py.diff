@@ -1,0 +1,8 @@
+1,2c1,2
+< int c = false
+< int j = cool
+---
+> int c = cool
+> int j = false
+3a4
+>   print this

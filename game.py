@@ -206,7 +206,7 @@ def p_variable_def(t):
     '''variable_def : var_type ID
                     | var_type assignment
                     | var_type ID EQ NEW var_type
-                    | var_type ID EQ NEW var_type RBRACK NL mul_variable_def RBRACK'''
+                    | var_type ID EQ NEW var_type LBRACK NL mul_variable_def RBRACK'''
 
 def p_mul_variable_def(t):
     '''mul_variable_def : mul_variable_def variable_def NL

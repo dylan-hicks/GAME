@@ -11,16 +11,35 @@ reserved = {
    'and' : 'AND',
    'or' : 'OR',
    'not' : 'NOT',
-   'number' : 'NUMBER_TYPE',
+   'number' : 'NUM_TYPE',
    'text' : 'TEXT_TYPE',
-   'class' : 'CLASS'
+   'bool' : 'BOOL_TYPE',
+   'class' : 'CLASS',
+   'break' : 'BREAK',
+   'continue' : 'CONTINUE',
+   'class' : 'CLASS',
+   'extends' : 'EXTENDS',
+   'function' : 'FUNCTION',
+   'return' : 'RETURN',
+   'foreach' : 'FOREACH',
+   'in' : 'IN',
+   'geteach' : 'GETEACH',
+   'where' : 'WHERE',
+   'load' : 'LOAD',
+   'export' : 'EXPORT',
+   'from' : 'FROM',
+   'to' : 'TO',
+   'new' : 'NEW',
+   'list' : 'LIST',
+   'false' : 'FALSE',
+   'true' : 'TRUE'
 }
 
 tokens = [
-    'NAME','NUMBER','EQ','EXCL',
+    'ID','NUM','EQ','EXCL', 'TXT',
     'PLUS','MINUS','TIMES','DIVIDE', 'MOD',
     'LPAREN','RPAREN', 'NL' , 'LBRACK', 'RBRACK', 
-    'COMMA', 'GT', 'LT', 'EQEQ'
+    'COMMA', 'GT', 'LT', 'EQEQ' , 'DOT' , 'LSQ' , 'RSQ'
     ] + list(reserved.values())
 
 # Tokens
@@ -40,9 +59,13 @@ t_COMMA   = r'\,'
 t_GT      = r'>'
 t_LT      = r'<'
 t_EXCL    = r'!'
+t_DOT     = r'\.'
+t_LSQ     = r'\['
+t_RSQ     = r'\]'
+t_TXT     = r'"[^"]*"'
 
-def t_NUMBER(t):
-    r'\d+'
+def t_NUM(t):
+    r'\d+\.?d*'
     try:
         t.value = int(t.value)
     except ValueError:
@@ -52,8 +75,8 @@ def t_NUMBER(t):
 
 def t_ID(t):
     r'[a-zA-Z_][a-zA-Z_0-9]*'
-    t.type = reserved.get(t.value,'NAME')    # Check for reserved words
-    if(t.type=='NAME'):
+    t.type = reserved.get(t.value,'ID')    # Check for reserved words
+    if(t.type=='ID'):
         p = re.compile('[a-zA-Z_][a-zA-Z0-9_]{0, 99}')
         if(not p.match(t.value)):
             t.value = ""
@@ -73,68 +96,90 @@ lex.lex()
 # Parsing rules (lowest to highest)
 
 precedence = (
-    ('left','OR'),
-    ('left','AND'),
-    ('left','EQEQ','NOTEQ'),
-    ('left','GT','LT','LTEQ','GTEQ'),
-    ('left','PLUS','MINUS'),
+    ('left','DOT'),
+    ('left','UMINUS','NOT'),
     ('left','TIMES','DIVIDE', 'MOD'),
-    ('right','UMINUS','NOT'),
-    ('right','ASSIGN'),
-    ('left','COMMA'),
+    ('left','PLUS','MINUS'),
+    ('left','GT','LT','LTEQ','GTEQ'),
+    ('left','EQEQ','NOTEQ'),
+    ('left','AND'),
+    ('left','OR'),
+    ('right','EQ'),
+    ('left','COMMA'),    
     )
 
 # dictionary of names
 names = { }
 
 def p_lines(t):
-    '''lines : lines statement NL
-             | lines NL
+    '''lines : lines class_def NL
+             | lines function_def NL
+             | lines
              | '''
 
+def p_class_lines(t):
+    '''class_lines : class_lines function_def NL
+                   | class_lines variable_def NL
+                   | class_lines
+                   | '''
+
+def p_function_lines(t):
+    '''function_lines : function_lines statement NL
+                      | function_lines NL
+                      | '''
+
 def p_statement(t):
-    '''statement : start_expression
+    '''statement : variable_def
+                 | assignment
                  | loop
-                 | if_statement'''
+                 | if_statement
+                 | data_statement
+                 | obj_expression DOT ID LPAREN function_args RPAREN
+                 | BREAK
+                 | CONTINUE'''
 
+def p_class_def(t):
+    '''class_def : CLASS ID LBRACK NL class_lines RBRACK
+                 | CLASS ID EXTENDS ID LBRACK NL class_lines RBRACK'''
 
-def p_start_expression(t):
-    '''start_expression : expression
-                        | def_variable'''
+def p_function_def(t):
+    '''function_def : FUNCTION ID LPAREN function_args RPAREN LBRACK NL function_lines RBRACK
+                    | var_type FUNCTION ID LPAREN function_args RPAREN LBRACK NL function_lines RETURN expression NL RBRACK'''
 
-def p_opt_statement(t):
-    '''opt_statement : statement
-                     | '''
-                 
+def p_function_args(t):
+    '''function_args : function_args COMMA function_args
+                     | var_type ID'''
+
 def p_loop(t):
-    '''loop : LOOP LPAREN loop_expression RPAREN LBRACK lines opt_statement RBRACK'''
+    '''loop : LOOP LPAREN loop_expression RPAREN LBRACK NL function_lines RBRACK
+            | FOREACH LPAREN var_type ID IN ID RPAREN LBRACK NL function_lines RBRACK
+            | var_type ID EQ GETEACH LPAREN var_type ID IN ID WHERE expression RPAREN'''
 
 def p_loop_expression(t):
-    '''loop_expression : loop_expression COMMA loop_expression
-                       | START start_expression
-                       | WHILE expression
-                       | SET expression
+    '''loop_expression : loop_expression_values COMMA loop_expression_values
+                       | loop_expression_values
                        | '''
 
-def p_if_statement(t):
-    '''if_statement : IF LPAREN expression RPAREN LBRACK lines opt_statement RBRACK
-                    | IF LPAREN expression RPAREN LBRACK lines opt_statement RBRACK ELSE LBRACK lines opt_statement RBRACK'''
+def p_loop_expression_values(t):
+    '''loop_expression_values : START variable_def
+                              | WHILE expression
+                              | SET assignment'''
 
-def p_expression_binop(t):
+def p_if_statement(t):
+    '''if_statement : IF LPAREN expression RPAREN LBRACK NL function_lines RBRACK
+                    | IF LPAREN expression RPAREN LBRACK NL function_lines RBRACK ELSE LBRACK NL function_lines RBRACK'''
+
+def p_data_statement(t):
+    '''data_statement : LOAD expression FROM expression
+                      | EXPORT expression TO expression'''
+
+def p_expression(t):
     '''expression : expression PLUS expression
                   | expression MINUS expression
                   | expression TIMES expression
                   | expression DIVIDE expression
                   | expression MOD expression
-                  | NAME EQ expression %prec ASSIGN'''
-#    if t[2] == '+'  : t[0] = t[1] + t[3]  
-#    elif t[2] == '-': t[0] = t[1] - t[3]
-#    elif t[2] == '*': t[0] = t[1] * t[3]
-#    elif t[2] == '/': t[0] = t[1] / t[3]
-#    elif t[2] == '%': t[0] = t[1] % t[3]
-
-def p_expression_conditional(t):
-    '''expression : expression GT expression
+                  | expression GT expression
                   | expression GT EQ expression %prec GTEQ
                   | expression LT expression
                   | expression LT EQ expression %prec LTEQ
@@ -142,44 +187,45 @@ def p_expression_conditional(t):
                   | expression EXCL EQ expression %prec NOTEQ
                   | expression AND expression
                   | expression OR expression
-                  | NOT expression %prec NOT'''
-#    if t[2] == '>'  : t[0] = t[1] > t[3]
-#    elif t[2] == '<': t[0] = t[1] < t[3]
-#    elif t[2] == '>=': t[0] = t[1] >= t[4]
-#    elif t[2] == '<=': t[0] = t[1] <= t[4]
-#    elif t[2] == '==': t[0] = t[1] == t[4]
-#    elif t[2] == 'and': t[0] = t[1] and t[3]
-#    elif t[2] == 'or' : t[0] = t[1] or t[3]
-#    elif t[2] == 'not' : t[0] = not t[1]
+                  | NOT expression 
+                  | MINUS expression %prec UMINUS
+                  | assignment
+                  | obj_expression DOT ID LPAREN function_args RPAREN
+                  | obj_expression LSQ expression RSQ
+                  | obj_expression
+                  | constant'''
 
-def p_expression_uminus(t):
-    'expression : MINUS expression %prec UMINUS'
-#    t[0] = -t[2]
+def p_assignment(t):
+    '''assignment : ID EQ expression'''
 
-def p_expression_group(t):
-    'expression : LPAREN expression RPAREN'
-#    t[0] = t[2]
+def p_obj_expression(t):
+    '''obj_expression : obj_expression DOT ID
+                      | ID'''
 
-def p_expression_number(t):
-    'expression : NUMBER'
-#    t[0] = t[1]
+def p_variable_def(t):
+    '''variable_def : var_type ID
+                    | var_type assignment
+                    | var_type ID EQ NEW var_type
+                    | var_type ID EQ NEW var_type RBRACK NL mul_variable_def RBRACK'''
 
-def p_expression_name(t):
-    'expression : NAME'
-
-#    try:
-#        t[0] = names[t[1]]
-#    except LookupError:
-#        print("Undefined name '%s'" % t[1])
-#        t[0] = 0
-   
-def p_def_variable(t):
-    '''def_variable : var_type NAME
-                    | var_type NAME EQ expression'''
+def p_mul_variable_def(t):
+    '''mul_variable_def : mul_variable_def variable_def NL
+                        | variable_def NL'''
 
 def p_var_type(t):
-    '''var_type : NUMBER_TYPE
-                | TEXT_TYPE'''
+    '''var_type : TEXT_TYPE
+                | NUM_TYPE
+                | BOOL_TYPE
+                | ID
+                | LIST LPAREN var_type RPAREN'''
+
+def p_constant(t):
+    '''constant : LBRACK constant RBRACK
+                | constant COMMA constant
+                | NUM
+                | TXT
+                | FALSE
+                | TRUE'''            
 
 def p_error(t):
 #    print("Syntax error at '%s'" % t.value)

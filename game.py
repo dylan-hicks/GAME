@@ -289,16 +289,7 @@ def p_error(t):
 
 import ply.yacc as yacc
 
-import logging
-logging.basicConfig(
-    level = logging.DEBUG,
-    filename = "parselog.txt",
-    filemode = "w",
-    format = "%(filename)10s:%(lineno)4d:%(message)s"
-)
-log = logging.getLogger()
-
-yacc.yacc(debug=True,debuglog=log)
+yacc.yacc()
 
 if len(sys.argv) > 1 :
     inputfile = open(sys.argv[1],'r')

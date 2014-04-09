@@ -118,18 +118,20 @@ def p_lines(t):
              | lines function_def NL
              | lines NL
              | '''
-    print('lines')
+    print('lines');
 
 def p_class_lines(t):
     '''class_lines : class_lines function_def NL
                    | class_lines variable_def NL
                    | class_lines NL
                    | '''
+    print('class lines');
 
 def p_function_lines(t):
     '''function_lines : function_lines statement NL
                       | function_lines NL
                       | '''
+    print('function lines');
 
 def p_statement(t):
     '''statement : variable_def
@@ -141,54 +143,65 @@ def p_statement(t):
                  | ID LPAREN function_run_args RPAREN
                  | BREAK
                  | CONTINUE'''
+    print('statement');
 
 def p_class_def(t):
     '''class_def : CLASS ID LBRACK NL class_lines RBRACK
                  | CLASS ID EXTENDS ID LBRACK NL class_lines RBRACK'''
+    print('class def');
 
 def p_function_def(t):
     '''function_def : FUNCTION ID LPAREN function_args RPAREN LBRACK NL function_lines RBRACK
                     | var_type FUNCTION ID LPAREN function_args RPAREN LBRACK NL function_lines RETURN expression NL RBRACK'''
-    print('function_def')
+    print('function def');
 
 def p_function_args(t):
     '''function_args : function_arg_values
                      | '''
+    print('function args');
 
 def p_function_arg_values(t):
     '''function_arg_values : function_arg_values COMMA function_arg_values
                            | var_type ID'''
+    print('function arg values');
 
 def p_function_run_args(t):
     '''function_run_args : function_run_arg_values
                          | '''
+    print('function run args');
 
 def p_function_run_arg_values(t):
     '''function_run_arg_values : function_run_arg_values COMMA function_run_arg_values
                                | expression'''
+    print('function run arg values');
 
 def p_loop(t):
     '''loop : LOOP LPAREN loop_expression RPAREN LBRACK NL function_lines RBRACK
             | FOREACH LPAREN var_type ID IN ID RPAREN LBRACK NL function_lines RBRACK
             | var_type ID EQ GETEACH LPAREN var_type ID IN ID WHERE expression RPAREN'''
+    print('loop');
 
 def p_loop_expression(t):
     '''loop_expression : loop_expression COMMA loop_expression
                        | loop_expression_values
                        | '''
+    print('loop expression');
 
 def p_loop_expression_values(t):
     '''loop_expression_values : START variable_def
                               | WHILE expression
                               | SET assignment'''
+    print('loop expression values');
 
 def p_if_statement(t):
     '''if_statement : IF LPAREN expression RPAREN LBRACK NL function_lines RBRACK
                     | IF LPAREN expression RPAREN LBRACK NL function_lines RBRACK ELSE LBRACK NL function_lines RBRACK'''
+    print('if statement');
 
 def p_data_statement(t):
     '''data_statement : LOAD expression FROM expression
                       | EXPORT expression TO expression'''
+    print('data statement');
 
 def p_expression(t):
     '''expression : expression PLUS expression
@@ -212,23 +225,28 @@ def p_expression(t):
                   | ID LPAREN function_run_args RPAREN
                   | obj_expression LSQ expression RSQ
                   | obj_expression'''
+    print('expression');
 
 def p_assignment(t):
     '''assignment : ID EQ expression'''
+    print('assignment');
 
 def p_obj_expression(t):
     '''obj_expression : obj_expression DOT ID
                       | ID'''
+    print('obj expression');
 
 def p_variable_def(t):
     '''variable_def : var_type ID
                     | var_type assignment
                     | var_type ID EQ NEW var_type
                     | var_type ID EQ NEW var_type LBRACK NL mul_variable_def RBRACK'''
+    print('variable def');
 
 def p_mul_variable_def(t):
     '''mul_variable_def : mul_variable_def variable_def NL
                         | variable_def NL'''
+    print('mul variable def');
 
 def p_var_type(t):
     '''var_type : TEXT_TYPE
@@ -236,6 +254,7 @@ def p_var_type(t):
                 | BOOL_TYPE
                 | ID
                 | LIST LPAREN var_type RPAREN'''
+    print('var type');
 
 def p_constant(t):
     '''constant : LBRACK constant_list RBRACK
@@ -243,14 +262,15 @@ def p_constant(t):
                 | TXT
                 | FALSE
                 | TRUE'''            
+    print('constant');
 
 def p_constant_list(t):
     '''constant_list : constant_list COMMA constant_list
                      | constant'''
+    print('constant list');
 
 def p_error(t):
     print("Syntax error at '%s'" % t.value)
-#    print("syntax error")
 
 import ply.yacc as yacc
 

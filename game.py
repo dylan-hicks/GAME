@@ -75,11 +75,13 @@ def t_NUM(t):
 
 def t_ID(t):
     r'[a-zA-Z_][a-zA-Z_0-9]*'
+    print(t.value)
     t.type = reserved.get(t.value,'ID')    # Check for reserved words
     if(t.type=='ID'):
         p = re.compile('[a-zA-Z_][a-zA-Z0-9_]{0, 99}')
         if(not p.match(t.value)):
             t.value = ""
+    print(t.type)
     return t
 
 # Ignored characters
@@ -116,6 +118,7 @@ def p_lines(t):
              | lines function_def NL
              | lines NL
              | '''
+    print('lines')
 
 def p_class_lines(t):
     '''class_lines : class_lines function_def NL
@@ -134,7 +137,8 @@ def p_statement(t):
                  | loop
                  | if_statement
                  | data_statement
-                 | obj_expression DOT ID LPAREN function_args RPAREN
+                 | obj_expression DOT ID LPAREN function_run_args RPAREN
+                 | ID LPAREN function_run_args RPAREN
                  | BREAK
                  | CONTINUE'''
 
@@ -145,10 +149,23 @@ def p_class_def(t):
 def p_function_def(t):
     '''function_def : FUNCTION ID LPAREN function_args RPAREN LBRACK NL function_lines RBRACK
                     | var_type FUNCTION ID LPAREN function_args RPAREN LBRACK NL function_lines RETURN expression NL RBRACK'''
+    print('function_def')
 
 def p_function_args(t):
-    '''function_args : function_args COMMA function_args
-                     | var_type ID'''
+    '''function_args : function_arg_values
+                     | '''
+
+def p_function_arg_values(t):
+    '''function_arg_values : function_arg_values COMMA function_arg_values
+                           | var_type ID'''
+
+def p_function_run_args(t):
+    '''function_run_args : function_run_arg_values
+                         | '''
+
+def p_function_run_arg_values(t):
+    '''function_run_arg_values : function_run_arg_values COMMA function_run_arg_values
+                               | expression'''
 
 def p_loop(t):
     '''loop : LOOP LPAREN loop_expression RPAREN LBRACK NL function_lines RBRACK
@@ -191,7 +208,8 @@ def p_expression(t):
                   | MINUS expression %prec UMINUS
                   | constant
                   | assignment
-                  | obj_expression DOT ID LPAREN function_args RPAREN
+                  | obj_expression DOT ID LPAREN function_run_args RPAREN
+                  | ID LPAREN function_run_args RPAREN
                   | obj_expression LSQ expression RSQ
                   | obj_expression'''
 
@@ -231,8 +249,8 @@ def p_constant_list(t):
                      | constant'''
 
 def p_error(t):
-#    print("Syntax error at '%s'" % t.value)
-    print("syntax error")
+    print("Syntax error at '%s'" % t.value)
+#    print("syntax error")
 
 import ply.yacc as yacc
 

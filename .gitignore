@@ -1,3 +1,4 @@
 parsetab.py
+parselog.txt
 *.out
 *.pyc

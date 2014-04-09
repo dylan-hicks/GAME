@@ -114,13 +114,13 @@ names = { }
 def p_lines(t):
     '''lines : lines class_def NL
              | lines function_def NL
-             | lines
+             | lines NL
              | '''
 
 def p_class_lines(t):
     '''class_lines : class_lines function_def NL
                    | class_lines variable_def NL
-                   | class_lines
+                   | class_lines NL
                    | '''
 
 def p_function_lines(t):
@@ -156,7 +156,7 @@ def p_loop(t):
             | var_type ID EQ GETEACH LPAREN var_type ID IN ID WHERE expression RPAREN'''
 
 def p_loop_expression(t):
-    '''loop_expression : loop_expression_values COMMA loop_expression_values
+    '''loop_expression : loop_expression COMMA loop_expression
                        | loop_expression_values
                        | '''
 
@@ -189,11 +189,11 @@ def p_expression(t):
                   | expression OR expression
                   | NOT expression 
                   | MINUS expression %prec UMINUS
+                  | constant
                   | assignment
                   | obj_expression DOT ID LPAREN function_args RPAREN
                   | obj_expression LSQ expression RSQ
-                  | obj_expression
-                  | constant'''
+                  | obj_expression'''
 
 def p_assignment(t):
     '''assignment : ID EQ expression'''
@@ -220,19 +220,32 @@ def p_var_type(t):
                 | LIST LPAREN var_type RPAREN'''
 
 def p_constant(t):
-    '''constant : LBRACK constant RBRACK
-                | constant COMMA constant
+    '''constant : LBRACK constant_list RBRACK
                 | NUM
                 | TXT
                 | FALSE
                 | TRUE'''            
+
+def p_constant_list(t):
+    '''constant_list : constant_list COMMA constant_list
+                     | constant'''
 
 def p_error(t):
 #    print("Syntax error at '%s'" % t.value)
     print("syntax error")
 
 import ply.yacc as yacc
-yacc.yacc()
+
+import logging
+logging.basicConfig(
+    level = logging.DEBUG,
+    filename = "parselog.txt",
+    filemode = "w",
+    format = "%(filename)10s:%(lineno)4d:%(message)s"
+)
+log = logging.getLogger()
+
+yacc.yacc(debug=True,debuglog=log)
 
 if len(sys.argv) > 1 :
     inputfile = open(sys.argv[1],'r')

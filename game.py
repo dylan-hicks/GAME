@@ -122,22 +122,70 @@ names = { }
 
 # defining the Node class
 
-class Node(object):
+class program_lines_node(object):
 
-    def __init__(self, type, children=None, leaf=None): 
-        self.type = type
+    def __init__(self, children=None): 
 
         if children:
             self.children = children
         else:
             self.children = [ ]
      
-        self.leaf = leaf
-    
-    def traverse(self, i): 
+    def __str__(self):
+        s = ""
+        for x in children:
+            s += x.__str__() + " "
+        return s
+
+class constant_node(object):
+
+    def __init__(self, children, value=None): 
+
         
+        self.children = children
+        if value:
+            self.value = value
+
+    def __str__(self):
+        s = ""
+        if value:
+            s += value #CHECK IF LEX CONVERTS THIS AUTOMATICALLY
+        else:
+            S += '{' + children[0].__str__() + '}'  
+        return s
+
+class constant_list_node(object):
+    def __init__(self, children):
+        
+        self.children = children
+
+    def __str__(self):
+        s = ""
+        if len(children) == 2:
+            s += children[0].__str__() + ', ' + children[1].__str__()
+        else: 
+            s += children[0].__str__()
+        return s
+
+class var_type_node(object):
+
+    def __init__(self, children, value=None): 
+        
+        self.children = children
+        if value:
+            self.value = value
+
+    def __str__(self):
+        s = ""
+        if value:
+            s += value #CHECK IF LEX CONVERTS THIS AUTOMATICALLY
+        else:
+            s += 'list(' + children[0].__str__() + ')'  
+        return s
+
 def p_program_lines(t):
     '''program_lines : import_lines lines'''
+    p[0] = program_lines_node([p[1], p[2]])
 
 def p_import_lines(t):
     '''import_lines : import_lines IMPORT TXT NL
@@ -286,6 +334,10 @@ def p_var_type(t):
                 | ID
                 | LIST LPAREN var_type RPAREN'''
     print('var type')
+    if len(p) == 4:
+        p[0] = var_type_node([p[3]])
+    else:
+        p[0] = var_type_node([ ], p[1])
 
 def p_constant(t):
     '''constant : LBRACK constant_list RBRACK
@@ -294,11 +346,19 @@ def p_constant(t):
                 | FALSE
                 | TRUE'''            
     print('constant')
+    if len(p) == 4:
+        p[0] = constant_node([p[2]])
+    else: 
+        p[0] = constant_node([ ], p[1])
 
 def p_constant_list(t):
     '''constant_list : constant_list COMMA constant_list
                      | constant'''
     print('constant list')
+    if len(p) == 4:
+        p[0] = constant_list_node([p[1], p[2]])
+    else:
+        p[0] = constant_list_node([p[1]])
 
 def p_error(t):
     print("Syntax error at '%s'" % t.value)

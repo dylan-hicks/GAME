@@ -305,15 +305,36 @@ def p_expression(t):
                   | obj_expression LSQ expression RSQ
                   | obj_expression'''
     print('expression')
+    if len(p) == 2:
+        p[0] = expression_node([p[1]])
+    elif len(p) == 3:
+        p[0] = expression_node([p[2]], [p[1]])
+    elif len(p) == 4:
+        p[0] = expression_node([p[1], p[3]], [p[2]])
+    elif len(p) == 5:
+        if p[3] == "=":
+            p[0] = expression_node([p[1], p[4]], [p[2], p[3]])
+        elif p[1] == ID: # ID evaluates to?
+            p[0] = expression_node([p[3]], [p[1], p[2], p[4]])
+        else:
+            p[0] = expression_node([p[1], p[3]])
+    else:
+        p[0] = expression_node([p[1], p[5]], [p[2], p[3], p[4], p[6]])
+            
 
 def p_assignment(t):
     '''assignment : ID EQ expression'''
     print('assignment')
+    p[0] = assignment_node([p[3]], p[1])
 
 def p_obj_expression(t):
     '''obj_expression : obj_expression DOT ID
                       | ID'''
     print('obj expression')
+    if len(p) == 2:
+        p[0] = obj_expression_node([ ], p[1])
+    else:
+        p[0] = obj_expression_node([p[1]], p[3])
 
 def p_variable_def(t):
     '''variable_def : var_type ID
@@ -321,11 +342,25 @@ def p_variable_def(t):
                     | var_type ID EQ NEW var_type
                     | var_type ID EQ NEW var_type LBRACK NL mul_variable_def RBRACK'''
     print('variable def')
+    if len(p) == 3:
+        if p[2] == ID: #NOT SURE WHAT ID EVALUATES TO
+            p[0] = variable_def_node([p[1]], p[2])
+        else:
+            p[0] = variable_def_node([p[1], p[2]])
+    else if len(p) == 6:
+        p[0] = variable_def_node([p[1], p[5]], p[2])
+    else:
+        p[0] = variable_def_node([p[1], p[5], p[8]], p[2])
+
 
 def p_mul_variable_def(t):
     '''mul_variable_def : mul_variable_def variable_def NL
                         | variable_def NL'''
     print('mul variable def')
+    if len(p) == 3:
+        p[0] = mul_variable_def_node([p[1], p[2]])
+    else:
+        p[0] = mul_variable_def_node([p[1]])
 
 def p_var_type(t):
     '''var_type : TEXT_TYPE

@@ -151,7 +151,7 @@ class constant_node(object):
         if value:
             s += value #CHECK IF LEX CONVERTS THIS AUTOMATICALLY
         else:
-            S += '{' + children[0].__str__() + '}'  
+            S += '{' + children[0].__str__() + '}' # can we just use LBRACK instead?
         return s
 
 class constant_list_node(object):
@@ -182,6 +182,101 @@ class var_type_node(object):
         else:
             s += 'list(' + children[0].__str__() + ')'  
         return s
+
+class mul_variable_def_node(object):
+
+    def __init__(self, children):
+        self.children = children
+        
+    def __str__(self):
+        s = ""
+        for x in children:
+            s += x.__str__()
+        
+        s += "\n"
+        return s
+
+class variable_def_node(object):
+
+    def __init__(self, children, value=None):
+        self.children = children
+        if value: 
+            self.value = value
+
+    def __str__(self):
+        s = ""
+
+        if len(children) == 1:
+            s += children[0].__str__() + value # what does ID evaluate to? 
+        elif len(children) == 2 && value:
+            s += children[0].__str__() + value + EQ + NEW + children[1].__str__() # same question
+        elif len(children) == 2: 
+            s += children[0].__str__() + children[1].__str__()
+        else:
+            s += children[0].__str__() + ID + EQ + NEW + children[1].__str__() + LBRACK + NL + children[2].__str__()
+            
+        return s;
+
+class obj_expression_node(object):
+
+    def __init__(self, children, value=None):
+        self.children = children
+        if value:
+            self.value = value
+
+    def __str__(self):
+        s = ""
+
+        if len(children) == 1:
+            s += children[0].__str__() + DOT + ID
+        else: 
+            s += ID
+
+        return s
+
+class assignment_node(object):
+
+    def __init__(self, children, value=None):
+        self.children = children
+        if value:
+            self.value = value
+
+    def __str__(self):
+        s = ""
+
+        s += ID + EQ + children[0].__str__()
+
+        return s
+
+class expression_node(object): # if this messes up, look for prec as the cause
+
+    def __init__(self, children, value=None):
+        self.children = children
+        if value:
+            self.value = value
+
+    def __str__(self):
+        s = ""
+
+        if len(children) == 1 && value && len(value) == 1:
+            s += value[0] + children[0].__str__() # will value be NOT?
+        elif len(children) == 1 && value && len(value) == 3:
+            s+= value[0] + value[1] + children[0].__str__() + value[2]
+        elif len(children) == 1: 
+            s += children[0].__str__()
+        elif len(children) == 2 && value && len(value) == 1:
+            s += children[0].__str__() + value[0] + children[1].__str__()
+        elif len(children) == 2 && value && len(value) == 2:
+            s += children[0].__str__() + value[0] + value[1] + children[1].__str__()
+        elif len(children) == 2 && value && len(value) == 4:
+            s += children[0].__str__() + DOT + value[1] + LPAREN + children[1].__str__() + RPAREN
+        else:
+            s += children[0].__str__() + LSQ + children[1].__str__() + RSQ
+
+        return s
+
+
+# grammar stuff below
 
 def p_program_lines(t):
     '''program_lines : import_lines lines'''

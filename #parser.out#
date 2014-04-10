@@ -1,0 +1,199 @@
+Created by PLY version 3.4 (http://www.dabeaz.com/ply)
+
+Grammar
+
+Rule 0     S' -> lines
+Rule 1     lines -> lines class_def NL
+Rule 2     lines -> lines function_def NL
+Rule 3     lines -> lines
+Rule 4     lines -> <empty>
+Rule 5     class_lines -> class_lines function_def NL
+Rule 6     class_lines -> class_lines variable_def NL
+Rule 7     class_lines -> class_lines
+Rule 8     class_lines -> <empty>
+Rule 9     function_lines -> function_lines statement NL
+Rule 10    function_lines -> function_lines NL
+Rule 11    function_lines -> <empty>
+Rule 12    statement -> variable_def
+Rule 13    statement -> assignment
+Rule 14    statement -> loop
+Rule 15    statement -> if_statement
+Rule 16    statement -> data_statement
+Rule 17    statement -> obj_expression DOT ID LPAREN function_args RPAREN
+Rule 18    statement -> BREAK
+Rule 19    statement -> CONTINUE
+Rule 20    class_def -> CLASS ID LBRACK NL class_lines RBRACK
+Rule 21    class_def -> CLASS ID EXTENDS ID LBRACK NL class_lines RBRACK
+Rule 22    function_def -> FUNCTION ID LPAREN function_args RPAREN LBRACK NL function_lines RBRACK
+Rule 23    function_def -> var_type FUNCTION ID LPAREN function_args RPAREN LBRACK NL function_lines RETURN expression NL RBRACK
+Rule 24    function_args -> function_args COMMA function_args
+Rule 25    function_args -> var_type ID
+Rule 26    loop -> LOOP LPAREN loop_expression RPAREN LBRACK NL function_lines RBRACK
+Rule 27    loop -> FOREACH LPAREN var_type ID IN ID RPAREN LBRACK NL function_lines RBRACK
+Rule 28    loop -> var_type ID EQ GETEACH LPAREN var_type ID IN ID WHERE expression RPAREN
+Rule 29    loop_expression -> loop_expression_values COMMA loop_expression_values
+Rule 30    loop_expression -> loop_expression_values
+Rule 31    loop_expression -> <empty>
+Rule 32    loop_expression_values -> START variable_def
+Rule 33    loop_expression_values -> WHILE expression
+Rule 34    loop_expression_values -> SET assignment
+Rule 35    if_statement -> IF LPAREN expression RPAREN LBRACK NL function_lines RBRACK
+Rule 36    if_statement -> IF LPAREN expression RPAREN LBRACK NL function_lines RBRACK ELSE LBRACK NL function_lines RBRACK
+Rule 37    data_statement -> LOAD expression FROM expression
+Rule 38    data_statement -> EXPORT expression TO expression
+Rule 39    expression -> expression PLUS expression
+Rule 40    expression -> expression MINUS expression
+Rule 41    expression -> expression TIMES expression
+Rule 42    expression -> expression DIVIDE expression
+Rule 43    expression -> expression MOD expression
+Rule 44    expression -> expression GT expression
+Rule 45    expression -> expression GT EQ expression
+Rule 46    expression -> expression LT expression
+Rule 47    expression -> expression LT EQ expression
+Rule 48    expression -> expression EQEQ expression
+Rule 49    expression -> expression EXCL EQ expression
+Rule 50    expression -> expression AND expression
+Rule 51    expression -> expression OR expression
+Rule 52    expression -> NOT expression
+Rule 53    expression -> MINUS expression
+Rule 54    expression -> assignment
+Rule 55    expression -> obj_expression DOT ID LPAREN function_args RPAREN
+Rule 56    expression -> obj_expression LSQ expression RSQ
+Rule 57    expression -> obj_expression
+Rule 58    expression -> constant
+Rule 59    assignment -> ID EQ expression
+Rule 60    obj_expression -> obj_expression DOT ID
+Rule 61    obj_expression -> ID
+Rule 62    variable_def -> var_type ID
+Rule 63    variable_def -> var_type assignment
+Rule 64    variable_def -> var_type ID EQ NEW var_type
+Rule 65    variable_def -> var_type ID EQ NEW var_type LBRACK NL mul_variable_def RBRACK
+Rule 66    mul_variable_def -> mul_variable_def variable_def NL
+Rule 67    mul_variable_def -> variable_def NL
+Rule 68    var_type -> TEXT_TYPE
+Rule 69    var_type -> NUM_TYPE
+Rule 70    var_type -> BOOL_TYPE
+Rule 71    var_type -> ID
+Rule 72    var_type -> LIST LPAREN var_type RPAREN
+Rule 73    constant -> LBRACK constant RBRACK
+Rule 74    constant -> constant COMMA constant
+Rule 75    constant -> NUM
+Rule 76    constant -> TXT
+Rule 77    constant -> FALSE
+Rule 78    constant -> TRUE
+
+Terminals, with rules where they appear
+
+AND                  : 50
+BOOL_TYPE            : 70
+BREAK                : 18
+CLASS                : 20 21
+COMMA                : 24 29 74
+CONTINUE             : 19
+DIVIDE               : 42
+DOT                  : 17 55 60
+ELSE                 : 36
+EQ                   : 28 45 47 49 59 64 65
+EQEQ                 : 48
+EXCL                 : 49
+EXPORT               : 38
+EXTENDS              : 21
+FALSE                : 77
+FOREACH              : 27
+FROM                 : 37
+FUNCTION             : 22 23
+GETEACH              : 28
+GT                   : 44 45
+ID                   : 17 20 21 21 22 23 25 27 27 28 28 28 55 59 60 61 62 64 65 71
+IF                   : 35 36
+IN                   : 27 28
+LBRACK               : 20 21 22 23 26 27 35 36 36 65 73
+LIST                 : 72
+LOAD                 : 37
+LOOP                 : 26
+LPAREN               : 17 22 23 26 27 28 35 36 55 72
+LSQ                  : 56
+LT                   : 46 47
+MINUS                : 40 53
+MOD                  : 43
+NEW                  : 64 65
+NL                   : 1 2 5 6 9 10 20 21 22 23 23 26 27 35 36 36 65 66 67
+NOT                  : 52
+NUM                  : 75
+NUM_TYPE             : 69
+OR                   : 51
+PLUS                 : 39
+RBRACK               : 20 21 22 23 26 27 35 36 36 65 73
+RETURN               : 23
+RPAREN               : 17 22 23 26 27 28 35 36 55 72
+RSQ                  : 56
+SET                  : 34
+START                : 32
+TEXT_TYPE            : 68
+TIMES                : 41
+TO                   : 38
+TRUE                 : 78
+TXT                  : 76
+WHERE                : 28
+WHILE                : 33
+error                : 
+
+Nonterminals, with rules where they appear
+
+assignment           : 13 34 54 63
+class_def            : 1
+class_lines          : 5 6 7 20 21
+constant             : 58 73 74 74
+data_statement       : 16
+expression           : 23 28 33 35 36 37 37 38 38 39 39 40 40 41 41 42 42 43 43 44 44 45 45 46 46 47 47 48 48 49 49 50 50 51 51 52 53 56 59
+function_args        : 17 22 23 24 24 55
+function_def         : 2 5
+function_lines       : 9 10 22 23 26 27 35 36 36
+if_statement         : 15
+lines                : 1 2 3 0
+loop                 : 14
+loop_expression      : 26
+loop_expression_values : 29 29 30
+mul_variable_def     : 65 66
+obj_expression       : 17 55 56 57 60
+statement            : 9
+var_type             : 23 25 27 28 28 62 63 64 64 65 65 72
+variable_def         : 6 12 32 66 67
+
+Parsing method: LALR
+
+state 0
+
+    (0) S' -> . lines
+    (1) lines -> . lines class_def NL
+    (2) lines -> . lines function_def NL
+    (3) lines -> . lines
+    (4) lines -> .
+
+    CLASS           reduce using rule 4 (lines -> .)
+    FUNCTION        reduce using rule 4 (lines -> .)
+    TEXT_TYPE       reduce using rule 4 (lines -> .)
+    NUM_TYPE        reduce using rule 4 (lines -> .)
+    BOOL_TYPE       reduce using rule 4 (lines -> .)
+    ID              reduce using rule 4 (lines -> .)
+    LIST            reduce using rule 4 (lines -> .)
+    $end            reduce using rule 4 (lines -> .)
+
+    lines                          shift and go to state 1
+
+state 1
+
+    (0) S' -> lines .
+    (1) lines -> lines . class_def NL
+    (2) lines -> lines . function_def NL
+    (3) lines -> lines .
+    (20) class_def -> . CLASS ID LBRACK NL class_lines RBRACK
+    (21) class_def -> . CLASS ID EXTENDS ID LBRACK NL class_lines RBRACK
+    (22) function_def -> . FUNCTION ID LPAREN function_args RPAREN LBRACK NL function_lines RBRACK
+    (23) function_def -> . var_type FUNCTION ID LPAREN function_args RPAREN LBRACK NL function_lines RETURN expression NL RBRACK
+    (68) var_type -> . TEXT_TYPE
+    (69) var_type -> . NUM_TYPE
+    (70) var_type -> . BOOL_TYPE
+    (71) var_type -> . ID
+    (72) var_type -> . LIST LPAREN var_type RPAREN
+

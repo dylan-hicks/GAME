@@ -1,7 +1,8 @@
 import sys
 import re
 
-reserved = {
+reserved = { 
+   'import' : 'IMPORT',
    'if' : 'IF',
    'else' : 'ELSE',
    'loop' : 'LOOP',
@@ -87,6 +88,11 @@ def t_ID(t):
 # Ignored characters
 t_ignore = " \t"
 
+def t_COMMENT(t):
+    r'\#.*\n'
+    t.type = 'NL'
+    return t
+
 def t_error(t):
     print("Illegal character '%s'" % t.value[0])
     t.lexer.skip(1)
@@ -108,6 +114,7 @@ precedence = (
     ('left','OR'),
     ('right','EQ'),
     ('left','COMMA'),    
+    ('left','NL'),
     )
 
 # dictionary of names
@@ -129,6 +136,13 @@ class Node(object):
     
     def traverse(self, i): 
         
+def p_program_lines(t):
+    '''program_lines : import_lines lines'''
+
+def p_import_lines(t):
+    '''import_lines : import_lines IMPORT TXT NL
+                    | import_lines NL
+                    | '''
 
 def p_lines(t):
     '''lines : lines class_def NL
@@ -291,16 +305,7 @@ def p_error(t):
 
 import ply.yacc as yacc
 
-import logging
-logging.basicConfig(
-    level = logging.DEBUG,
-    filename = "parselog.txt",
-    filemode = "w",
-    format = "%(filename)10s:%(lineno)4d:%(message)s"
-)
-log = logging.getLogger()
-
-yacc.yacc(debug=True,debuglog=log)
+yacc.yacc()
 
 if len(sys.argv) > 1 :
     inputfile = open(sys.argv[1],'r')

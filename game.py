@@ -124,17 +124,12 @@ names = { }
 
 class program_lines_node(object):
 
-    def __init__(self, children=None): 
-
-        if children:
-            self.children = children
-        else:
-            self.children = [ ]
-     
+    def __init__(self, children): 
+        self.children = children
+             
     def __str__(self):
         s = ""
-        for x in children:
-            s += x.__str__() + " "
+        s += children[0].__str__() + " " + children[1].__str__()
         
 #        print s # TESTING
         return s
@@ -546,6 +541,7 @@ class data_statement_node:
 def p_program_lines(p):
     '''program_lines : import_lines lines'''
     p[0] = program_lines_node([p[1], p[2]])
+    print p[0] # TESTING
 
 def p_import_lines(p):
     '''import_lines : import_lines IMPORT TXT NL

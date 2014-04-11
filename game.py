@@ -275,6 +275,92 @@ class expression_node(object): # if this messes up, look for prec as the cause
 
         return s
 
+class import_lines_node:
+    def __init__(self, children, value=None):
+        self.children = children
+        if value:
+            self.value = value
+
+    def __str__(self):
+        s = ""
+        if value: 
+            s += children[0].__str__() + " import " + value + "\n"
+        else:
+            s += children[0].__str__() + "\n"
+
+        return s
+
+
+class lines_node:
+    def __init__(self, children, value=None):
+        self.children = children
+        if value:
+            self.value = value
+
+    def __str__(self):
+        s = ""
+        if len(children) == 0:
+            s = ""
+        elif len(children) == 1:
+            s += children[0].__str__() + "\n"
+        else:
+            s += children[0].__str__() + " " + children[1].__str__() + "\n"
+
+        return s
+
+class class_lines_node:
+    def __init__(self, children, value=None):
+        self.children = children
+        if value:
+            self.value = value
+
+    def __str__(self):
+        s = ""
+        if len(children) == 0:
+            s = ""
+        elif len(children) == 1:
+            s += children[0].__str__() + "\n"
+        else:
+            s += children[0].__str__() + " " + children[1].__str__() + "\n"
+
+        return s
+
+class function_lines_node:
+    def __init__(self, children, value=None):
+        self.children = children
+        if value:
+            self.value = value
+
+    def __str__(self):
+        s = ""
+        if len(children) == 0:
+            s = ""
+        elif len(children) == 1:
+            s += children[0].__str__() + "\n"
+        else:
+            s += children[0].__str__() + " " + children[1].__str__() + "\n"
+
+        return s
+
+class statement_node:
+    def __init__(self, children, value=None):
+        self.children = children
+        if value:
+            self.value = value
+    
+    def __str__(self):
+        s = ""
+        if len(children) == 0:
+            s += value
+        elif len(children) == 1:
+            if value:
+                s += value + "(" + children[0].__str__() + ")"
+            else:
+                s += children[0].__str__()
+        elif len(children) == 2:
+            s += children[0].__str__() + "." + value + "(" + children[1].__str__() + ")"
+
+        return s
 
 # grammar stuff below
 

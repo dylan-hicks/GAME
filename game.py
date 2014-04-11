@@ -208,7 +208,7 @@ class variable_def_node(object):
 
         if len(children) == 1:
             s += children[0].__str__() + value # what does ID evaluate to? 
-        elif len(children) == 2 && value:
+        elif len(children) == 2 and value:
             s += children[0].__str__() + value + EQ + NEW + children[1].__str__() # same question
         elif len(children) == 2: 
             s += children[0].__str__() + children[1].__str__()
@@ -258,23 +258,109 @@ class expression_node(object): # if this messes up, look for prec as the cause
     def __str__(self):
         s = ""
 
-        if len(children) == 1 && value && len(value) == 1:
+        if len(children) == 1 and value and len(value) == 1:
             s += value[0] + children[0].__str__() # will value be NOT?
-        elif len(children) == 1 && value && len(value) == 3:
+        elif len(children) == 1 and value and len(value) == 3:
             s+= value[0] + value[1] + children[0].__str__() + value[2]
         elif len(children) == 1: 
             s += children[0].__str__()
-        elif len(children) == 2 && value && len(value) == 1:
+        elif len(children) == 2 and value and len(value) == 1:
             s += children[0].__str__() + value[0] + children[1].__str__()
-        elif len(children) == 2 && value && len(value) == 2:
+        elif len(children) == 2 and value and len(value) == 2:
             s += children[0].__str__() + value[0] + value[1] + children[1].__str__()
-        elif len(children) == 2 && value && len(value) == 4:
+        elif len(children) == 2 and value and len(value) == 4:
             s += children[0].__str__() + DOT + value[1] + LPAREN + children[1].__str__() + RPAREN
         else:
             s += children[0].__str__() + LSQ + children[1].__str__() + RSQ
 
         return s
 
+class import_lines_node:
+    def __init__(self, children, value=None):
+        self.children = children
+        if value:
+            self.value = value
+
+    def __str__(self):
+        s = ""
+        if value: 
+            s += children[0].__str__() + " import " + value + "\n"
+        else:
+            s += children[0].__str__() + "\n"
+
+        return s
+
+
+class lines_node:
+    def __init__(self, children, value=None):
+        self.children = children
+        if value:
+            self.value = value
+
+    def __str__(self):
+        s = ""
+        if len(children) == 0:
+            s = ""
+        elif len(children) == 1:
+            s += children[0].__str__() + "\n"
+        else:
+            s += children[0].__str__() + " " + children[1].__str__() + "\n"
+
+        return s
+
+class class_lines_node:
+    def __init__(self, children, value=None):
+        self.children = children
+        if value:
+            self.value = value
+
+    def __str__(self):
+        s = ""
+        if len(children) == 0:
+            s = ""
+        elif len(children) == 1:
+            s += children[0].__str__() + "\n"
+        else:
+            s += children[0].__str__() + " " + children[1].__str__() + "\n"
+
+        return s
+
+class function_lines_node:
+    def __init__(self, children, value=None):
+        self.children = children
+        if value:
+            self.value = value
+
+    def __str__(self):
+        s = ""
+        if len(children) == 0:
+            s = ""
+        elif len(children) == 1:
+            s += children[0].__str__() + "\n"
+        else:
+            s += children[0].__str__() + " " + children[1].__str__() + "\n"
+
+        return s
+
+class statement_node:
+    def __init__(self, children, value=None):
+        self.children = children
+        if value:
+            self.value = value
+    
+    def __str__(self):
+        s = ""
+        if len(children) == 0:
+            s += value
+        elif len(children) == 1:
+            if value:
+                s += value + "(" + children[0].__str__() + ")"
+            else:
+                s += children[0].__str__()
+        elif len(children) == 2:
+            s += children[0].__str__() + "." + value + "(" + children[1].__str__() + ")"
+
+        return s
 
 # grammar stuff below
 
@@ -479,7 +565,7 @@ def p_constant(t):
     if len(p) == 4:
         p[0] = constant_node([p[2]])
     else: 
-        p[0] = constant_node([ ], p[1])
+        p[0] = constant_node([ ], p[1].value)
 
 def p_constant_list(t):
     '''constant_list : constant_list COMMA constant_list

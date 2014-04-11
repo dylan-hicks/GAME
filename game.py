@@ -288,8 +288,10 @@ def p_import_lines(p):
                     | '''
     if len(p) == 3:
         p[0] = import_lines_node([p[1]])
+    elif len(p) == 1:
+        p[0] = class_lines_node([ ])
     else:
-        p[0] = import_lines_node([p[1]], [p[2], p[3]])
+        p[0] = import_lines_node([p[1]], p[3].value)
 
 def p_lines(p):
     '''lines : lines class_def NL
@@ -299,7 +301,9 @@ def p_lines(p):
     print('lines')
     if len(p) == 3:
         p[0] = lines_node([p[1]])
-    elif:
+    elif len(p) == 1:
+        p[0] = class_lines_node([ ])
+    else:
         p[0] = lines_node([p[1], p[2]])
 
 
@@ -309,12 +313,25 @@ def p_class_lines(p):
                    | class_lines NL
                    | '''
     print('class lines')
+    if len(p) == 3:
+        p[0] = class_lines_node([p[1]])
+    elif len(p) == 1:
+        p[0] = class_lines_node([ ])
+    else:
+        p[0] = class_lines_node([p[1], p[2]])
 
 def p_function_lines(p):
     '''function_lines : function_lines statement NL
                       | function_lines NL
                       | '''
     print('function lines')
+    if len(p) == 3:
+        p[0] = function_lines_node([p[1]])
+    elif len(p) == 1:
+        p[0] = class_lines_node([ ])
+    else:
+        p[0] = function_lines_node([p[1], p[2]])
+    
 
 def p_statement(p):
     '''statement : variable_def
@@ -327,6 +344,17 @@ def p_statement(p):
                  | BREAK
                  | CONTINUE'''
     print('statement')
+    if len(p) == 2:
+        if p[1].value == "BREAK" or p[1].value == "CONTINUE":
+            p[0] = statement_node([ ], [p[1]])
+        else:
+            p[0] = statement_node([p[1]])
+    elif len(p) == 5:
+        p[0] = statement_node([p[3]], p[1])
+    else:
+        p[0] = statement_node([p[1], p[5]], p[3])
+
+
 
 def p_class_def(p):
     '''class_def : CLASS ID LBRACK NL class_lines RBRACK

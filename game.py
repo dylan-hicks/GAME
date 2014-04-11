@@ -2,7 +2,7 @@ import sys
 import re
 
 reserved = { 
-   'import' : 'IMPORT',
+   'include' : 'INCLUDE',
    'if' : 'IF',
    'else' : 'ELSE',
    'loop' : 'LOOP',
@@ -540,14 +540,14 @@ class data_statement_node:
 # grammar stuff below
 
 def p_program_lines(p):
-    '''program_lines : import_lines lines'''
+    '''program_lines : include_lines lines'''
     p[0] = program_lines_node([p[1], p[2]])
     print p[0] # TESTING
 
-def p_import_lines(p):
-    '''import_lines : import_lines IMPORT TXT NL
-                    | import_lines NL
-                    | '''
+def p_include_lines(p):
+    '''include_lines : include_lines INCLUDE TXT NL
+                     | include_lines NL
+                     | '''
     if len(p) == 3:
         p[0] = import_lines_node([p[1]])
     elif len(p) == 1:

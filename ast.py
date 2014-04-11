@@ -2,7 +2,7 @@ import sys
 import re
 
 reserved = { 
-   'import' : 'IMPORT',
+   'include' : 'INCLUDE',
    'if' : 'IF',
    'else' : 'ELSE',
    'loop' : 'LOOP',
@@ -121,19 +121,19 @@ names = { }
 
         
 def p_program_lines(t):
-    '''program_lines : import_lines lines'''
+    '''program_lines : include_lines lines'''
     print('program_lines(' + t[1] + ',' + t[2] + ')')
 
 def p_import_lines(t):
-    '''import_lines : import_lines IMPORT TXT NL
-                    | import_lines NL
-                    | '''
+    '''include_lines : include_lines INCLUDE TXT NL
+                     | include_lines NL
+                     | '''
     if len(t)==5:
-        t[0] = 'import_lines(' + t[1] + ',' + t[3] + ')'
+        t[0] = 'include_lines(' + t[1] + ',' + t[3] + ')'
     elif len(t)==3:
-        t[0] = 'import_lines(' + t[1] + ')'
+        t[0] = 'include_lines(' + t[1] + ')'
     else:
-        t[0] = 'import_lines()'
+        t[0] = 'include_lines()'
 
 def p_lines(t):
     '''lines : lines class_def NL

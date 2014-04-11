@@ -130,9 +130,8 @@ class program_lines_node(object):
              
     def __str__(self):
         s = ""
-        s += self.children[0].__str__() + " " + self.children[1].__str__()
+        s += self.children[0].__str__() + self.children[1].__str__()
         
-#        print s # TESTING
         return s
 
 class constant_node(object):
@@ -188,7 +187,7 @@ class mul_variable_def_node(object):
     def __str__(self):
         s = ""
         for x in self.children:
-            s += x.__str__() + " "
+            s += x.__str__()
         
         s += "\n"
         return s
@@ -301,9 +300,8 @@ class lines_node:
         elif len(self.children) == 1:
             s += self.children[0].__str__() + "\n"
         else:
-            s += self.children[0].__str__() + " " + self.children[1].__str__() + "\n"
+            s += self.children[0].__str__() + self.children[1].__str__() + "\n"
         
-        print s # TESTING
         return s
 
 class class_lines_node:
@@ -336,9 +334,8 @@ class function_lines_node:
         elif len(self.children) == 1:
             s += self.children[0].__str__() + "\n"
         else:
-            s += self.children[0].__str__() + " " + self.children[1].__str__() + "\n"
+            s += self.children[0].__str__() + "\t" + self.children[1].__str__() + "\n"
             
-        print s # TESTING
         return s
 
 class statement_node:
@@ -386,11 +383,10 @@ class function_def_node:
         s = ""
         
         if len(self.children) == 2:
-            s += "function " + self.value + "(" + self.children[0].__str__() + "){\n" + self.children[1].__str__() + "}"
+            s += "def " + self.value + "(" + self.children[0].__str__() + "):\n" + self.children[1].__str__() + ""
         else:
-            s += self.children[0].__str__() + " function " + self.value + "(" + self.children[1].__str__() + "){\n" + self.children[2].__str__() + "return " + self.children[3].__str__() + "\n}"
+            s += self.children[0].__str__() + " def " + self.value + "(" + self.children[1].__str__() + "):\n" + self.children[2].__str__() + "return " + self.children[3].__str__() + "\n"
 
-        print s # TESTING
         return s
 
 class function_args_node:
@@ -541,7 +537,7 @@ class data_statement_node:
 def p_program_lines(p):
     '''program_lines : include_lines lines'''
     p[0] = program_lines_node([p[1], p[2]])
-    print p[0] # TESTING
+    print p[0].__str__() + "if __name__ == '__main__':main()" # TESTING
 
 def p_include_lines(p):
     '''include_lines : include_lines INCLUDE TXT NL

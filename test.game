@@ -1,5 +1,3 @@
-import "bla.game"
-
-function main() { #asfjklsjfkl
+function main() {
   print("hello, will")
 }

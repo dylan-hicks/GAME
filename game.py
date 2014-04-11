@@ -105,17 +105,17 @@ lex.lex()
 # Parsing rules (lowest to highest)
 
 precedence = (
-    ('left','DOT'),
-    ('left','UMINUS','NOT'),
-    ('left','TIMES','DIVIDE', 'MOD'),
-    ('left','PLUS','MINUS'),
-    ('left','GT','LT','LTEQ','GTEQ'),
-    ('left','EQEQ','NOTEQ'),
-    ('left','AND'),
-    ('left','OR'),
-    ('right','EQ'),
-    ('left','COMMA'),    
     ('left','NL'),
+    ('left','COMMA'),
+    ('right','EQ'),
+    ('left','OR'),
+    ('left','AND'),
+    ('left','EQEQ','NOTEQ'),
+    ('left','GT','LT','LTEQ','GTEQ'),
+    ('left','PLUS','MINUS'),
+    ('left','TIMES','DIVIDE', 'MOD'),
+    ('left','UMINUS','NOT'),
+    ('left','DOT'),
     )
 
 # dictionary of names

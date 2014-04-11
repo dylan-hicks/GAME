@@ -1,3 +1,13 @@
+include "stdlib"
+
 function main() {
-  print("hello, will")
+ num points
+ num games
+ num average
+
+ points = 2323
+ games = 1233
+ average = points + games
+
+ print("asfjafs" + average)
 }

@@ -553,7 +553,7 @@ def p_include_lines(p):
     elif len(p) == 1:
         p[0] = class_lines_node([ ])
     else:
-        p[0] = import_lines_node([p[1]], p[3].value)
+        p[0] = import_lines_node([p[1]], p[3])
 
 def p_lines(p):
     '''lines : lines class_def NL
@@ -702,7 +702,7 @@ def p_loop_expression_values(p):
                               | WHILE expression
                               | SET assignment'''
     print('loop expression values')
-    p[0] = loop_expression_values_node([p[2]], p[1].value)
+    p[0] = loop_expression_values_node([p[2]], p[1])
 
 def p_if_statement(p):
     '''if_statement : IF LPAREN expression RPAREN LBRACK NL function_lines RBRACK
@@ -745,33 +745,33 @@ def p_expression(p):
     if len(p) == 2:
         p[0] = expression_node([p[1]])
     elif len(p) == 3:
-        p[0] = expression_node([p[2]], [p[1].value])
+        p[0] = expression_node([p[2]], [p[1]])
     elif len(p) == 4:
-        p[0] = expression_node([p[1], p[3]], [p[2].value])
+        p[0] = expression_node([p[1], p[3]], [p[2]])
     elif len(p) == 5:
         if p[3] == "=":
-            p[0] = expression_node([p[1], p[4]], [p[2].value, p[3].value])
+            p[0] = expression_node([p[1], p[4]], [p[2], p[3]])
         elif p[1] == ID: # ID evaluates to?
-            p[0] = expression_node([p[3]], [p[1].value, p[2].value, p[4].value])
+            p[0] = expression_node([p[3]], [p[1], p[2], p[4]])
         else:
             p[0] = expression_node([p[1], p[3]])
     else:
-        p[0] = expression_node([p[1], p[5]], [p[2].value, p[3].value, p[4].value, p[6].value])
+        p[0] = expression_node([p[1], p[5]], [p[2], p[3], p[4], p[6]])
             
 
 def p_assignment(p):
     '''assignment : ID EQ expression'''
     print('assignment')
-    p[0] = assignment_node([p[3]], p[1].value)
+    p[0] = assignment_node([p[3]], p[1])
 
 def p_obj_expression(p):
     '''obj_expression : obj_expression DOT ID
                       | ID'''
     print('obj expression')
     if len(p) == 2:
-        p[0] = obj_expression_node([ ], p[1].value)
+        p[0] = obj_expression_node([ ], p[1])
     else:
-        p[0] = obj_expression_node([p[1]], p[3].value)
+        p[0] = obj_expression_node([p[1]], p[3])
 
 def p_variable_def(p):
     '''variable_def : var_type ID
@@ -781,13 +781,13 @@ def p_variable_def(p):
     print('variable def')
     if len(p) == 3:
         if p[2].type == 'ID': #NOT SURE WHAT ID EVALUATES TO
-            p[0] = variable_def_node([p[1]], p[2].value)
+            p[0] = variable_def_node([p[1]], p[2])
         else:
             p[0] = variable_def_node([p[1], p[2]])
     elif len(p) == 6:
-        p[0] = variable_def_node([p[1], p[5]], p[2].value)
+        p[0] = variable_def_node([p[1], p[5]], p[2])
     else:
-        p[0] = variable_def_node([p[1], p[5], p[8]], p[2].value)
+        p[0] = variable_def_node([p[1], p[5], p[8]], p[2])
 
 
 def p_mul_variable_def(p):
@@ -809,7 +809,7 @@ def p_var_type(p):
     if len(p) == 4:
         p[0] = var_type_node([p[3]])
     else:
-        p[0] = var_type_node([ ], p[1].value)
+        p[0] = var_type_node([ ], p[1])
 
 def p_constant(p):
     '''constant : LBRACK constant_list RBRACK

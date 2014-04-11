@@ -103,17 +103,17 @@ lex.lex()
 # Parsing rules (lowest to highest)
 
 precedence = (
-    ('left','DOT'),
-    ('left','UMINUS','NOT'),
-    ('left','TIMES','DIVIDE', 'MOD'),
-    ('left','PLUS','MINUS'),
-    ('left','GT','LT','LTEQ','GTEQ'),
-    ('left','EQEQ','NOTEQ'),
-    ('left','AND'),
-    ('left','OR'),
-    ('right','EQ'),
-    ('left','COMMA'),    
     ('left','NL'),
+    ('left','COMMA'),
+    ('right','EQ'),
+    ('left','OR'),
+    ('left','AND'),
+    ('left','EQEQ','NOTEQ'),
+    ('left','GT','LT','LTEQ','GTEQ'),
+    ('left','PLUS','MINUS'),
+    ('left','TIMES','DIVIDE', 'MOD'),
+    ('left','UMINUS','NOT'),
+    ('left','DOT'),
     )
 
 # dictionary of names
@@ -297,7 +297,7 @@ def p_expression(t):
                   | obj_expression LSQ expression RSQ
                   | obj_expression'''
     if len(t)==4:
-        t[0] = 'expression(' + t[1] + ',' + t[2] + ',' + t[3] + ')'
+        t[0] = 'expression(' + t[1] + ',' + t[3] + ')'
     elif len(t)==3:
         t[0] = 'expression(' + t[2] + ')'
     elif len(t)==2:
@@ -305,7 +305,7 @@ def p_expression(t):
     elif len(t)==7:
         t[0] = 'expression(' + t[1] + ',' + t[3] + ',' + t[5] + ')'
     elif len(t)==5:
-        t[0] = 'expression(' + t[1] + ',' + t[3] + ',' + ')'
+        t[0] = 'expression(' + t[1] + ',' + t[3] + ')'
     else:
         t[0] = 'expression(' + t[1] + ')'
 
@@ -326,7 +326,7 @@ def p_variable_def(t):
                     | var_type assignment
                     | var_type ID EQ NEW var_type
                     | var_type ID EQ NEW var_type LBRACK NL mul_variable_def RBRACK'''
-    if len(t)==2:
+    if len(t)==3:
         t[0] = 'variable_def(' + t[1] + ',' + t[2] + ')'
     elif len(t)==6:
         t[0] = 'variable_def(' + t[1] + ',' + t[2] + ',' + t[5] + ')'
@@ -359,7 +359,7 @@ def p_constant(t):
                 | FALSE
                 | TRUE'''            
     if len(t)!=4:
-        t[0] = 'constant(' + t[1] + ')'
+        t[0] = 'constant(' + str(t[1]) + ')'
     else:
         t[0] = 'constant(' + t[2] + ')'
 

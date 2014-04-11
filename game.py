@@ -332,12 +332,12 @@ class function_lines_node:
 
     def __str__(self):
         s = ""
-        if len(children) == 0:
+        if len(self.children) == 0:
             s = ""
-        elif len(children) == 1:
-            s += children[0].__str__() + "\n"
+        elif len(self.children) == 1:
+            s += self.children[0].__str__() + "\n"
         else:
-            s += children[0].__str__() + " " + children[1].__str__() + "\n"
+            s += self.children[0].__str__() + " " + self.children[1].__str__() + "\n"
             
         print s # TESTING
         return s
@@ -351,9 +351,9 @@ class statement_node:
     def __str__(self):
         s = ""
         if len(self.children) == 0:
-            s += value
+            s += self.value
         elif len(self.children) == 1:
-            if value:
+            if self.value:
                 s += self.value + "(" + self.children[0].__str__() + ")"
             else:
                 s += self.children[0].__str__()

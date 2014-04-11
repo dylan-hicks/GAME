@@ -191,7 +191,7 @@ class mul_variable_def_node(object):
     def __str__(self):
         s = ""
         for x in children:
-            s += x.__str__()
+            s += x.__str__() + " "
         
         s += "\n"
         return s
@@ -207,13 +207,13 @@ class variable_def_node(object):
         s = ""
 
         if len(children) == 1:
-            s += children[0].__str__() + value # what does ID evaluate to? 
-        elif len(children) == 2 and value:
-            s += children[0].__str__() + value + EQ + NEW + children[1].__str__() # same question
+            s += children[0].__str__() + " " + value # what does ID evaluate to? 
+        elif len(children) == 2 && value:
+            s += children[0].__str__() + " " + value + " = new " + children[1].__str__() # same question
         elif len(children) == 2: 
             s += children[0].__str__() + children[1].__str__()
         else:
-            s += children[0].__str__() + ID + EQ + NEW + children[1].__str__() + LBRACK + NL + children[2].__str__()
+            s += children[0].__str__() + " " + value + " = new " + children[1].__str__() + "{\n" + children[2].__str__() + "}"
             
         return s;
 
@@ -228,9 +228,9 @@ class obj_expression_node(object):
         s = ""
 
         if len(children) == 1:
-            s += children[0].__str__() + DOT + ID
+            s += children[0].__str__() + "." + value
         else: 
-            s += ID
+            s += value
 
         return s
 
@@ -244,7 +244,7 @@ class assignment_node(object):
     def __str__(self):
         s = ""
 
-        s += ID + EQ + children[0].__str__()
+        s += value + " = " + children[0].__str__()
 
         return s
 
@@ -258,20 +258,20 @@ class expression_node(object): # if this messes up, look for prec as the cause
     def __str__(self):
         s = ""
 
-        if len(children) == 1 and value and len(value) == 1:
-            s += value[0] + children[0].__str__() # will value be NOT?
-        elif len(children) == 1 and value and len(value) == 3:
-            s+= value[0] + value[1] + children[0].__str__() + value[2]
+        if len(children) == 1 && value && len(value) == 1:
+            s += value[0] + " " + children[0].__str__() # will value be NOT?
+        elif len(children) == 1 && value && len(value) == 3:
+            s+= value[0] + " " + value[1]+ " " + children[0].__str__()+ " " + value[2]
         elif len(children) == 1: 
             s += children[0].__str__()
-        elif len(children) == 2 and value and len(value) == 1:
-            s += children[0].__str__() + value[0] + children[1].__str__()
-        elif len(children) == 2 and value and len(value) == 2:
-            s += children[0].__str__() + value[0] + value[1] + children[1].__str__()
-        elif len(children) == 2 and value and len(value) == 4:
-            s += children[0].__str__() + DOT + value[1] + LPAREN + children[1].__str__() + RPAREN
+        elif len(children) == 2 && value && len(value) == 1:
+            s += children[0].__str__() + " " + value[0] + " " + children[1].__str__()
+        elif len(children) == 2 && value && len(value) == 2:
+            s += children[0].__str__() + " " + value[0] + " " + value[1] + " " + children[1].__str__()
+        elif len(children) == 2 && value && len(value) == 4:
+            s += children[0].__str__() + "." + value[1] + "(" + children[1].__str__() + ")"
         else:
-            s += children[0].__str__() + LSQ + children[1].__str__() + RSQ
+            s += children[0].__str__() + "[" + children[1].__str__() + "]"
 
         return s
 
@@ -364,36 +364,62 @@ class statement_node:
 
 # grammar stuff below
 
-def p_program_lines(t):
+def p_program_lines(p):
     '''program_lines : import_lines lines'''
     p[0] = program_lines_node([p[1], p[2]])
 
-def p_import_lines(t):
+def p_import_lines(p):
     '''import_lines : import_lines IMPORT TXT NL
                     | import_lines NL
                     | '''
+    if len(p) == 3:
+        p[0] = import_lines_node([p[1]])
+    elif len(p) == 1:
+        p[0] = class_lines_node([ ])
+    else:
+        p[0] = import_lines_node([p[1]], p[3].value)
 
-def p_lines(t):
+def p_lines(p):
     '''lines : lines class_def NL
              | lines function_def NL
              | lines NL
              | '''
     print('lines')
+    if len(p) == 3:
+        p[0] = lines_node([p[1]])
+    elif len(p) == 1:
+        p[0] = class_lines_node([ ])
+    else:
+        p[0] = lines_node([p[1], p[2]])
 
-def p_class_lines(t):
+
+def p_class_lines(p):
     '''class_lines : class_lines function_def NL
                    | class_lines variable_def NL
                    | class_lines NL
                    | '''
     print('class lines')
+    if len(p) == 3:
+        p[0] = class_lines_node([p[1]])
+    elif len(p) == 1:
+        p[0] = class_lines_node([ ])
+    else:
+        p[0] = class_lines_node([p[1], p[2]])
 
-def p_function_lines(t):
+def p_function_lines(p):
     '''function_lines : function_lines statement NL
                       | function_lines NL
                       | '''
     print('function lines')
+    if len(p) == 3:
+        p[0] = function_lines_node([p[1]])
+    elif len(p) == 1:
+        p[0] = class_lines_node([ ])
+    else:
+        p[0] = function_lines_node([p[1], p[2]])
+    
 
-def p_statement(t):
+def p_statement(p):
     '''statement : variable_def
                  | assignment
                  | loop
@@ -404,66 +430,77 @@ def p_statement(t):
                  | BREAK
                  | CONTINUE'''
     print('statement')
+    if len(p) == 2:
+        if p[1].value == "BREAK" or p[1].value == "CONTINUE":
+            p[0] = statement_node([ ], [p[1]])
+        else:
+            p[0] = statement_node([p[1]])
+    elif len(p) == 5:
+        p[0] = statement_node([p[3]], p[1])
+    else:
+        p[0] = statement_node([p[1], p[5]], p[3])
 
-def p_class_def(t):
+
+
+def p_class_def(p):
     '''class_def : CLASS ID LBRACK NL class_lines RBRACK
                  | CLASS ID EXTENDS ID LBRACK NL class_lines RBRACK'''
     print('class def')
 
-def p_function_def(t):
+def p_function_def(p):
     '''function_def : FUNCTION ID LPAREN function_args RPAREN LBRACK NL function_lines RBRACK
                     | var_type FUNCTION ID LPAREN function_args RPAREN LBRACK NL function_lines RETURN expression NL RBRACK'''
     print('function def')
 
-def p_function_args(t):
+def p_function_args(p):
     '''function_args : function_arg_values
                      | '''
     print('function args')
 
-def p_function_arg_values(t):
+def p_function_arg_values(p):
     '''function_arg_values : function_arg_values COMMA function_arg_values
                            | var_type ID'''
     print('function arg values')
 
-def p_function_run_args(t):
+def p_function_run_args(p):
     '''function_run_args : function_run_arg_values
                          | '''
     print('function run args')
 
-def p_function_run_arg_values(t):
+def p_function_run_arg_values(p):
     '''function_run_arg_values : function_run_arg_values COMMA function_run_arg_values
                                | expression'''
     print('function run arg values')
 
-def p_loop(t):
+def p_loop(p):
     '''loop : LOOP LPAREN loop_expression RPAREN LBRACK NL function_lines RBRACK
             | FOREACH LPAREN var_type ID IN ID RPAREN LBRACK NL function_lines RBRACK
             | var_type ID EQ GETEACH LPAREN var_type ID IN ID WHERE expression RPAREN'''
     print('loop')
 
-def p_loop_expression(t):
+def p_loop_expression(p):
     '''loop_expression : loop_expression COMMA loop_expression
                        | loop_expression_values
                        | '''
     print('loop expression')
 
-def p_loop_expression_values(t):
+def p_loop_expression_values(p):
     '''loop_expression_values : START variable_def
                               | WHILE expression
                               | SET assignment'''
     print('loop expression values')
 
-def p_if_statement(t):
+def p_if_statement(p):
     '''if_statement : IF LPAREN expression RPAREN LBRACK NL function_lines RBRACK
                     | IF LPAREN expression RPAREN LBRACK NL function_lines RBRACK ELSE LBRACK NL function_lines RBRACK'''
     print('if statement')
 
-def p_data_statement(t):
+def p_data_statement(p):
     '''data_statement : LOAD expression FROM expression
                       | EXPORT expression TO expression'''
     print('data statement')
 
-def p_expression(t):
+def p_expression(p):
     '''expression : expression PLUS expression
                   | expression MINUS expression
                   | expression TIMES expression
@@ -489,52 +526,52 @@ def p_expression(t):
     if len(p) == 2:
         p[0] = expression_node([p[1]])
     elif len(p) == 3:
-        p[0] = expression_node([p[2]], [p[1]])
+        p[0] = expression_node([p[2]], [p[1].value])
     elif len(p) == 4:
-        p[0] = expression_node([p[1], p[3]], [p[2]])
+        p[0] = expression_node([p[1], p[3]], [p[2].value])
     elif len(p) == 5:
         if p[3] == "=":
-            p[0] = expression_node([p[1], p[4]], [p[2], p[3]])
+            p[0] = expression_node([p[1], p[4]], [p[2].value, p[3].value])
         elif p[1] == ID: # ID evaluates to?
-            p[0] = expression_node([p[3]], [p[1], p[2], p[4]])
+            p[0] = expression_node([p[3]], [p[1].value, p[2].value, p[4].value])
         else:
             p[0] = expression_node([p[1], p[3]])
     else:
-        p[0] = expression_node([p[1], p[5]], [p[2], p[3], p[4], p[6]])
+        p[0] = expression_node([p[1], p[5]], [p[2].value, p[3].value, p[4].value, p[6].value])
             
 
-def p_assignment(t):
+def p_assignment(p):
     '''assignment : ID EQ expression'''
     print('assignment')
-    p[0] = assignment_node([p[3]], p[1])
+    p[0] = assignment_node([p[3]], p[1].value)
 
-def p_obj_expression(t):
+def p_obj_expression(p):
     '''obj_expression : obj_expression DOT ID
                       | ID'''
     print('obj expression')
     if len(p) == 2:
-        p[0] = obj_expression_node([ ], p[1])
+        p[0] = obj_expression_node([ ], p[1].value)
     else:
-        p[0] = obj_expression_node([p[1]], p[3])
+        p[0] = obj_expression_node([p[1]], p[3].value)
 
-def p_variable_def(t):
+def p_variable_def(p):
     '''variable_def : var_type ID
                     | var_type assignment
                     | var_type ID EQ NEW var_type
                     | var_type ID EQ NEW var_type LBRACK NL mul_variable_def RBRACK'''
     print('variable def')
     if len(p) == 3:
-        if p[2] == ID: #NOT SURE WHAT ID EVALUATES TO
-            p[0] = variable_def_node([p[1]], p[2])
+        if p[2].type == 'ID': #NOT SURE WHAT ID EVALUATES TO
+            p[0] = variable_def_node([p[1]], p[2].value)
         else:
             p[0] = variable_def_node([p[1], p[2]])
     else if len(p) == 6:
-        p[0] = variable_def_node([p[1], p[5]], p[2])
+        p[0] = variable_def_node([p[1], p[5]], p[2].value)
     else:
-        p[0] = variable_def_node([p[1], p[5], p[8]], p[2])
+        p[0] = variable_def_node([p[1], p[5], p[8]], p[2].value)
 
 
-def p_mul_variable_def(t):
+def p_mul_variable_def(p):
     '''mul_variable_def : mul_variable_def variable_def NL
                         | variable_def NL'''
     print('mul variable def')
@@ -543,7 +580,7 @@ def p_mul_variable_def(t):
     else:
         p[0] = mul_variable_def_node([p[1]])
 
-def p_var_type(t):
+def p_var_type(p):
     '''var_type : TEXT_TYPE
                 | NUM_TYPE
                 | BOOL_TYPE
@@ -553,9 +590,9 @@ def p_var_type(t):
     if len(p) == 4:
         p[0] = var_type_node([p[3]])
     else:
-        p[0] = var_type_node([ ], p[1])
+        p[0] = var_type_node([ ], p[1].value)
 
-def p_constant(t):
+def p_constant(p):
     '''constant : LBRACK constant_list RBRACK
                 | NUM
                 | TXT
@@ -567,7 +604,7 @@ def p_constant(t):
     else: 
         p[0] = constant_node([ ], p[1].value)
 
-def p_constant_list(t):
+def p_constant_list(p):
     '''constant_list : constant_list COMMA constant_list
                      | constant'''
     print('constant list')
@@ -576,8 +613,8 @@ def p_constant_list(t):
     else:
         p[0] = constant_list_node([p[1]])
 
-def p_error(t):
-    print("Syntax error at '%s'" % t.value)
+def p_error(p):
+    print("Syntax error at '%s'" % p.value)
 
 import ply.yacc as yacc
 

@@ -362,6 +362,164 @@ class statement_node:
 
         return s
 
+class class_def_node:
+    def __init__(self, children, value=None):
+        self.children = children
+        if value:
+            self.value = value
+    
+    def __str__(self):
+        s = ""
+        if len(value) == 1:
+            s += "class " + value + "{\n" + children[0].__str__() + "}"
+        else:
+            s += "class " + value + " extends" + value[0] + "{\n" + children[0].__str__() + "}" 
+
+        return s
+
+class function_def_node:
+    def __init__(self, children, value=None):
+        self.children = children
+        if value:
+            self.value = value
+    
+    def __str__(self):
+        s = ""
+        
+        if len(children) == 2:
+            s += "function " + value + "(" + children[0].__str__() + "){\n" + children[1].__str__() + "}"
+        else:
+            s += children[0].__str__() + " function " + value + "(" + children[1].__str__() + "){\n" + children[2].__str__() + "return " + children[3].__str__() + "\n}"
+
+        return s
+
+class function_arg_values_node:
+    def __init__(self, children, value=None):
+        self.children = children
+        if value:
+            self.value = value
+    
+    def __str__(self):
+        s = ""
+        
+        if len(children) == 1: 
+            s += children[0].__str__() + value
+        else:
+            s += children[0].__str__() + "," + children[1].__str__()
+
+        return s
+
+class function_run_args_node:
+    def __init__(self, children, value=None):
+        self.children = children
+        if value:
+            self.value = value
+    
+    def __str__(self):
+        s = ""
+        
+        if len(children) == 0:
+            s = ""
+        else:
+            s += children[0].__str__()
+
+        return s
+
+
+class function_run_arg_values_node:
+    def __init__(self, children, value=None):
+        self.children = children
+        if value:
+            self.value = value
+    
+    def __str__(self):
+        s = ""
+        
+        if len(children) == 1:
+            s += children[0].__str__()
+        else:
+            s += children[0].__str__() + "," + children[1].__str__()
+
+        return s
+
+
+class loop_node:
+    def __init__(self, children, value=None):
+        self.children = children
+        if value:
+            self.value = value
+    
+    def __str__(self):
+        s = ""
+        
+        if len(children) == 2:
+            if value:
+                s += "foreach (" + children[0].__str__() + value[0] " in " value[1] + "){\n" + children[1].__str__() + "}"
+            else:
+                s += "loop (" + children[0].__str__() + "){\n" + children[1].__str__() + "}"
+        else:
+            s += children[0].__str__() + value[0] + " = geteach (" + children[1].__str__() + value[0] + " in " + value[1] + " where " + children[2].__str__() + ")"
+
+        return s
+
+class loop_expression_node:
+    def __init__(self, children, value=None):
+        self.children = children
+        if value:
+            self.value = value
+    
+    def __str__(self):
+        s = ""
+
+        if len(children) == 0:
+            s = ""
+        elif len(children) == 1:
+            s += children[0].__str__()
+        else:
+            s += children[0].__str__() + "," + children[1].__str__()
+
+        return s
+
+class loop_expression_values_node:
+    def __init__(self, children, value=None):
+        self.children = children
+        if value:
+            self.value = value
+    
+    def __str__(self):
+        s = ""
+
+        s += value + children[0].__str__()
+        return s
+
+class if_statement_node:
+    def __init__(self, children, value=None):
+        self.children = children
+        if value:
+            self.value = value
+    
+    def __str__(self):
+        s = ""
+        if len(children) == 2:
+            s += "if (" + children[0].__str__() + "){\n" + children[1].__str__() + "}"
+        else:
+            s += "if (" + children[0].__str__() + "){\n" + children[1].__str__() + "} else {\n" + children[2].__str__() + "}"
+
+        return s
+
+class data_statement_node:
+    def __init__(self, children, value=None):
+        self.children = children
+        if value:
+            self.value = value
+    
+    def __str__(self):
+        s = ""
+
+        s += value[0] + " " + children[0].__str__() + value[1] + " " + children[1].__str__()
+
+        return s
+
 # grammar stuff below
 
 def p_program_lines(p):

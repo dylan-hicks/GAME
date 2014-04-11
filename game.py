@@ -455,54 +455,93 @@ def p_function_def(p):
     '''function_def : FUNCTION ID LPAREN function_args RPAREN LBRACK NL function_lines RBRACK
                     | var_type FUNCTION ID LPAREN function_args RPAREN LBRACK NL function_lines RETURN expression NL RBRACK'''
     print('function def')
+    if len(p) == 10:
+        p[0] = function_def_node([p[4], p[8]], p[2])
+    else:
+        p[0] = funciton_def_node([p[1], p[5], p[9], p[11]], p[3])
 
 def p_function_args(p):
     '''function_args : function_arg_values
                      | '''
     print('function args')
+    if len(p) == 1:
+        p[0] = function_args_node([ ])
+    else:
+        p[0] = function_args_node([p[1]])
 
 def p_function_arg_values(p):
     '''function_arg_values : function_arg_values COMMA function_arg_values
                            | var_type ID'''
     print('function arg values')
+    if len(p) == 3:
+        p[0] = function_arg_values_node([p[1]], p[2])
+    else:
+        p[0] = function_arg_values_node([p[1], p[3]])
 
 def p_function_run_args(p):
     '''function_run_args : function_run_arg_values
                          | '''
     print('function run args')
+    if len(p) == 1:
+        p[0] = function_run_args_node([ ])
+    else:
+        p[0] = function_run_args_node([p[1]])
 
 def p_function_run_arg_values(p):
     '''function_run_arg_values : function_run_arg_values COMMA function_run_arg_values
                                | expression'''
     print('function run arg values')
+    if len(p) == 2:
+        p[0] = function_run_arg_values_node([p[1]])
+    else:
+        p[0] = function_run_arg_values_node([p[1], p[3]])
 
 def p_loop(p):
     '''loop : LOOP LPAREN loop_expression RPAREN LBRACK NL function_lines RBRACK
             | FOREACH LPAREN var_type ID IN ID RPAREN LBRACK NL function_lines RBRACK
             | var_type ID EQ GETEACH LPAREN var_type ID IN ID WHERE expression RPAREN'''
     print('loop')
+    if len(p) == 9:
+        p[0] = loop_node([p[3], p[7]])
+    elif len(p) == 12:
+        p[0] = loop_node([p[3], p[10]], [p[4], p[6]]
+    else:
+        p[0] = loop_node([p[1], p[6], p[11]], [p[2], p[7], p[9]])
 
 def p_loop_expression(p):
     '''loop_expression : loop_expression COMMA loop_expression
                        | loop_expression_values
                        | '''
     print('loop expression')
+    if len(p) == 1:
+        p[0] = loop_expression_node([ ])
+    elif len(p) == 2:
+        p[0] = loop_expression_node([p[1]])
+    else:
+        p[0] = loop_expression_node([p[1], p[3])
+        
 
 def p_loop_expression_values(p):
     '''loop_expression_values : START variable_def
                               | WHILE expression
                               | SET assignment'''
     print('loop expression values')
+    p[0] = loop_expression_values_node([p[2]], p[1].value)
 
 def p_if_statement(p):
     '''if_statement : IF LPAREN expression RPAREN LBRACK NL function_lines RBRACK
                     | IF LPAREN expression RPAREN LBRACK NL function_lines RBRACK ELSE LBRACK NL function_lines RBRACK'''
     print('if statement')
+    if len(p) == 9:
+        p[0] = if_statement_node([p[3], p[7]])
+    else:
+        p[0] = if_statement_node([p[3], p[7], p[12]])
 
 def p_data_statement(p):
     '''data_statement : LOAD expression FROM expression
                       | EXPORT expression TO expression'''
     print('data statement')
+    p[0] = data_statement_node([p[2], p[4]], [p[1], p[3]])
 
 def p_expression(p):
     '''expression : expression PLUS expression

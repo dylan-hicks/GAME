@@ -355,11 +355,15 @@ def p_statement(p):
         p[0] = statement_node([p[1], p[5]], p[3])
 
 
-
 def p_class_def(p):
     '''class_def : CLASS ID LBRACK NL class_lines RBRACK
                  | CLASS ID EXTENDS ID LBRACK NL class_lines RBRACK'''
     print('class def')
+    if len(p) == 7:
+        p[0] = class_def_node([p[5]], [p[2]])
+    else:
+        p[0] = class_def_node([p[5]], [p[2], p[4]])
+
 
 def p_function_def(p):
     '''function_def : FUNCTION ID LPAREN function_args RPAREN LBRACK NL function_lines RBRACK

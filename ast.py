@@ -76,13 +76,12 @@ def t_NUM(t):
 
 def t_ID(t):
     r'[a-zA-Z_][a-zA-Z_0-9]*'
-    print(t.value)
     t.type = reserved.get(t.value,'ID')    # Check for reserved words
-    if(t.type=='ID'):
-        p = re.compile('[a-zA-Z_][a-zA-Z0-9_]{0, 99}')
-        if(not p.match(t.value)):
-            t.value = ""
-    print(t.type)
+# TODO check token length
+#    if(t.type=='ID'):
+#        p = re.compile('[a-zA-Z_][a-zA-Z0-9_]{0, 99}')
+#        if(not p.match(t.value)):
+#            t.value = ""
     return t
 
 # Ignored characters
@@ -226,7 +225,7 @@ def p_function_run_args(t):
     if len(t)==1:
         t[0] = 'function_run_args()'
     else:
-        t[0] = 'functino_run_args(' + t[1] + ')'
+        t[0] = 'function_run_args(' + t[1] + ')'
 
 def p_function_run_arg_values(t):
     '''function_run_arg_values : function_run_arg_values COMMA function_run_arg_values

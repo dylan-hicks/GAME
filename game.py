@@ -78,10 +78,11 @@ def t_ID(t):
     r'[a-zA-Z_][a-zA-Z_0-9]*'
     print(t.value)
     t.type = reserved.get(t.value,'ID')    # Check for reserved words
-    if(t.type=='ID'):
-        p = re.compile('[a-zA-Z_][a-zA-Z0-9_]{0, 99}')
-        if(not p.match(t.value)):
-            t.value = ""
+# TODO: check length of ID
+#    if(t.type=='ID'):
+#        p = re.compile('[a-zA-Z_][a-zA-Z0-9_]{0, 99}')
+#        if(not p.match(t.value)):
+#            t.value = ""
     print(t.type)
     return t
 

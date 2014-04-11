@@ -141,13 +141,12 @@ class constant_node(object):
 
         
         self.children = children
-        if value:
-            self.value = value
+        self.value = value
 
     def __str__(self):
         s = ""
-        if value:
-            s += value #CHECK IF LEX CONVERTS THIS AUTOMATICALLY
+        if self.value:
+            s += self.value #CHECK IF LEX CONVERTS THIS AUTOMATICALLY
         else:
             S += '{' + self.children[0].__str__() + '}' # can we just use LBRACK instead?
         return s
@@ -250,8 +249,8 @@ class expression_node(object): # if this messes up, look for prec as the cause
 
     def __init__(self, children, value=None):
         self.children = children
-        if value:
-            self.value = value
+        
+        self.value = value
 
     def __str__(self):
         s = ""

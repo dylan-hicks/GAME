@@ -129,7 +129,7 @@ class program_lines_node(object):
              
     def __str__(self):
         s = ""
-        s += children[0].__str__() + " " + children[1].__str__()
+        s += self.children[0].__str__() + " " + self.children[1].__str__()
         
 #        print s # TESTING
         return s
@@ -148,7 +148,7 @@ class constant_node(object):
         if value:
             s += value #CHECK IF LEX CONVERTS THIS AUTOMATICALLY
         else:
-            S += '{' + children[0].__str__() + '}' # can we just use LBRACK instead?
+            S += '{' + self.children[0].__str__() + '}' # can we just use LBRACK instead?
         return s
 
 class constant_list_node(object):
@@ -158,10 +158,10 @@ class constant_list_node(object):
 
     def __str__(self):
         s = ""
-        if len(children) == 2:
-            s += children[0].__str__() + ', ' + children[1].__str__()
+        if len(self.children) == 2:
+            s += self.children[0].__str__() + ', ' + self.children[1].__str__()
         else: 
-            s += children[0].__str__()
+            s += self.children[0].__str__()
         return s
 
 class var_type_node(object):
@@ -174,10 +174,10 @@ class var_type_node(object):
 
     def __str__(self):
         s = ""
-        if value:
-            s += value #CHECK IF LEX CONVERTS THIS AUTOMATICALLY
+        if self.value:
+            s += self.value #CHECK IF LEX CONVERTS THIS AUTOMATICALLY
         else:
-            s += 'list(' + children[0].__str__() + ')'  
+            s += 'list(' + self.children[0].__str__() + ')'  
         return s
 
 class mul_variable_def_node(object):
@@ -187,7 +187,7 @@ class mul_variable_def_node(object):
         
     def __str__(self):
         s = ""
-        for x in children:
+        for x in self.children:
             s += x.__str__() + " "
         
         s += "\n"
@@ -203,14 +203,14 @@ class variable_def_node(object):
     def __str__(self):
         s = ""
 
-        if len(children) == 1:
-            s += children[0].__str__() + " " + value # what does ID evaluate to? 
-        elif len(children) == 2 and value:
-            s += children[0].__str__() + " " + value + " = new " + children[1].__str__() # same question
-        elif len(children) == 2: 
-            s += children[0].__str__() + children[1].__str__()
+        if len(self.children) == 1:
+            s += self.children[0].__str__() + " " + self.value # what does ID evaluate to? 
+        elif len(self.children) == 2 and value:
+            s += self.children[0].__str__() + " " + self.value + " = new " + self.children[1].__str__() # same question
+        elif len(self.children) == 2: 
+            s += self.children[0].__str__() + self.children[1].__str__()
         else:
-            s += children[0].__str__() + " " + value + " = new " + children[1].__str__() + "{\n" + children[2].__str__() + "}"
+            s += self.children[0].__str__() + " " + self.value + " = new " + self.children[1].__str__() + "{\n" + self.children[2].__str__() + "}"
             
         return s;
 
@@ -225,9 +225,9 @@ class obj_expression_node(object):
         s = ""
 
         if len(children) == 1:
-            s += children[0].__str__() + "." + value
+            s += self.children[0].__str__() + "." + self.value
         else: 
-            s += value
+            s += self.value
 
         return s
 
@@ -241,7 +241,7 @@ class assignment_node(object):
     def __str__(self):
         s = ""
 
-        s += value + " = " + children[0].__str__()
+        s += self.value + " = " + self.children[0].__str__()
 
         return s
 
@@ -255,20 +255,20 @@ class expression_node(object): # if this messes up, look for prec as the cause
     def __str__(self):
         s = ""
 
-        if len(children) == 1 and value and len(value) == 1:
-            s += value[0] + " " + children[0].__str__() # will value be NOT?
-        elif len(children) == 1 and value and len(value) == 3:
-            s+= value[0] + " " + value[1]+ " " + children[0].__str__()+ " " + value[2]
-        elif len(children) == 1: 
-            s += children[0].__str__()
-        elif len(children) == 2 and value and len(value) == 1:
-            s += children[0].__str__() + " " + value[0] + " " + children[1].__str__()
-        elif len(children) == 2 and value and len(value) == 2:
-            s += children[0].__str__() + " " + value[0] + " " + value[1] + " " + children[1].__str__()
-        elif len(children) == 2 and value and len(value) == 4:
-            s += children[0].__str__() + "." + value[1] + "(" + children[1].__str__() + ")"
+        if len(self.children) == 1 and self.value and len(self.value) == 1:
+            s += self.value[0] + " " + self.children[0].__str__() # will value be NOT?
+        elif len(self.children) == 1 and self.value and len(self.value) == 3:
+            s+= self.value[0] + " " + self.value[1]+ " " + self.children[0].__str__()+ " " + self.value[2]
+        elif len(self.children) == 1: 
+            s += self.children[0].__str__()
+        elif len(self.children) == 2 and self.value and len(self.value) == 1:
+            s += self.children[0].__str__() + " " + self.value[0] + " " + self.children[1].__str__()
+        elif len(self.children) == 2 and self.value and len(self.value) == 2:
+            s += self.children[0].__str__() + " " + self.value[0] + " " + self.value[1] + " " + self.children[1].__str__()
+        elif len(self.children) == 2 and self.value and len(self.value) == 4:
+            s += self.children[0].__str__() + "." + self.value[1] + "(" + self.children[1].__str__() + ")"
         else:
-            s += children[0].__str__() + "[" + children[1].__str__() + "]"
+            s += self.children[0].__str__() + "[" + self.children[1].__str__() + "]"
 
         return s
 
@@ -280,10 +280,10 @@ class import_lines_node:
 
     def __str__(self):
         s = ""
-        if value: 
-            s += children[0].__str__() + " import " + value + "\n"
+        if self.value: 
+            s += self.children[0].__str__() + " import " + value + "\n"
         else:
-            s += children[0].__str__() + "\n"
+            s += self.children[0].__str__() + "\n"
 
         return s
 
@@ -296,12 +296,12 @@ class lines_node:
 
     def __str__(self):
         s = ""
-        if len(children) == 0:
+        if len(self.children) == 0:
             s = ""
-        elif len(children) == 1:
-            s += children[0].__str__() + "\n"
+        elif len(self.children) == 1:
+            s += self.children[0].__str__() + "\n"
         else:
-            s += children[0].__str__() + " " + children[1].__str__() + "\n"
+            s += self.children[0].__str__() + " " + self.children[1].__str__() + "\n"
         
         print s # TESTING
         return s
@@ -314,12 +314,12 @@ class class_lines_node:
 
     def __str__(self):
         s = ""
-        if len(children) == 0:
+        if len(self.children) == 0:
             s = ""
-        elif len(children) == 1:
-            s += children[0].__str__() + "\n"
+        elif len(self.children) == 1:
+            s += self.children[0].__str__() + "\n"
         else:
-            s += children[0].__str__() + " " + children[1].__str__() + "\n"
+            s += self.children[0].__str__() + " " + self.children[1].__str__() + "\n"
 
         return s
 
@@ -349,15 +349,15 @@ class statement_node:
     
     def __str__(self):
         s = ""
-        if len(children) == 0:
+        if len(self.children) == 0:
             s += value
-        elif len(children) == 1:
+        elif len(self.children) == 1:
             if value:
-                s += value + "(" + children[0].__str__() + ")"
+                s += self.value + "(" + self.children[0].__str__() + ")"
             else:
-                s += children[0].__str__()
-        elif len(children) == 2:
-            s += children[0].__str__() + "." + value + "(" + children[1].__str__() + ")"
+                s += self.children[0].__str__()
+        elif len(self.children) == 2:
+            s += self.children[0].__str__() + "." + self.value + "(" + self.children[1].__str__() + ")"
 
         return s
 
@@ -370,9 +370,9 @@ class class_def_node:
     def __str__(self):
         s = ""
         if len(value) == 1:
-            s += "class " + value + "{\n" + children[0].__str__() + "}"
+            s += "class " + self.value[0] + "{\n" + self.children[0].__str__() + "}"
         else:
-            s += "class " + value + " extends" + value[0] + "{\n" + children[0].__str__() + "}" 
+            s += "class " + self.value[0] + " extends" + self.value[1] + "{\n" + self.children[0].__str__() + "}" 
 
         return s
 
@@ -385,10 +385,10 @@ class function_def_node:
     def __str__(self):
         s = ""
         
-        if len(children) == 2:
-            s += "function " + value + "(" + children[0].__str__() + "){\n" + children[1].__str__() + "}"
+        if len(self.children) == 2:
+            s += "function " + self.value + "(" + self.children[0].__str__() + "){\n" + self.children[1].__str__() + "}"
         else:
-            s += children[0].__str__() + " function " + value + "(" + children[1].__str__() + "){\n" + children[2].__str__() + "return " + children[3].__str__() + "\n}"
+            s += self.children[0].__str__() + " function " + self.value + "(" + self.children[1].__str__() + "){\n" + self.children[2].__str__() + "return " + self.children[3].__str__() + "\n}"
 
         print s # TESTING
         return s
@@ -402,10 +402,10 @@ class function_args_node:
     def __str__(self):
         s = ""
         
-        if len(children) == 0:
+        if len(self.children) == 0:
             s = ""
         else:
-            s += children[0].__str__()
+            s += self.children[0].__str__()
 
         return s
 
@@ -419,9 +419,9 @@ class function_arg_values_node:
         s = ""
         
         if len(children) == 1: 
-            s += children[0].__str__() + value
+            s += self.children[0].__str__() + self.value
         else:
-            s += children[0].__str__() + "," + children[1].__str__()
+            s += self.children[0].__str__() + "," + self.children[1].__str__()
 
         return s
 
@@ -434,10 +434,10 @@ class function_run_args_node:
     def __str__(self):
         s = ""
         
-        if len(children) == 0:
+        if len(self.children) == 0:
             s = ""
         else:
-            s += children[0].__str__()
+            s += self.children[0].__str__()
 
         return s
 
@@ -451,10 +451,10 @@ class function_run_arg_values_node:
     def __str__(self):
         s = ""
         
-        if len(children) == 1:
-            s += children[0].__str__()
+        if len(self.children) == 1:
+            s += self.children[0].__str__()
         else:
-            s += children[0].__str__() + "," + children[1].__str__()
+            s += self.children[0].__str__() + "," + self.children[1].__str__()
 
         return s
 
@@ -468,13 +468,13 @@ class loop_node:
     def __str__(self):
         s = ""
         
-        if len(children) == 2:
-            if value:
-                s += "foreach (" + children[0].__str__() + value[0] + " in " + value[1] + "){\n" + children[1].__str__() + "}"
+        if len(self.children) == 2:
+            if self.value:
+                s += "foreach (" + self.children[0].__str__() + self.value[0] + " in " + self.value[1] + "){\n" + self.children[1].__str__() + "}"
             else:
-                s += "loop (" + children[0].__str__() + "){\n" + children[1].__str__() + "}"
+                s += "loop (" + self.children[0].__str__() + "){\n" + self.children[1].__str__() + "}"
         else:
-            s += children[0].__str__() + value[0] + " = geteach (" + children[1].__str__() + value[0] + " in " + value[1] + " where " + children[2].__str__() + ")"
+            s += self.children[0].__str__() + self.value[0] + " = geteach (" + self.children[1].__str__() + self.value[0] + " in " + self.value[1] + " where " + self.children[2].__str__() + ")"
 
         return s
 
@@ -487,12 +487,12 @@ class loop_expression_node:
     def __str__(self):
         s = ""
 
-        if len(children) == 0:
+        if len(self.children) == 0:
             s = ""
-        elif len(children) == 1:
-            s += children[0].__str__()
+        elif len(self.children) == 1:
+            s += self.children[0].__str__()
         else:
-            s += children[0].__str__() + "," + children[1].__str__()
+            s += self.children[0].__str__() + "," + self.children[1].__str__()
 
         return s
 
@@ -505,7 +505,7 @@ class loop_expression_values_node:
     def __str__(self):
         s = ""
 
-        s += value + children[0].__str__()
+        s += self.value + self.children[0].__str__()
         return s
 
 class if_statement_node:
@@ -516,10 +516,10 @@ class if_statement_node:
     
     def __str__(self):
         s = ""
-        if len(children) == 2:
-            s += "if (" + children[0].__str__() + "){\n" + children[1].__str__() + "}"
+        if len(self.children) == 2:
+            s += "if (" + self.children[0].__str__() + "){\n" + self.children[1].__str__() + "}"
         else:
-            s += "if (" + children[0].__str__() + "){\n" + children[1].__str__() + "} else {\n" + children[2].__str__() + "}"
+            s += "if (" + self.children[0].__str__() + "){\n" + self.children[1].__str__() + "} else {\n" + self.children[2].__str__() + "}"
 
         return s
 
@@ -532,7 +532,7 @@ class data_statement_node:
     def __str__(self):
         s = ""
 
-        s += value[0] + " " + children[0].__str__() + value[1] + " " + children[1].__str__()
+        s += self.value[0] + " " + self.children[0].__str__() + self.value[1] + " " + self.children[1].__str__()
 
         return s
 

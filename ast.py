@@ -123,33 +123,53 @@ names = { }
         
 def p_program_lines(t):
     '''program_lines : import_lines lines'''
-    print('program_lines')
+    print('program_lines(' + t[1] + ',' + t[2] + ')')
 
 def p_import_lines(t):
     '''import_lines : import_lines IMPORT TXT NL
                     | import_lines NL
                     | '''
-    print('import_lines')
+    if len(t)==5:
+        t[0] = 'import_lines(' + t[1] + ',' + t[3] + ')'
+    elif len(t)==3:
+        t[0] = 'import_lines(' + t[1] + ')'
+    else:
+        t[0] = 'import_lines()'
 
 def p_lines(t):
     '''lines : lines class_def NL
              | lines function_def NL
              | lines NL
              | '''
-    print('lines')
+    if len(t)==4:
+        t[0] = 'lines(' + t[1] + ',' + t[2] + ')'
+    elif len(t)==2:
+        t[0] = 'lines(' + t[1] + ')'
+    else:
+        t[0] = 'lines()'
 
 def p_class_lines(t):
     '''class_lines : class_lines function_def NL
                    | class_lines variable_def NL
                    | class_lines NL
                    | '''
-    print('class lines')
+    if len(t)==4:
+        t[0] = 'class_lines(' + t[1] + ',' + t[2] + ')'
+    elif len(t)==3:
+        t[0] = 'class_lines(' + t[1] + ')'
+    else:
+        t[0] = 'class_lines()'
 
 def p_function_lines(t):
     '''function_lines : function_lines statement NL
                       | function_lines NL
                       | '''
-    print('function lines')
+    if len(t)==1:
+        t[0] = 'function_lines()'
+    elif len(t)==3:
+        t[0] = 'function_lines(' + t[1] + ')'
+    else:
+        t[0] = 'function_lines(' + t[1] + ',' + t[2] + ')'
 
 def p_statement(t):
     '''statement : variable_def
@@ -161,65 +181,99 @@ def p_statement(t):
                  | ID LPAREN function_run_args RPAREN
                  | BREAK
                  | CONTINUE'''
-    print('statement')
+    if len(t)==2:
+        t[0] = 'statement(' + t[1] + ')'
+    elif len(t)==5:
+        t[0] = 'statement(' + t[1] + ',' + t[3] + ')'
+    else:
+        t[1] = 'statement(' + t[1] + ',' + t[3] + ',' + t[5] + ')'
 
 def p_class_def(t):
     '''class_def : CLASS ID LBRACK NL class_lines RBRACK
                  | CLASS ID EXTENDS ID LBRACK NL class_lines RBRACK'''
-    print('class def')
+    if len(t)==6:
+        t[0] = 'class_def(' + t[2] + ',' + t[5] + ')'
+    else:
+        t[0] = 'class_def(' + t[2] + ',' + t[4] + ',' + t[7] + ')' 
 
 def p_function_def(t):
     '''function_def : FUNCTION ID LPAREN function_args RPAREN LBRACK NL function_lines RBRACK
                     | var_type FUNCTION ID LPAREN function_args RPAREN LBRACK NL function_lines RETURN expression NL RBRACK'''
-    print('function def')
+    if len(t)==10:
+        t[0] = 'function_def(' + t[2] + ',' + t[4] + ',' + t[8] + ')'
+    else:
+        t[0] = 'function_def(' + t[1] + ',' + t[3] + ',' + t[5] + ',' + t[9] + t[11] + ')'
 
 def p_function_args(t):
     '''function_args : function_arg_values
                      | '''
-    print('function args')
+    if len(t)==1:
+        t[0] = 'function_args()'
+    else:
+        t[0] = 'function_args(' + t[1] + ')'
 
 def p_function_arg_values(t):
     '''function_arg_values : function_arg_values COMMA function_arg_values
                            | var_type ID'''
-    print('function arg values')
+    if len(t)==3:
+        t[0] = 'function_arg_values(' + t[1] + ',' + t[2] + ')'
+    else:
+        t[0] = 'function_arg_values(' + t[1] + ',' + t[3] + ')'
 
 def p_function_run_args(t):
     '''function_run_args : function_run_arg_values
                          | '''
-    print('function run args')
+    if len(t)==1:
+        t[0] = 'function_run_args()'
+    else:
+        t[0] = 'functino_run_args(' + t[1] + ')'
 
 def p_function_run_arg_values(t):
     '''function_run_arg_values : function_run_arg_values COMMA function_run_arg_values
                                | expression'''
-    print('function run arg values')
+    if len(t)==2:
+        t[0] = 'function_run_arg_values(' + t[1] + ')'
+    else:
+        t[0] = 'function_run_arg_values(' + t[1] + ',' + t[3] + ')'
 
 def p_loop(t):
     '''loop : LOOP LPAREN loop_expression RPAREN LBRACK NL function_lines RBRACK
             | FOREACH LPAREN var_type ID IN ID RPAREN LBRACK NL function_lines RBRACK
             | var_type ID EQ GETEACH LPAREN var_type ID IN ID WHERE expression RPAREN'''
-    print('loop')
+    if len(t)==9:
+        t[0] = 'loop(' + t[3] + ',' + t[7] + ')'
+    elif len(t)==12:
+        t[0] = 'loop(' + t[3] + ',' + t[4] + ',' + t[6] + ',' + t[10] + ')'
+    else:    
+        t[0] = 'loop(' + t[1] + ',' + t[2] + ',' + t[6] + ',' + t[7] + ',' + t[9] + ',' + t[11] + ')'
 
 def p_loop_expression(t):
     '''loop_expression : loop_expression COMMA loop_expression
                        | loop_expression_values
                        | '''
-    print('loop expression')
+    if len(t)==4:
+        t[0] = 'loop_expression(' + t[1] + ',' + t[3] + ')'
+    else:
+        t[0] = 'loop_expression(' + t[1] + ')'
 
 def p_loop_expression_values(t):
     '''loop_expression_values : START variable_def
                               | WHILE expression
                               | SET assignment'''
-    print('loop expression values')
+    t[0] = 'loop_expression_values(' + t[2] + ')'
 
 def p_if_statement(t):
     '''if_statement : IF LPAREN expression RPAREN LBRACK NL function_lines RBRACK
                     | IF LPAREN expression RPAREN LBRACK NL function_lines RBRACK ELSE LBRACK NL function_lines RBRACK'''
-    print('if statement')
+    if len(t)==9:
+        t[0] = 'if_statement(' + t[3] + ',' + t[7] + ')'
+    else:
+        t[0] = 'if_statement(' + t[3] + ',' + t[7] + ',' + t[12] + ')'
 
 def p_data_statement(t):
     '''data_statement : LOAD expression FROM expression
                       | EXPORT expression TO expression'''
-    print('data statement')
+    t[0] = 'data_statement(' + t[2] + ',' + t[4] + ')'
 
 def p_expression(t):
     '''expression : expression PLUS expression
@@ -243,19 +297,30 @@ def p_expression(t):
                   | ID LPAREN function_run_args RPAREN
                   | obj_expression LSQ expression RSQ
                   | obj_expression'''
-    print('expression')
+    if len(t)==4:
+        t[0] = 'expression(' + t[1] + ',' + t[2] + ',' + t[3] + ')'
+    elif len(t)==3:
+        t[0] = 'expression(' + t[2] + ')'
+    elif len(t)==2:
+        t[0] = 'expression(' + t[1] + ')'
+    elif len(t)==7:
+        t[0] = 'expression(' + t[1] + ',' + t[3] + ',' + t[5] + ')'
+    elif len(t)==5:
+        t[0] = 'expression(' + t[1] + ',' + t[3] + ',' + ')'
+    else:
+        t[0] = 'expression(' + t[1] + ')'
 
 def p_assignment(t):
     '''assignment : ID EQ expression'''
-    t[0] = t[1] + ' = ' + t[3]
+    t[0] = 'assignment(' + t[1] + ',' + t[3] + ')'
 
 def p_obj_expression(t):
     '''obj_expression : obj_expression DOT ID
                       | ID'''
     if len(t)==2:
-        t[0] = t[1]
+        t[0] = 'obj_expression(' + t[1] + ')'
     else:
-        t[0] = t[1] + ' . ' + t[3]
+        t[0] = 'obj_expression(' + t[1] + ',' + t[3] + ')'
 
 def p_variable_def(t):
     '''variable_def : var_type ID
@@ -263,19 +328,19 @@ def p_variable_def(t):
                     | var_type ID EQ NEW var_type
                     | var_type ID EQ NEW var_type LBRACK NL mul_variable_def RBRACK'''
     if len(t)==2:
-        t[0] = t[1] + t[2]
+        t[0] = 'variable_def(' + t[1] + ',' + t[2] + ')'
     elif len(t)==6:
-        t[0] = t[1] + t[2] + '= new ' + t[5]
+        t[0] = 'variable_def(' + t[1] + ',' + t[2] + ',' + t[5] + ')'
     else: 
-        t[0] = t[1] + t[2] + '= new ' + t[5] + '[\n' + t[8] + ']'
+        t[0] = 'variable_def(' + t[1] + ',' + t[2] + ',' + t[5] + ',' + t[8] + ')'
 
 def p_mul_variable_def(t):
     '''mul_variable_def : mul_variable_def variable_def NL
                         | variable_def NL'''
     if len(t)==4:
-        t[0] = t[1] + t[2] + '\n'
+        t[0] = 'mul_variable_def(' + t[1] + ',' + t[2] + ')'
     else:
-        t[0] = t[1] + '\n'
+        t[0] = 'mul_variable_def(' + t[1] + ')'
 
 def p_var_type(t):
     '''var_type : TEXT_TYPE
@@ -284,9 +349,9 @@ def p_var_type(t):
                 | ID
                 | LIST LPAREN var_type RPAREN'''
     if len(t)==2:
-        t[0] = t[1]
+        t[0] = 'var_type(' + t[1] + ')'
     else:
-        t[0] = t[1] + '(' + t[3] + ')'
+        t[0] = 'var_type(' + t[3] + ')'
 
 def p_constant(t):
     '''constant : LBRACK constant_list RBRACK
@@ -295,17 +360,17 @@ def p_constant(t):
                 | FALSE
                 | TRUE'''            
     if len(t)!=4:
-        t[0] = t[1]
+        t[0] = 'constant(' + t[1] + ')'
     else:
-        t[0] = '[' + constant_list + ']'
+        t[0] = 'constant(' + t[2] + ')'
 
 def p_constant_list(t):
     '''constant_list : constant_list COMMA constant_list
                      | constant'''
     if len(t)==2:
-        t[0] = t[1] + ',' + t[3]
+        t[0] = 'constant_list(' + t[1] + ',' + t[3] + ')'
     else:
-        t[0] = t[1]
+        t[0] = 'constant_list(' + t[1] + ')'
 
 def p_error(t):
     print("Syntax error at '%s'" % t.value)

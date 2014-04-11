@@ -2,7 +2,7 @@ import sys
 import re
 
 reserved = { 
-   'import' : 'IMPORT',
+   'include' : 'INCLUDE',
    'if' : 'IF',
    'else' : 'ELSE',
    'loop' : 'LOOP',
@@ -76,13 +76,12 @@ def t_NUM(t):
 
 def t_ID(t):
     r'[a-zA-Z_][a-zA-Z_0-9]*'
-    print(t.value)
     t.type = reserved.get(t.value,'ID')    # Check for reserved words
-    if(t.type=='ID'):
-        p = re.compile('[a-zA-Z_][a-zA-Z0-9_]{0, 99}')
-        if(not p.match(t.value)):
-            t.value = ""
-    print(t.type)
+# TODO check token length
+#    if(t.type=='ID'):
+#        p = re.compile('[a-zA-Z_][a-zA-Z0-9_]{0, 99}')
+#        if(not p.match(t.value)):
+#            t.value = ""
     return t
 
 # Ignored characters
@@ -122,19 +121,19 @@ names = { }
 
         
 def p_program_lines(t):
-    '''program_lines : import_lines lines'''
+    '''program_lines : include_lines lines'''
     print('program_lines(' + t[1] + ',' + t[2] + ')')
 
 def p_import_lines(t):
-    '''import_lines : import_lines IMPORT TXT NL
-                    | import_lines NL
-                    | '''
+    '''include_lines : include_lines INCLUDE TXT NL
+                     | include_lines NL
+                     | '''
     if len(t)==5:
-        t[0] = 'import_lines(' + t[1] + ',' + t[3] + ')'
+        t[0] = 'include_lines(' + t[1] + ',' + t[3] + ')'
     elif len(t)==3:
-        t[0] = 'import_lines(' + t[1] + ')'
+        t[0] = 'include_lines(' + t[1] + ')'
     else:
-        t[0] = 'import_lines()'
+        t[0] = 'include_lines()'
 
 def p_lines(t):
     '''lines : lines class_def NL
@@ -226,7 +225,7 @@ def p_function_run_args(t):
     if len(t)==1:
         t[0] = 'function_run_args()'
     else:
-        t[0] = 'functino_run_args(' + t[1] + ')'
+        t[0] = 'function_run_args(' + t[1] + ')'
 
 def p_function_run_arg_values(t):
     '''function_run_arg_values : function_run_arg_values COMMA function_run_arg_values

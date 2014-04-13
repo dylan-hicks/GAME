@@ -4,7 +4,7 @@ import time
 
 def test():
   #System commands to compile test files
-  #subprocess.Popen("cd source; compile *.game; mv *.py ../target", shell=True)
+  #subprocess.Popen("cd source; compile ../*.game; mv *.py ../target", shell=True)
   #Create list of file names
   file_names = os.listdir("./source")
 

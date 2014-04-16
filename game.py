@@ -537,7 +537,11 @@ class data_statement_node:
 def p_program_lines(p):
     '''program_lines : include_lines lines'''
     p[0] = program_lines_node([p[1], p[2]])
-    print p[0].__str__() + "if __name__ == '__main__':main()" # TESTING
+    runCommand = p[0].__str__() + "if __name__ == '__main__':main()" # TESTING
+    print runCommand
+
+    file = open("run.py", "w")
+    file.write(runCommand)
 
 def p_include_lines(p):
     '''include_lines : include_lines INCLUDE TXT NL
@@ -629,7 +633,7 @@ def p_function_def(p):
     if len(p) == 10:
         p[0] = function_def_node([p[4], p[8]], p[2])
     else:
-        p[0] = funciton_def_node([p[1], p[5], p[9], p[11]], p[3])
+        p[0] = function_def_node([p[1], p[5], p[9], p[11]], p[3])
 
 def p_function_args(p):
     '''function_args : function_arg_values

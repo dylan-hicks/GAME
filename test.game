@@ -1,8 +1,11 @@
 function main() {
-  num points = 1
-  num games = 2
-  num average = 3
+  num points
+  num games
+  num average
 
-  num total = points + games * average
-  print("Total: " + total)
+  points = 38279
+  games = 1264
+  average = points / games
+
+  print("Average Points Per Game by Michael Jordan: " + average)
 }

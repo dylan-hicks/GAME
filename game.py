@@ -143,7 +143,10 @@ class constant_node(object):
     def __str__(self):
         s = ""
         if self.value:
-            s += str(self.value) 
+            if isinstance(self.value, (int, long, float, complex)) and not "." in str(self.value):
+                s += str(self.value) + ".0"
+            else:
+                s += str(self.value) 
         else:
             S += '{' + self.children[0].__str__() + '}' 
         return s
@@ -199,9 +202,16 @@ class variable_def_node(object):
     def __str__(self):
         s = ""
         # self.children[0].__str__() is the type of the variable
-
+        
         if len(self.children) == 1:
-            s += self.value # what does ID evaluate to? 
+            if str(self.children[0]) == 'num':
+                s += self.value + " = 0"
+            elif str(self.children[0]) == 'text':
+                s += self.value + '=""'
+            elif str(self.children[0]) == 'bool':
+                s += self.value + "false"
+            elif str(self.children[0]) == 'list':
+                s += self.value + "[]"
         elif len(self.children) == 2 and self.value:
             s += self.value + " = new " + self.children[1].__str__() # same question
         elif len(self.children) == 2: 
@@ -235,7 +245,6 @@ class assignment_node(object):
 
     def __str__(self):
         s = ""
-
         s += self.value + " = " + self.children[0].__str__()
 
         return s
@@ -765,7 +774,9 @@ def p_variable_def(p):
                     | var_type ID EQ NEW var_type LBRACK NL mul_variable_def RBRACK'''
     print('variable def')
     if len(p) == 3:
-        if p[2] == 'ID': #NOT SURE WHAT ID EVALUATES TO
+        print "whoo"
+        print p[2]
+        if not "=" in str(p[2]):
             p[0] = variable_def_node([p[1]], p[2])
         else:
             p[0] = variable_def_node([p[1], p[2]])

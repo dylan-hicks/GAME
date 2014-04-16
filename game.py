@@ -137,17 +137,18 @@ class program_lines_node(object):
 class constant_node(object):
 
     def __init__(self, children, value=None): 
-
-        
         self.children = children
         self.value = value
 
     def __str__(self):
         s = ""
         if self.value:
-            s += self.value #CHECK IF LEX CONVERTS THIS AUTOMATICALLY
+            if isinstance(self.value, (int, long, float, complex)) and not "." in str(self.value):
+                s += str(self.value) + ".0"
+            else:
+                s += str(self.value) 
         else:
-            S += '{' + self.children[0].__str__() + '}' # can we just use LBRACK instead?
+            S += '{' + self.children[0].__str__() + '}' 
         return s
 
 class constant_list_node(object):
@@ -159,7 +160,8 @@ class constant_list_node(object):
         s = ""
         if len(self.children) == 2:
             s += self.children[0].__str__() + ', ' + self.children[1].__str__()
-        else: 
+        else:
+#            if isinstance(self.children[0], 
             s += self.children[0].__str__()
         return s
 
@@ -168,8 +170,7 @@ class var_type_node(object):
     def __init__(self, children, value=None): 
         
         self.children = children
-        if value:
-            self.value = value
+        self.value = value
 
     def __str__(self):
         s = ""
@@ -196,20 +197,27 @@ class variable_def_node(object):
 
     def __init__(self, children, value=None):
         self.children = children
-        if value: 
-            self.value = value
+        self.value = value
 
     def __str__(self):
         s = ""
-
+        # self.children[0].__str__() is the type of the variable
+        
         if len(self.children) == 1:
-            s += self.children[0].__str__() + " " + self.value # what does ID evaluate to? 
-        elif len(self.children) == 2 and value:
-            s += self.children[0].__str__() + " " + self.value + " = new " + self.children[1].__str__() # same question
+            if str(self.children[0]) == 'num':
+                s += self.value + " = 0"
+            elif str(self.children[0]) == 'text':
+                s += self.value + '=""'
+            elif str(self.children[0]) == 'bool':
+                s += self.value + "false"
+            elif str(self.children[0]) == 'list':
+                s += self.value + "[]"
+        elif len(self.children) == 2 and self.value:
+            s += self.value + " = new " + self.children[1].__str__() # same question
         elif len(self.children) == 2: 
-            s += self.children[0].__str__() + self.children[1].__str__()
+            s += self.children[1].__str__()
         else:
-            s += self.children[0].__str__() + " " + self.value + " = new " + self.children[1].__str__() + "{\n" + self.children[2].__str__() + "}"
+            s += self.value + " = new " + self.children[1].__str__() + "{\n" + self.children[2].__str__() + "}"
             
         return s;
 
@@ -217,13 +225,12 @@ class obj_expression_node(object):
 
     def __init__(self, children, value=None):
         self.children = children
-        if value:
-            self.value = value
+        self.value = value
 
     def __str__(self):
         s = ""
 
-        if len(children) == 1:
+        if len(self.children) == 1:
             s += self.children[0].__str__() + "." + self.value
         else: 
             s += self.value
@@ -234,12 +241,10 @@ class assignment_node(object):
 
     def __init__(self, children, value=None):
         self.children = children
-        if value:
-            self.value = value
+        self.value = value
 
     def __str__(self):
         s = ""
-
         s += self.value + " = " + self.children[0].__str__()
 
         return s
@@ -248,7 +253,6 @@ class expression_node(object): # if this messes up, look for prec as the cause
 
     def __init__(self, children, value=None):
         self.children = children
-        
         self.value = value
 
     def __str__(self):
@@ -274,8 +278,7 @@ class expression_node(object): # if this messes up, look for prec as the cause
 class import_lines_node:
     def __init__(self, children, value=None):
         self.children = children
-        if value:
-            self.value = value
+        self.value = value
 
     def __str__(self):
         s = ""
@@ -290,8 +293,7 @@ class import_lines_node:
 class lines_node:
     def __init__(self, children, value=None):
         self.children = children
-        if value:
-            self.value = value
+        self.value = value
 
     def __str__(self):
         s = ""
@@ -307,8 +309,7 @@ class lines_node:
 class class_lines_node:
     def __init__(self, children, value=None):
         self.children = children
-        if value:
-            self.value = value
+        self.value = value
 
     def __str__(self):
         s = ""
@@ -324,8 +325,7 @@ class class_lines_node:
 class function_lines_node:
     def __init__(self, children, value=None):
         self.children = children
-        if value:
-            self.value = value
+        self.value = value
 
     def __str__(self):
         s = ""
@@ -341,8 +341,7 @@ class function_lines_node:
 class statement_node:
     def __init__(self, children, value=None):
         self.children = children
-        if value:
-            self.value = value
+        self.value = value
     
     def __str__(self):
         s = ""
@@ -350,7 +349,14 @@ class statement_node:
             s += self.value
         elif len(self.children) == 1:
             if self.value:
-                s += self.value + "(" + self.children[0].__str__() + ")"
+                if self.value == "print" and "+" in str(self.children[0]):
+                    splitChildren = str(self.children[0]).split("+")
+                    printArg = splitChildren[0]
+
+                    for i in range(1, len(splitChildren)):
+                        printArg += "+ str(" + splitChildren[i] + ")"
+
+                s += self.value + "(" + printArg + ")"
             else:
                 s += self.children[0].__str__()
         elif len(self.children) == 2:
@@ -361,8 +367,7 @@ class statement_node:
 class class_def_node:
     def __init__(self, children, value=None):
         self.children = children
-        if value:
-            self.value = value
+        self.value = value
     
     def __str__(self):
         s = ""
@@ -376,8 +381,7 @@ class class_def_node:
 class function_def_node:
     def __init__(self, children, value=None):
         self.children = children
-        if value:
-            self.value = value
+        self.value = value
     
     def __str__(self):
         s = ""
@@ -392,8 +396,7 @@ class function_def_node:
 class function_args_node:
     def __init__(self, children, value=None):
         self.children = children
-        if value:
-            self.value = value
+        self.value = value
     
     def __str__(self):
         s = ""
@@ -408,8 +411,7 @@ class function_args_node:
 class function_arg_values_node:
     def __init__(self, children, value=None):
         self.children = children
-        if value:
-            self.value = value
+        self.value = value
     
     def __str__(self):
         s = ""
@@ -424,8 +426,7 @@ class function_arg_values_node:
 class function_run_args_node:
     def __init__(self, children, value=None):
         self.children = children
-        if value:
-            self.value = value
+        self.value = value
     
     def __str__(self):
         s = ""
@@ -441,8 +442,7 @@ class function_run_args_node:
 class function_run_arg_values_node:
     def __init__(self, children, value=None):
         self.children = children
-        if value:
-            self.value = value
+        self.value = value
     
     def __str__(self):
         s = ""
@@ -458,8 +458,7 @@ class function_run_arg_values_node:
 class loop_node:
     def __init__(self, children, value=None):
         self.children = children
-        if value:
-            self.value = value
+        self.value = value
     
     def __str__(self):
         s = ""
@@ -477,8 +476,7 @@ class loop_node:
 class loop_expression_node:
     def __init__(self, children, value=None):
         self.children = children
-        if value:
-            self.value = value
+        self.value = value
     
     def __str__(self):
         s = ""
@@ -495,8 +493,7 @@ class loop_expression_node:
 class loop_expression_values_node:
     def __init__(self, children, value=None):
         self.children = children
-        if value:
-            self.value = value
+        self.value = value
     
     def __str__(self):
         s = ""
@@ -507,8 +504,7 @@ class loop_expression_values_node:
 class if_statement_node:
     def __init__(self, children, value=None):
         self.children = children
-        if value:
-            self.value = value
+        self.value = value
     
     def __str__(self):
         s = ""
@@ -522,8 +518,7 @@ class if_statement_node:
 class data_statement_node:
     def __init__(self, children, value=None):
         self.children = children
-        if value:
-            self.value = value
+        self.value = value
     
     def __str__(self):
         s = ""
@@ -537,7 +532,11 @@ class data_statement_node:
 def p_program_lines(p):
     '''program_lines : include_lines lines'''
     p[0] = program_lines_node([p[1], p[2]])
-    print p[0].__str__() + "if __name__ == '__main__':main()" # TESTING
+    runCommand = p[0].__str__() + "if __name__ == '__main__':main()" # TESTING
+    print runCommand
+
+    file = open("run.py", "w")
+    file.write(runCommand)
 
 def p_include_lines(p):
     '''include_lines : include_lines INCLUDE TXT NL
@@ -602,7 +601,7 @@ def p_statement(p):
                  | CONTINUE'''
     print('statement')
     if len(p) == 2:
-        if p[1].value == "BREAK" or p[1].value == "CONTINUE":
+        if p[1] == "BREAK" or p[1] == "CONTINUE":
             p[0] = statement_node([ ], [p[1]])
         else:
             p[0] = statement_node([p[1]])
@@ -629,7 +628,7 @@ def p_function_def(p):
     if len(p) == 10:
         p[0] = function_def_node([p[4], p[8]], p[2])
     else:
-        p[0] = funciton_def_node([p[1], p[5], p[9], p[11]], p[3])
+        p[0] = function_def_node([p[1], p[5], p[9], p[11]], p[3])
 
 def p_function_args(p):
     '''function_args : function_arg_values
@@ -746,7 +745,7 @@ def p_expression(p):
     elif len(p) == 5:
         if p[3] == "=":
             p[0] = expression_node([p[1], p[4]], [p[2], p[3]])
-        elif p[1] == ID: # ID evaluates to?
+        elif p[1] == 'ID': # ID evaluates to?
             p[0] = expression_node([p[3]], [p[1], p[2], p[4]])
         else:
             p[0] = expression_node([p[1], p[3]])
@@ -775,7 +774,9 @@ def p_variable_def(p):
                     | var_type ID EQ NEW var_type LBRACK NL mul_variable_def RBRACK'''
     print('variable def')
     if len(p) == 3:
-        if p[2].type == 'ID': #NOT SURE WHAT ID EVALUATES TO
+        print "whoo"
+        print p[2]
+        if not "=" in str(p[2]):
             p[0] = variable_def_node([p[1]], p[2])
         else:
             p[0] = variable_def_node([p[1], p[2]])
@@ -823,7 +824,7 @@ def p_constant_list(p):
                      | constant'''
     print('constant list')
     if len(p) == 4:
-        p[0] = constant_list_node([p[1], p[2]])
+        p[0] = constant_list_node([p[1], p[3]])
     else:
         p[0] = constant_list_node([p[1]])
 

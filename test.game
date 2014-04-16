@@ -1,9 +1,0 @@
-class Player {
- text first
- text last
- list(num) p
- function addGame(num points,num pasdf) {
-  p.add(points)
-  ppg = average(p)
- }
-}

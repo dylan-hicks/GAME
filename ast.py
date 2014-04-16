@@ -90,6 +90,7 @@ t_ignore = " \t"
 def t_COMMENT(t):
     r'\#.*\n'
     t.type = 'NL'
+    print(">>"+t.value+"<<")
     return t
 
 def t_error(t):
@@ -124,7 +125,7 @@ def p_program_lines(t):
     '''program_lines : include_lines lines'''
     print('program_lines(' + t[1] + ',' + t[2] + ')')
 
-def p_import_lines(t):
+def p_include_lines(t):
     '''include_lines : include_lines INCLUDE TXT NL
                      | include_lines NL
                      | '''
@@ -184,13 +185,15 @@ def p_statement(t):
         t[0] = 'statement(' + t[1] + ')'
     elif len(t)==5:
         t[0] = 'statement(' + t[1] + ',' + t[3] + ')'
+    elif len(t)==7:
+        t[0] = 'statement(' + t[1] + ',' + t[3] + ')'
     else:
-        t[1] = 'statement(' + t[1] + ',' + t[3] + ',' + t[5] + ')'
+        t[0] = 'statement(' + t[1] + ',' + t[3] + ',' + t[5] + ')'
 
 def p_class_def(t):
     '''class_def : CLASS ID LBRACK NL class_lines RBRACK
                  | CLASS ID EXTENDS ID LBRACK NL class_lines RBRACK'''
-    if len(t)==6:
+    if len(t)==7:
         t[0] = 'class_def(' + t[2] + ',' + t[5] + ')'
     else:
         t[0] = 'class_def(' + t[2] + ',' + t[4] + ',' + t[7] + ')' 
@@ -252,8 +255,10 @@ def p_loop_expression(t):
                        | '''
     if len(t)==4:
         t[0] = 'loop_expression(' + t[1] + ',' + t[3] + ')'
-    else:
+    elif len(t)==2:
         t[0] = 'loop_expression(' + t[1] + ')'
+    else:
+        t[0] = 'loop_expression()'
 
 def p_loop_expression_values(t):
     '''loop_expression_values : START variable_def
@@ -292,8 +297,8 @@ def p_expression(t):
                   | MINUS expression %prec UMINUS
                   | constant
                   | assignment
-                  | obj_expression DOT ID LPAREN function_run_args RPAREN
                   | ID LPAREN function_run_args RPAREN
+                  | obj_expression DOT ID LPAREN function_run_args RPAREN
                   | obj_expression LSQ expression RSQ
                   | obj_expression'''
     if len(t)==4:
@@ -354,19 +359,22 @@ def p_var_type(t):
 
 def p_constant(t):
     '''constant : LBRACK constant_list RBRACK
+                | LBRACK RBRACK
                 | NUM
                 | TXT
                 | FALSE
                 | TRUE'''            
     if len(t)!=4:
         t[0] = 'constant(' + str(t[1]) + ')'
+    elif len(t)==3:
+        t[0] = 'constant()'
     else:
         t[0] = 'constant(' + t[2] + ')'
 
 def p_constant_list(t):
     '''constant_list : constant_list COMMA constant_list
                      | constant'''
-    if len(t)==2:
+    if len(t)==4:
         t[0] = 'constant_list(' + t[1] + ',' + t[3] + ')'
     else:
         t[0] = 'constant_list(' + t[1] + ')'

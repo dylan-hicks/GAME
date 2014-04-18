@@ -103,7 +103,7 @@ lex.lex()
 # Parsing rules (lowest to highest)
 
 precedence = (
-    ('left','NL'),
+    ('right','NL'),
     ('left','COMMA'),
     ('right','EQ'),
     ('left','OR'),

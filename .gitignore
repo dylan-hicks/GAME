@@ -3,3 +3,4 @@ parselog.txt
 *.out
 *.pyc
 run.py
+*.swp

@@ -341,7 +341,6 @@ def p_variable_def(t):
     '''variable_def : var_type ID
                     | var_type ID EQ expression
                     | var_type ID EQ NEW var_type
-                    | var_type ID EQ NEW var_type NL 
                     | var_type ID EQ NEW var_type NL LBRACK NL mul_variable_assign RBRACK
                     | var_type ID EQ NEW var_type LBRACK NL mul_variable_assign RBRACK'''
     if len(t)==3:

@@ -1,0 +1,11 @@
+function main() {
+  num points
+  num games
+  num average
+
+  points = 38279
+  games = 1264
+  average = points / games
+
+  print("Average Points Per Game by Michael Jordan: " + average)
+}

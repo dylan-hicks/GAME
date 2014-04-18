@@ -142,13 +142,13 @@ class constant_node(object):
 
     def __str__(self):
         s = ""
-        if self.value:
-            if isinstance(self.value, (int, long, float, complex)) and not "." in str(self.value):
-                s += str(self.value) + ".0"
+        if len(self.value) == 1:
+            if isinstance(self.value[0], (int, long)):
+                s += str(self.value[0]) + ".0"
             else:
-                s += str(self.value) 
+                s += str(self.value[0])
         else:
-            s += '{' + self.children[0].__str__() + '}' 
+            s += '[' + self.children[0].__str__() + ']' 
         return s
 
 class constant_list_node(object):
@@ -205,7 +205,7 @@ class variable_def_node(object):
         
         if len(self.children) == 1:
             if str(self.children[0]) == 'num':
-                s += self.value[0] + " = 0"
+                s += self.value[0] + " = 0.0"
             elif str(self.children[0]) == 'text':
                 s += self.value[0] + '=""'
             elif str(self.children[0]) == 'bool':
@@ -265,13 +265,16 @@ class expression_node(object): # if this messes up, look for prec as the cause
         elif len(self.children) == 1: 
             s += self.children[0].__str__()
         elif len(self.children) == 2 and self.value and len(self.value) == 1:
-            s += self.children[0].__str__() + " " + self.value[0] + " " + self.children[1].__str__()
+#            if isinstance(self.children[0], int) and isinstance(self.children[1], int):
+                s += self.children[0].__str__() + " " + self.value[0] + " " + self.children[1].__str__()
+#            else:
+#                s += self.children[0].__str__() + " " + self.value[0] + " " + self.children[1].__str__()
         elif len(self.children) == 2 and self.value and len(self.value) == 2:
             s += self.children[0].__str__() + " " + self.value[0] + " " + self.value[1] + " " + self.children[1].__str__()
         elif len(self.children) == 2 and self.value and len(self.value) == 4:
             s += self.children[0].__str__() + "." + self.value[1] + "(" + self.children[1].__str__() + ")"
-        else:
-            s += self.children[0].__str__() + "[" + self.children[1].__str__() + "]"
+        elif len(self.children) == 2:
+            s += self.children[0].__str__() + "[int(" + self.children[1].__str__() + ")]"
 
         return s
 
@@ -355,6 +358,8 @@ class statement_node:
     
     def __str__(self):
         s = ""
+        printArg = ""
+
         if len(self.children) == 0:
             s += self.value
         elif len(self.children) == 1:
@@ -365,7 +370,9 @@ class statement_node:
 
                     for i in range(1, len(splitChildren)):
                         printArg += "+ str(" + splitChildren[i] + ")"
-
+                elif self.value == "print":
+                    printArg = self.children[0].__str__()
+                
                 s += self.value + "(" + printArg + ")"
             else:
                 s += self.children[0].__str__()
@@ -382,9 +389,9 @@ class class_def_node:
     def __str__(self):
         s = ""
         if len(value) == 1:
-            s += "class " + self.value[0] + "{\n" + self.children[0].__str__() + "}"
+            s += "class " + self.value[0] + ":\n\t" + self.children[0].__str__() + ""
         else:
-            s += "class " + self.value[0] + " extends" + self.value[1] + "{\n" + self.children[0].__str__() + "}" 
+            s += "class " + self.value[0] + " extends" + self.value[1] + ":\n\t" + self.children[0].__str__() + "" 
 
         return s
 
@@ -841,9 +848,9 @@ def p_constant(p):
                 | TRUE'''            
     print('constant')
     if len(p) == 4:
-        p[0] = constant_node([p[2]])
+        p[0] = constant_node([p[2]], [p[1], p[3]])
     else: 
-        p[0] = constant_node([ ], p[1])
+        p[0] = constant_node([p[1]], [p[1]])
 
 def p_constant_list(p):
     '''constant_list : constant_list COMMA constant_list

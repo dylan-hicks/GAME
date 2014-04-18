@@ -148,7 +148,7 @@ class constant_node(object):
             else:
                 s += str(self.value) 
         else:
-            S += '{' + self.children[0].__str__() + '}' 
+            s += '{' + self.children[0].__str__() + '}' 
         return s
 
 class constant_list_node(object):
@@ -213,11 +213,11 @@ class variable_def_node(object):
             elif str(self.children[0]) == 'list':
                 s += self.value[0] + "[]"
         elif len(self.children) == 2 and self.value and len(self.value) == 2:
-            s += self.value + " = new " + self.children[1].__str__() # same question
+            s += self.value[0] + " = new " + self.children[1].__str__() # same question
         elif len(self.children) == 2 and self.value and len(self.value) == 1:
-            s += self.children[1].__str__()
+            s += self.value[0] + " = " + self.children[1].__str__()
         else:
-            s += self.value + " = " + self.children[1].__str__() + "{\n" + self.children[2].__str__() + "}"
+            s += self.value[0] + " = new " + self.children[1].__str__() + "{\n" + self.children[2].__str__() + "}"
             
         return s;
 
@@ -724,7 +724,7 @@ def p_data_statement(p):
     '''data_statement : data_statement_load 
                       | data_statement_export'''
     print('data statement')
-    p[0] = p[1]
+    p[0] = data_statement_node([p[1]])
 
 def p_data_statement_load(p):
     '''data_statement_load : LOAD obj_expression FROM expression'''
@@ -781,7 +781,7 @@ def p_function_call(p):
 def p_assignment(p):
     '''assignment : obj_expression EQ expression'''
     print('assignment')
-    p[0] = assignment_node([p[3]], p[1])
+    p[0] = assignment_node([p[1], p[3]])
 
 def p_obj_expression(p):
     '''obj_expression : obj_expression DOT ID
@@ -797,31 +797,29 @@ def p_variable_def(p):
                     | var_type ID EQ expression
                     | var_type ID EQ NEW var_type
                     | var_type ID EQ NEW var_type LBRACK NL mul_variable_assign RBRACK'''
-    # TODO: update attached rules to reflect change in second CFG line
     print('variable def')
     if len(p) == 3:
-        print "whoo"
-        print p[2]
-        if not "=" in str(p[2]):
-            p[0] = variable_def_node([p[1]], p[2])
-        else:
-            p[0] = variable_def_node([p[1], p[2]])
+        p[0] = variable_def_node([p[1]], [p[2]])
+    elif len(p) == 5:
+            p[0] = variable_def_node([p[1], p[4]], [p[2]])
     elif len(p) == 6:
-        p[0] = variable_def_node([p[1], p[5]], p[2])
+        p[0] = variable_def_node([p[1], p[5]], [p[2], p[4]])
     else:
-        p[0] = variable_def_node([p[1], p[5], p[8]], p[2])
+        p[0] = variable_def_node([p[1], p[5], p[8]], [p[2]])
 
 
-def p_mul_variable_assign(p): #TODO: fix this function to reflect new CFG lines
+def p_mul_variable_assign(p): 
     '''mul_variable_assign : mul_variable_assign assignment NL
                            | data_statement_load NL
                            | mul_variable_assign NL
                            | '''
     print('mul variable assign')
-    if len(p) == 3:
+    if len(p) == 4:
         p[0] = mul_variable_assign_node([p[1], p[2]])
-    else:
+    elif len(p) == 3:
         p[0] = mul_variable_assign_node([p[1]])
+    else:
+        p[0] = mul_variable_assign_node([ ])
 
 def p_var_type(p):
     '''var_type : TEXT_TYPE

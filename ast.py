@@ -44,6 +44,11 @@ tokens = [
     ] + list(reserved.values())
 
 # Tokens
+def t_LBRACK(t):
+    r'(\n|\#.*\n)*{'
+    t.type = 'LBRACK'
+    return t
+
 t_PLUS    = r'\+'
 t_MINUS   = r'-'
 t_TIMES   = r'\*'
@@ -54,7 +59,6 @@ t_EQ      = r'='
 t_LPAREN  = r'\('
 t_RPAREN  = r'\)'
 t_NL      = r'\n+'
-t_LBRACK  = r'\{'
 t_RBRACK  = r'\}'
 t_COMMA   = r'\,'
 t_GT      = r'>'
@@ -337,6 +341,8 @@ def p_variable_def(t):
     '''variable_def : var_type ID
                     | var_type ID EQ expression
                     | var_type ID EQ NEW var_type
+                    | var_type ID EQ NEW var_type NL 
+                    | var_type ID EQ NEW var_type NL LBRACK NL mul_variable_assign RBRACK
                     | var_type ID EQ NEW var_type LBRACK NL mul_variable_assign RBRACK'''
     if len(t)==3:
         t[0] = 'variable_def(' + t[1] + ',' + t[2] + ')'

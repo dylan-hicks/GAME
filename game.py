@@ -275,6 +275,16 @@ class expression_node(object): # if this messes up, look for prec as the cause
 
         return s
 
+class function_call_node:
+    def __init__(self, children, value=None):
+        self.children = children
+        self.value = value
+
+    def __str__(self):
+        s = ""
+        s += self.value + "(" + self.children[0].__str__() + ")"
+        return s
+
 class import_lines_node:
     def __init__(self, children, value=None):
         self.children = children
@@ -386,10 +396,10 @@ class function_def_node:
     def __str__(self):
         s = ""
         
-        if len(self.children) == 2:
+        if len(self.children) == 2: # for main or void
             s += "def " + self.value + "(" + self.children[0].__str__() + "):\n" + self.children[1].__str__() + ""
-        else:
-            s += self.children[0].__str__() + " def " + self.value + "(" + self.children[1].__str__() + "):\n" + self.children[2].__str__() + "return " + self.children[3].__str__() + "\n"
+        else: # for functions with return types
+            s += "def " + self.value + "(" + self.children[1].__str__() + "):\n" + self.children[2].__str__() + "\treturn " + self.children[3].__str__() + "\n"
 
         return s
 
@@ -416,10 +426,10 @@ class function_arg_values_node:
     def __str__(self):
         s = ""
         
-        if len(children) == 1: 
-            s += self.children[0].__str__() + self.value
+        if len(self.children) == 1: 
+            s += self.value
         else:
-            s += self.children[0].__str__() + "," + self.children[1].__str__()
+            s += self.children[0].__str__() + ", " + self.children[1].__str__()
 
         return s
 
@@ -732,7 +742,7 @@ def p_expression(p):
                   | constant
                   | assignment
                   | obj_expression DOT ID LPAREN function_run_args RPAREN
-                  | ID LPAREN function_run_args RPAREN
+                  | function_call
                   | obj_expression LSQ expression RSQ
                   | obj_expression'''
     print('expression')
@@ -745,13 +755,19 @@ def p_expression(p):
     elif len(p) == 5:
         if p[3] == "=":
             p[0] = expression_node([p[1], p[4]], [p[2], p[3]])
-        elif p[1] == 'ID': # ID evaluates to?
-            p[0] = expression_node([p[3]], [p[1], p[2], p[4]])
+#        elif isinstance(p[1], basestring):
+#            p[0] = expression_node([p[3]], [p[1], p[2], p[4]])
         else:
             p[0] = expression_node([p[1], p[3]])
     else:
         p[0] = expression_node([p[1], p[5]], [p[2], p[3], p[4], p[6]])
             
+
+def p_function_call(p):
+    '''function_call : ID LPAREN function_run_args RPAREN
+                     | '''
+    print('function call')
+    p[0] = function_call_node([p[3]], p[1])
 
 def p_assignment(p):
     '''assignment : ID EQ expression'''

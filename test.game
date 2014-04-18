@@ -1,3 +1,7 @@
+num function calculate(num x1, num x2) {	 
+  return x1 / x2
+}
+
 function main() {
   num points
   num games
@@ -5,7 +9,7 @@ function main() {
 
   points = 38279
   games = 1264
-  average = points / games
+  average = calculate(points, games)
 
   print("Average Points Per Game by Michael Jordan: " + average)
 }

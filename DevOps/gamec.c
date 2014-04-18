@@ -18,24 +18,28 @@ int main(int argc, char **argv){
   while(!mv_flag && i < argc){
     if(strcmp(argv[i], "-m") == 0){
       mv_flag = 1; 
-      sprintf(mv_directory, "%s", argv[++i]);
+      sprintf(mv_directory, "./%s", argv[++i]);
     }
     i++;
   }
 
   char compiled[100];
+  int k = 1;
+  
+  for(k= 1; k < argc; k++){ 
+    if(strstr(argv[k], ".game")){
+      sprintf(compiled, "./%s", argv[k]);
+      execlp("python", "python", "./game.py", compiled, "&>", "/dev/null");
+      if(mv_flag){
+        sprintf(compiled, "%s.py", argv[k]);
 
-    int k = 1;
-    for(k= 1; k < argc; k++){ 
-      if(strstr(argv[k], ".game")){
-        printf("python game.py %s\n", argv[k]);
-        printf("%d\n", k);
-        //execlp("python", "python", "game.py", argv[k]);
-        if(mv_flag){
-          sprintf(compiled, "%s.py", argv[k]);
-          execlp("mv", "mv", compiled, mv_directory);
-        }
+        //execlp("mv", "mv", compiled, mv_directory);
+        execlp("mv", "mv", "./run.py", mv_directory);
+
       }
     }
+  }  
+
+        fprintf(stdout, "compiled is: %s\n", compiled);
   return 0;
 }

@@ -31,13 +31,13 @@ int main(int argc, char **argv){
     }
   }
 
-  char compiled[100];
   int k = 1;
   pid_t child, pid; 
   int status = 0;
   for(k= 1; k < argc; k++){ 
     if(strstr(argv[k], ".game")){
       if((child = fork()) == 0){//child process
+        char compiled[100];
         int devNull = open("/dev/null", O_WRONLY);
         int result = dup2(devNull, STDOUT_FILENO);
         sprintf(compiled, "./%s", argv[k]);
@@ -47,10 +47,13 @@ int main(int argc, char **argv){
         wait(&status); 
       }
       if(mv_flag){
+        char compiled[100];
         if((child = fork()) == 0){//child process
-          sprintf(compiled, "%s.py", argv[k]);
-          //execlp("mv", "mv", compiled, mv_directory);
-          execlp("mv", "mv", "./run.py", mv_directory, 0);
+          sprintf(compiled, "./%s.py", argv[k]);
+          printf("Compiled is %s\n", compiled);
+          printf("Compiled is %s\n", mv_directory);
+
+          execlp("mv", "mv", compiled, mv_directory, 0);
         }
         else{
           wait(&status);

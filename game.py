@@ -19,7 +19,7 @@ reserved = {
    'break' : 'BREAK',
    'continue' : 'CONTINUE',
    'class' : 'CLASS',
-   'extends' : 'EXTENDS',
+   'inherits' : 'INHERITS',
    'function' : 'FUNCTION',
    'return' : 'RETURN',
    'foreach' : 'FOREACH',
@@ -105,7 +105,7 @@ lex.lex()
 # Parsing rules (lowest to highest)
 
 precedence = (
-    ('left','NL'),
+    ('right','NL'),
     ('left','COMMA'),
     ('right','EQ'),
     ('left','OR'),
@@ -623,7 +623,7 @@ def p_statement(p):
 
 def p_class_def(p):
     '''class_def : CLASS ID LBRACK NL class_lines RBRACK
-                 | CLASS ID EXTENDS ID LBRACK NL class_lines RBRACK'''
+                 | CLASS ID INHERITS ID LBRACK NL class_lines RBRACK'''
     print('class def')
     if len(p) == 7:
         p[0] = class_def_node([p[5]], [p[2]])
@@ -718,9 +718,17 @@ def p_if_statement(p):
         p[0] = if_statement_node([p[3], p[7], p[12]])
 
 def p_data_statement(p):
-    '''data_statement : LOAD expression FROM expression
-                      | EXPORT expression TO expression'''
+    '''data_statement : data_statement_load 
+                      | data_statement_export'''
     print('data statement')
+    p[0] = p[1]
+
+def p_data_statement_load(p):
+    '''data_statement_load : LOAD obj_expression FROM expression'''
+    p[0] = data_statement_node([p[2], p[4]], [p[1], p[3]])
+
+def p_data_statement_export(p):
+    '''data_statement_export : EXPORT expression TO expression'''
     p[0] = data_statement_node([p[2], p[4]], [p[1], p[3]])
 
 def p_expression(p):
@@ -770,7 +778,7 @@ def p_function_call(p):
     p[0] = function_call_node([p[3]], p[1])
 
 def p_assignment(p):
-    '''assignment : ID EQ expression'''
+    '''assignment : obj_expression EQ expression'''
     print('assignment')
     p[0] = assignment_node([p[3]], p[1])
 
@@ -785,9 +793,10 @@ def p_obj_expression(p):
 
 def p_variable_def(p):
     '''variable_def : var_type ID
-                    | var_type assignment
+                    | var_type ID EQ expression
                     | var_type ID EQ NEW var_type
                     | var_type ID EQ NEW var_type LBRACK NL mul_variable_def RBRACK'''
+    # TODO: update attached rules to reflect change in second CFG line
     print('variable def')
     if len(p) == 3:
         print "whoo"
@@ -802,10 +811,12 @@ def p_variable_def(p):
         p[0] = variable_def_node([p[1], p[5], p[8]], p[2])
 
 
-def p_mul_variable_def(p):
-    '''mul_variable_def : mul_variable_def variable_def NL
-                        | variable_def NL'''
-    print('mul variable def')
+def p_mul_variable_assign(p): #TODO: fix this function to reflect new CFG lines
+    '''mul_variable_assign : mul_variable_assign assignment NL
+                           | data_statement_load NL
+                           | mul_variable_assign NL
+                           | '''
+    print('mul variable assign')
     if len(p) == 3:
         p[0] = mul_variable_def_node([p[1], p[2]])
     else:

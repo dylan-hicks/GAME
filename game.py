@@ -180,7 +180,7 @@ class var_type_node(object):
             s += 'list(' + self.children[0].__str__() + ')'  
         return s
 
-class mul_variable_def_node(object):
+class mul_variable_assign_node(object):
 
     def __init__(self, children):
         self.children = children
@@ -205,19 +205,19 @@ class variable_def_node(object):
         
         if len(self.children) == 1:
             if str(self.children[0]) == 'num':
-                s += self.value + " = 0"
+                s += self.value[0] + " = 0"
             elif str(self.children[0]) == 'text':
-                s += self.value + '=""'
+                s += self.value[0] + '=""'
             elif str(self.children[0]) == 'bool':
-                s += self.value + "false"
+                s += self.value[0] + "false"
             elif str(self.children[0]) == 'list':
-                s += self.value + "[]"
-        elif len(self.children) == 2 and self.value:
+                s += self.value[0] + "[]"
+        elif len(self.children) == 2 and self.value and len(self.value) == 2:
             s += self.value + " = new " + self.children[1].__str__() # same question
-        elif len(self.children) == 2: 
+        elif len(self.children) == 2 and self.value and len(self.value) == 1:
             s += self.children[1].__str__()
         else:
-            s += self.value + " = new " + self.children[1].__str__() + "{\n" + self.children[2].__str__() + "}"
+            s += self.value + " = " + self.children[1].__str__() + "{\n" + self.children[2].__str__() + "}"
             
         return s;
 
@@ -245,7 +245,7 @@ class assignment_node(object):
 
     def __str__(self):
         s = ""
-        s += self.value + " = " + self.children[0].__str__()
+        s += self.children[0].__str__() + " = " + self.children[1].__str__()
 
         return s
 
@@ -293,7 +293,7 @@ class import_lines_node:
     def __str__(self):
         s = ""
         if self.value: 
-            s += self.children[0].__str__() + " import " + value + "\n"
+            s += self.children[0].__str__() + " import " + self.value + "\n"
         else:
             s += self.children[0].__str__() + "\n"
 
@@ -533,7 +533,10 @@ class data_statement_node:
     def __str__(self):
         s = ""
 
-        s += self.value[0] + " " + self.children[0].__str__() + self.value[1] + " " + self.children[1].__str__()
+        if len(self.children) == 1:
+            s += self.children[0].__str__()
+        else:
+            s += self.value[0] + " " + self.children[0].__str__() + self.value[1] + " " + self.children[1].__str__()
 
         return s
 
@@ -816,9 +819,9 @@ def p_mul_variable_assign(p): #TODO: fix this function to reflect new CFG lines
                            | '''
     print('mul variable assign')
     if len(p) == 3:
-        p[0] = mul_variable_def_node([p[1], p[2]])
+        p[0] = mul_variable_assign_node([p[1], p[2]])
     else:
-        p[0] = mul_variable_def_node([p[1]])
+        p[0] = mul_variable_assign_node([p[1]])
 
 def p_var_type(p):
     '''var_type : TEXT_TYPE

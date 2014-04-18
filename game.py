@@ -728,7 +728,7 @@ def p_data_statement_load(p):
     p[0] = data_statement_node([p[2], p[4]], [p[1], p[3]])
 
 def p_data_statement_export(p):
-    '''data_statement_export : EXPORT expression TO expression'''
+    '''data_statement_export : EXPORT obj_expression TO expression'''
     p[0] = data_statement_node([p[2], p[4]], [p[1], p[3]])
 
 def p_expression(p):
@@ -750,7 +750,6 @@ def p_expression(p):
                   | constant
                   | assignment
                   | obj_expression DOT ID LPAREN function_run_args RPAREN
-                  | function_call
                   | obj_expression LSQ expression RSQ
                   | obj_expression'''
     print('expression')
@@ -772,8 +771,7 @@ def p_expression(p):
             
 
 def p_function_call(p):
-    '''function_call : ID LPAREN function_run_args RPAREN
-                     | '''
+    '''expression : ID LPAREN function_run_args RPAREN'''
     print('function call')
     p[0] = function_call_node([p[3]], p[1])
 
@@ -795,7 +793,7 @@ def p_variable_def(p):
     '''variable_def : var_type ID
                     | var_type ID EQ expression
                     | var_type ID EQ NEW var_type
-                    | var_type ID EQ NEW var_type LBRACK NL mul_variable_def RBRACK'''
+                    | var_type ID EQ NEW var_type LBRACK NL mul_variable_assign RBRACK'''
     # TODO: update attached rules to reflect change in second CFG line
     print('variable def')
     if len(p) == 3:

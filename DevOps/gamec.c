@@ -30,8 +30,7 @@ int main(int argc, char **argv){
     }
     int j;
     for(j = 0; j < data.gl_pathc; j++){
-      printf("python game.py %s\n", data.gl_pathv[j]);
-      //execlp("python", "python", "game.py", data.gl_pathv[j]); 
+      execlp("python", "python", "game.py", data.gl_pathv[j]); 
     }
     globfree(&data);  
   }

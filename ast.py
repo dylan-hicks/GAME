@@ -275,7 +275,7 @@ def p_if_statement(t):
 
 def p_data_statement(t):
     '''data_statement : data_statement_load
-                      | data_statement_save'''
+                      | data_statement_export'''
     t[0] = t[1]
 
 def p_data_statement_load(t):
@@ -283,7 +283,7 @@ def p_data_statement_load(t):
     t[0] = 'data_statement(' + t[2] + ',' + t[4] + ')'
 
 def p_data_statement_save(t):
-    '''data_statement_save : EXPORT obj_expression TO expression'''
+    '''data_statement_export : EXPORT obj_expression TO expression'''
     t[0] = 'data_statement(' + t[2] + ',' + t[4] + ')'
 
 def p_expression(t):

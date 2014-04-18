@@ -4,3 +4,5 @@ parselog.txt
 *.pyc
 run.py
 *.swp
+DevOps/*.o
+DevOps/gamec

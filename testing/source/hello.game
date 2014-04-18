@@ -1,5 +1,0 @@
-include stdlib
-
-function main() {
-  print(“hello, world!”)
-}

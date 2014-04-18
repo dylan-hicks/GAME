@@ -4,5 +4,10 @@ parselog.txt
 *.pyc
 run.py
 *.swp
+*.swo
 DevOps/*.o
 DevOps/gamec
+DevOps/run.py
+testing/target
+testing/diffs
+testing/output

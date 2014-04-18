@@ -1,7 +1,0 @@
-
-To run your .game.py file, please use the following command:
-
-python run.py [.game.py file]
-
-Please note that you can only run one .game.py file at a time.
-

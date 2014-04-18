@@ -6,27 +6,28 @@
 
 ####Result:
 
-Will show which tests failed.
+Will show which tests failed. The test framework compiles the .game files in the _source_ directory and places the output compiled python files in the _target_ directory. It then runs each compiled python file and places the outputs as a text file into the _output_ directory and then creates a diff between that output text file and its correct counterpart in the _correct_ directory. If the diff file is empty, then that .game file compiled and worked correctly and that test case passes.
 
-For the matching of compiled target files to correct target files, the compiled target files and the diffs will remain in the _target_ directory only if the test case for that file failed.
+After each test script operation, the outputs and the diffs will respectively remain in the _output_ and _diffs_ directory. The compiled python target files will remain in the _target_ directory. 
 
 ####Directory Structure:
 
-source
+_source_
 
 - Contains source GAME files that are to be compiled
 
-target
+_target_
 
 - Contains target python files from compilation
+
+_diffs_
+
 - Contains diff files of compiled target python files and the correct target python files
 
-correct
+_correct_
 
-- Contains correct target python files from compilation
+- Contains the correct outputs
 
 ####Pending:
 
 - Actual test cases for the the compiler
-- Test Discovery (need other tests first)
-- Testing of parser (token stream) and more modular compiler tests using unittest assertions

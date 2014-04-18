@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include <glob.h>
 #include <string.h>
+#include <fcntl.h>
 
 int main(int argc, char **argv){
 
@@ -25,21 +26,30 @@ int main(int argc, char **argv){
 
   char compiled[100];
   int k = 1;
-  
+  pid_t child, pid; 
+  int status = 0;
   for(k= 1; k < argc; k++){ 
     if(strstr(argv[k], ".game")){
-      sprintf(compiled, "./%s", argv[k]);
-      execlp("python", "python", "./game.py", compiled, "&>", "/dev/null");
+      if((child = fork()) == 0){//in child process
+        int devNull = open("/dev/null", O_WRONLY);
+        int result = dup2(devNull, STDOUT_FILENO);
+        sprintf(compiled, "./%s", argv[k]);
+        execlp("python", "python", "./game.py", compiled, 0);
+      }
+      else{
+        wait(&status); 
+      }
       if(mv_flag){
-        sprintf(compiled, "%s.py", argv[k]);
-
-        //execlp("mv", "mv", compiled, mv_directory);
-        execlp("mv", "mv", "./run.py", mv_directory);
-
+        if((child = fork()) == 0){//child process
+          sprintf(compiled, "%s.py", argv[k]);
+          //execlp("mv", "mv", compiled, mv_directory);
+          execlp("mv", "mv", "./run.py", mv_directory, 0);
+        }
+        else{
+          wait(&status);
+        }
       }
     }
   }  
-
-        fprintf(stdout, "compiled is: %s\n", compiled);
   return 0;
 }

@@ -45,7 +45,7 @@ tokens = [
 
 # Tokens
 def t_LBRACK(t):
-    r'(\n|\#.*\n)*{'
+    r'(\n|\#.*\n|[ ]|\t)*{'
     t.type = 'LBRACK'
     return t
 t_PLUS    = r'\+'

@@ -44,6 +44,10 @@ tokens = [
     ] + list(reserved.values())
 
 # Tokens
+def t_LBRACK(t):
+    r'(\n|\#.*\n)*{'
+    t.type = 'LBRACK'
+    return t
 t_PLUS    = r'\+'
 t_MINUS   = r'-'
 t_TIMES   = r'\*'

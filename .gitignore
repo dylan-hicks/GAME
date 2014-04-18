@@ -8,3 +8,6 @@ run.py
 DevOps/*.o
 DevOps/gamec
 DevOps/run.py
+testing/target
+testing/diffs
+testing/output

@@ -19,7 +19,7 @@ reserved = {
    'break' : 'BREAK',
    'continue' : 'CONTINUE',
    'class' : 'CLASS',
-   'extends' : 'EXTENDS',
+   'inherits' : 'INHERITS',
    'function' : 'FUNCTION',
    'return' : 'RETURN',
    'foreach' : 'FOREACH',
@@ -90,7 +90,6 @@ t_ignore = " \t"
 def t_COMMENT(t):
     r'\#.*\n'
     t.type = 'NL'
-    print(">>"+t.value+"<<")
     return t
 
 def t_error(t):
@@ -192,7 +191,7 @@ def p_statement(t):
 
 def p_class_def(t):
     '''class_def : CLASS ID LBRACK NL class_lines RBRACK
-                 | CLASS ID EXTENDS ID LBRACK NL class_lines RBRACK'''
+                 | CLASS ID INHERITS ID LBRACK NL class_lines RBRACK'''
     if len(t)==7:
         t[0] = 'class_def(' + t[2] + ',' + t[5] + ')'
     else:
@@ -275,8 +274,16 @@ def p_if_statement(t):
         t[0] = 'if_statement(' + t[3] + ',' + t[7] + ',' + t[12] + ')'
 
 def p_data_statement(t):
-    '''data_statement : LOAD expression FROM expression
-                      | EXPORT expression TO expression'''
+    '''data_statement : data_statement_load
+                      | data_statement_save'''
+    t[0] = t[1]
+
+def p_data_statement_load(t):
+    '''data_statement_load : LOAD obj_expression FROM expression'''
+    t[0] = 'data_statement(' + t[2] + ',' + t[4] + ')'
+
+def p_data_statement_save(t):
+    '''data_statement_save : EXPORT obj_expression TO expression'''
     t[0] = 'data_statement(' + t[2] + ',' + t[4] + ')'
 
 def p_expression(t):
@@ -315,7 +322,7 @@ def p_expression(t):
         t[0] = 'expression(' + t[1] + ')'
 
 def p_assignment(t):
-    '''assignment : ID EQ expression'''
+    '''assignment : obj_expression EQ expression'''
     t[0] = 'assignment(' + t[1] + ',' + t[3] + ')'
 
 def p_obj_expression(t):
@@ -328,23 +335,29 @@ def p_obj_expression(t):
 
 def p_variable_def(t):
     '''variable_def : var_type ID
-                    | var_type assignment
+                    | var_type ID EQ expression
                     | var_type ID EQ NEW var_type
-                    | var_type ID EQ NEW var_type LBRACK NL mul_variable_def RBRACK'''
+                    | var_type ID EQ NEW var_type LBRACK NL mul_variable_assign RBRACK'''
     if len(t)==3:
         t[0] = 'variable_def(' + t[1] + ',' + t[2] + ')'
+    elif len(t)==5:
+        t[0] = 'variable_def(' + t[1] + ',' + t[2] + ',' + t[4] + ')'
     elif len(t)==6:
         t[0] = 'variable_def(' + t[1] + ',' + t[2] + ',' + t[5] + ')'
     else: 
         t[0] = 'variable_def(' + t[1] + ',' + t[2] + ',' + t[5] + ',' + t[8] + ')'
 
-def p_mul_variable_def(t):
-    '''mul_variable_def : mul_variable_def variable_def NL
-                        | variable_def NL'''
+def p_mul_variable_assign(t):
+    '''mul_variable_assign : mul_variable_assign assignment NL
+                           | data_statement_load NL
+                           | mul_variable_assign NL
+                           | '''
     if len(t)==4:
         t[0] = 'mul_variable_def(' + t[1] + ',' + t[2] + ')'
-    else:
+    elif len(t)==3:
         t[0] = 'mul_variable_def(' + t[1] + ')'
+    else:
+        t[0] = ''
 
 def p_var_type(t):
     '''var_type : TEXT_TYPE
@@ -356,6 +369,7 @@ def p_var_type(t):
         t[0] = 'var_type(' + t[1] + ')'
     else:
         t[0] = 'var_type(' + t[3] + ')'
+    print(t[0])
 
 def p_constant(t):
     '''constant : LBRACK constant_list RBRACK
@@ -364,7 +378,7 @@ def p_constant(t):
                 | TXT
                 | FALSE
                 | TRUE'''            
-    if len(t)!=4:
+    if len(t)<3:
         t[0] = 'constant(' + str(t[1]) + ')'
     elif len(t)==3:
         t[0] = 'constant()'

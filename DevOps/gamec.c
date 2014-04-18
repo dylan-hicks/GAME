@@ -4,6 +4,7 @@
 #include <glob.h>
 #include <string.h>
 #include <fcntl.h>
+#include <sys/stat.h>
 
 int main(int argc, char **argv){
 
@@ -24,13 +25,19 @@ int main(int argc, char **argv){
     i++;
   }
 
+  //Check for existence of directory to move compiled files to if -m flag was used
+  if(mv_flag){
+    if(mkdir(mv_directory, S_IRWXU | S_IRWXG | S_IRWXO) < 0){// < 0 then directory already exists
+    }
+  }
+
   char compiled[100];
   int k = 1;
   pid_t child, pid; 
   int status = 0;
   for(k= 1; k < argc; k++){ 
     if(strstr(argv[k], ".game")){
-      if((child = fork()) == 0){//in child process
+      if((child = fork()) == 0){//child process
         int devNull = open("/dev/null", O_WRONLY);
         int result = dup2(devNull, STDOUT_FILENO);
         sprintf(compiled, "./%s", argv[k]);

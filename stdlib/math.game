@@ -1,0 +1,76 @@
+num function mean(list(num) x) {
+	num total = 0
+	foreach(num i in x){
+		total = total + i
+	}
+	return total / x.length
+}
+
+list(num) function qsort(list(num) x) {
+	if (x.length <= 1) {
+		return x
+	}
+	pivotIndex = floor(x.length/2)
+	pivot = x.remAt(pivotIndex)
+	
+	list(num) less
+	list(num) greater
+	
+	foreach( num i in x) {
+		if (i <= pivot) {
+			less.add(i)
+		}
+		else {
+			greater.add(i)
+		}
+	}
+	list(num) left = qsort(less)
+	list(num) middle = { pivot }
+	list(num) right = qsort(greater)
+	
+	list(num) returnList
+	returnList.add(left)
+	returnList.add(middle)
+	returnList.add(right)
+	
+	return returnList
+}
+
+num function median(list(num) x) {
+	x = qsort(x)
+	return x[floor(x.length/2)]
+}
+
+#function stdev(list(num) x) {
+#	foreach(){
+#		
+#	}	
+#}
+
+num function min(list(num) x) {
+	num returnNum = x[0]
+	foreach(num i in x){
+		if(x[i] < returnNum) {
+			returnNum = x[i]
+		}
+	}
+	return returnNum
+}
+
+num function max(list(num) x) {
+	num returnNum = x[0]
+	foreach(num i in x){
+		if(x[i] > returnNum) {
+			returnNum = x[i]
+		}
+	}
+	return returnNum
+}
+
+num function floor(num x) {
+	return x-(x%1)
+}
+
+num function ceiling(num x) {
+	return x + (1 - (x%1))
+}

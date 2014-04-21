@@ -44,6 +44,11 @@ tokens = [
     ] + list(reserved.values())
 
 # Tokens
+def t_LBRACK(t):
+    r'(\n|\#.*\n|[ ]|\t)*{'
+    t.type = 'LBRACK'
+    return t
+
 t_PLUS    = r'\+'
 t_MINUS   = r'-'
 t_TIMES   = r'\*'
@@ -54,7 +59,6 @@ t_EQ      = r'='
 t_LPAREN  = r'\('
 t_RPAREN  = r'\)'
 t_NL      = r'\n+'
-t_LBRACK  = r'\{'
 t_RBRACK  = r'\}'
 t_COMMA   = r'\,'
 t_GT      = r'>'
@@ -369,7 +373,6 @@ def p_var_type(t):
         t[0] = 'var_type(' + t[1] + ')'
     else:
         t[0] = 'var_type(' + t[3] + ')'
-    print(t[0])
 
 def p_constant(t):
     '''constant : LBRACK constant_list RBRACK

@@ -6,6 +6,7 @@ run.py
 *.swp
 *.swo
 DevOps/*.o
+DevOps/*.game.py
 DevOps/gamec
 DevOps/run.py
 testing/target

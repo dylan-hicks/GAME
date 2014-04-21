@@ -5,7 +5,7 @@ gamec.o: gamec.c
 
 .PHONY:clean
 clean:
-	rm -f *.o
+	rm -f *.o *.game.py
 
 .PHONY: all
 all: clean gamec

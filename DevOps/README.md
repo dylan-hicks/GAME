@@ -32,4 +32,4 @@ Usage of the "_-m_" flag allows the user to specify a directory after the flag t
 
     ./gamec *.game -m temp
 
-This command will compile all of the .game files in the current directory and then move them to the temp directory if it exists.
+This command will compile all of the .game files in the current directory and then move them to the temp directory if it exists. If the directory doesn't exist, it will be created and then the compiled files will be moved to it.

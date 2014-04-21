@@ -1,14 +1,12 @@
-function main() {
-  list(num) y = {1,2, 3}
+class Player {
 
-  num x = y[1]
+  	text first
+        text last
+        num points_per_game
+        list(num) points_scored
 
-  num calc = 15
-  num calc2 = 2
-  num calc3 = calc / calc1
-
-  print(calc3)
-  print(x)
-  print(y[0])
-  print("Hello: " + x)
+        function addGame(num points) {
+            points_scored.add(points)
+            points_per_game = average(points_scored)
+        }
 }

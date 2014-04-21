@@ -211,7 +211,7 @@ class variable_def_node(object):
             elif str(self.children[0]) == 'bool':
                 s += self.value[0] + "false"
             elif str(self.children[0]) == 'list':
-                s += self.value[0] + "[]"
+                s += self.value[0] + " = []"
         elif len(self.children) == 2 and self.value and len(self.value) == 2:
             s += self.value[0] + " = new " + self.children[1].__str__() # same question
         elif len(self.children) == 2 and self.value and len(self.value) == 1:
@@ -331,7 +331,7 @@ class class_lines_node:
         elif len(self.children) == 1:
             s += self.children[0].__str__() + "\n"
         else:
-            s += self.children[0].__str__() + " " + self.children[1].__str__() + "\n"
+            s += self.children[0].__str__() + "\t" + self.children[1].__str__() + "\n"
 
         return s
 
@@ -388,10 +388,10 @@ class class_def_node:
     
     def __str__(self):
         s = ""
-        if len(value) == 1:
-            s += "class " + self.value[0] + ":\n\t" + self.children[0].__str__() + ""
+        if len(self.value) == 1:
+            s += "class " + self.value[0] + ":\n" + self.children[0].__str__() + ""
         else:
-            s += "class " + self.value[0] + " extends" + self.value[1] + ":\n\t" + self.children[0].__str__() + "" 
+            s += "class " + self.value[0] + " extends" + self.value[1] + ":\n" + self.children[0].__str__() + "" 
 
         return s
 

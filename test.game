@@ -1,5 +1,13 @@
-class Player {
 
+num function average(list(num) x){
+        num result = 0
+        foreach(num i in x){
+            result = result + i
+        }
+        return result / x.length()
+}
+
+class Player {
   	text first
         text last
         num points_per_game
@@ -9,4 +17,14 @@ class Player {
             points_scored.add(points)
             points_per_game = average(points_scored)
         }
+
+        function setName(text f, text l){
+            first = f
+            last = l
+        }
+}
+
+class Game {
+        num home_score
+        num away_score
 }

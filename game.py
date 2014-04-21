@@ -123,6 +123,15 @@ precedence = (
 
 # dictionary of names
 names = { }
+# number of tabs to insert
+tabs_count = 0
+
+def insert_tabs():
+    
+    s = ""
+    for i in range(0, tabs_count):
+        s += "\t"
+    return s
 
 # defining the Node class
 
@@ -334,7 +343,7 @@ class class_lines_node:
         elif len(self.children) == 1:
             s += self.children[0].__str__() + "\n"
         else:
-            s += self.children[0].__str__() + "\t" + self.children[1].__str__() + "\n"
+            s += self.children[0].__str__() + insert_tabs() + self.children[1].__str__() + "\n"
 
         return s
 
@@ -350,7 +359,7 @@ class function_lines_node:
         elif len(self.children) == 1:
             s += self.children[0].__str__() + "\n"
         else:
-            s += self.children[0].__str__() + "\t" + self.children[1].__str__() + "\n"
+            s += self.children[0].__str__() + insert_tabs() + self.children[1].__str__() + "\n"
 
         return s
 
@@ -390,12 +399,14 @@ class class_def_node:
         self.value = value
 
     def __str__(self):
+        global tabs_count 
+        tabs_count = 1
         s = ""
         if len(self.value) == 1:
             s += "class " + self.value[0] + ":\n" + self.children[0].__str__() + ""
         else:
             s += "class " + self.value[0] + " extends" + self.value[1] + ":\n\t" + self.children[0].__str__() + ""
-
+        tabs_count = 0 
         return s
 
 class function_def_node:
@@ -405,12 +416,14 @@ class function_def_node:
 
     def __str__(self):
         s = ""
-
+        global tabs_count 
+        tabs_count += 1
         if len(self.children) == 2: # for main or void
             s += "def " + self.value + "(" + self.children[0].__str__() + "):\n" + self.children[1].__str__() + ""
         else: # for functions with return types
             s += "def " + self.value + "(" + self.children[1].__str__() + "):\n" + self.children[2].__str__() + "\treturn " + self.children[3].__str__() + "\n"
-
+        
+        tabs_count -= 1
         return s
 
 class function_args_node:

@@ -702,6 +702,9 @@ def p_lines(p):
     else:
         p[0] = lines_node([p[1], p[2]])
 
+def p_new_lines(p):
+    '''new_lines : new_lines NL
+                 | '''
 
 def p_class_lines(p):
     '''class_lines : class_lines method_def NL
@@ -762,7 +765,7 @@ def p_class_def(p):
 
 def p_method_def(p):
     '''method_def : FUNCTION ID LPAREN function_args RPAREN LBRACK NL function_lines RBRACK
-                    | var_type FUNCTION ID LPAREN function_args RPAREN LBRACK NL function_lines RETURN expression NL RBRACK'''
+                    | var_type FUNCTION ID LPAREN function_args RPAREN LBRACK NL function_lines RETURN expression new_lines NL RBRACK'''
     print('function def')
     if len(p) == 10:
         p[0] = method_def_node([p[4], p[8]], p[2])
@@ -884,6 +887,7 @@ def p_expression(p):
                   | expression EXCL EQ expression %prec NOTEQ
                   | expression AND expression
                   | expression OR expression
+                  | LPAREN expression RPAREN
                   | NOT expression
                   | MINUS expression %prec UMINUS
                   | constant

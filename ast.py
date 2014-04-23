@@ -146,7 +146,7 @@ def p_lines(t):
              | '''
     if len(t)==4:
         t[0] = 'lines(' + t[1] + ',' + t[2] + ')'
-    elif len(t)==2:
+    elif len(t)==3:
         t[0] = 'lines(' + t[1] + ')'
     else:
         t[0] = 'lines()'
@@ -173,6 +173,10 @@ def p_function_lines(t):
         t[0] = 'function_lines(' + t[1] + ')'
     else:
         t[0] = 'function_lines(' + t[1] + ',' + t[2] + ')'
+
+def p_new_lines(t):
+    '''new_lines : new_lines NL
+                 | '''
 
 def p_statement(t):
     '''statement : variable_def
@@ -203,7 +207,7 @@ def p_class_def(t):
 
 def p_function_def(t):
     '''function_def : FUNCTION ID LPAREN function_args RPAREN LBRACK NL function_lines RBRACK
-                    | var_type FUNCTION ID LPAREN function_args RPAREN LBRACK NL function_lines RETURN expression NL RBRACK'''
+                    | var_type FUNCTION ID LPAREN function_args RPAREN LBRACK NL function_lines RETURN expression new_lines RBRACK'''
     if len(t)==10:
         t[0] = 'function_def(' + t[2] + ',' + t[4] + ',' + t[8] + ')'
     else:
@@ -304,6 +308,7 @@ def p_expression(t):
                   | expression EXCL EQ expression %prec NOTEQ
                   | expression AND expression
                   | expression OR expression
+                  | LPAREN expression RPAREN
                   | NOT expression 
                   | MINUS expression %prec UMINUS
                   | constant

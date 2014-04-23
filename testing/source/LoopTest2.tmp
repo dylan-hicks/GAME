@@ -1,0 +1,11 @@
+function main() {
+  num sum = 0
+
+  loop (start num i = 0, start num j = 0, while i <= 100 and j <= 200, set i 
+= i + 1, set j = j + 2) {
+  
+sum = sum + i + j
+  }
+
+  print(“Total: ” + sum)
+}

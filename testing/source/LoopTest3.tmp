@@ -1,0 +1,11 @@
+function main() {
+  num i = 0
+  num sum = 0
+  
+loop (while i <= 100) {
+    sum = sum + i
+    i = i + 1
+  } 
+
+  print(“Total: ” + sum)
+}

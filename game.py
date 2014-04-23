@@ -126,6 +126,10 @@ names = { }
 # number of tabs to insert
 tabs_count = 0
 
+#our working version of a symbol table
+class_attributes = []
+local_variables = []
+
 def insert_tabs():
     
     s = ""
@@ -219,9 +223,40 @@ class variable_def_node(object):
             if str(self.children[0]) == 'num':
                 s += self.value[0] + " = 0.0"
             elif str(self.children[0]) == 'text':
-                s += self.value[0] + '=""'
+                s += self.value[0] + ' = ""'
             elif str(self.children[0]) == 'bool':
-                s += self.value[0] + "false"
+                s += self.value[0] + " = false"
+            elif str(self.children[0]) == 'list':
+                s += self.value[0] + " = []"
+        elif len(self.children) == 2 and self.value and len(self.value) == 2:
+            s += self.value[0] + " = " + self.children[1].__str__() + "()" # same question
+        elif len(self.children) == 2 and self.value and len(self.value) == 1:
+            s += self.value[0] + " = " + self.children[1].__str__()
+        else:
+            s += self.value[0] + " = new " + self.children[1].__str__() + "{\n" + self.children[2].__str__() + "}"
+
+        return s;
+
+class attribute_def_node(object):
+
+    def __init__(self, children, value=None):
+        self.children = children
+        self.value = value
+
+        global class_attributes
+        class_attributes.append(self.value[0])
+
+    def __str__(self):
+        s = ""
+        # self.children[0].__str__() is the type of the variable
+
+        if len(self.children) == 1:
+            if str(self.children[0]) == 'num':
+                s += self.value[0] + " = 0.0"
+            elif str(self.children[0]) == 'text':
+                s += self.value[0] + ' = ""'
+            elif str(self.children[0]) == 'bool':
+                s += self.value[0] + " = false"
             elif str(self.children[0]) == 'list':
                 s += self.value[0] + " = []"
         elif len(self.children) == 2 and self.value and len(self.value) == 2:
@@ -256,8 +291,16 @@ class assignment_node(object):
         self.value = value
 
     def __str__(self):
+        self1 = ""
+        self2 = ""
+        if class_attributes:
+            if self.children[0].__str__() in class_attributes:
+                self1 = "self."
+            if self.children[1].__str__() in class_attributes:
+                self2 = "self."
+        
         s = ""
-        s += self.children[0].__str__() + " = " + self.children[1].__str__()
+        s += self1 + self.children[0].__str__() + " = " + self2 + self.children[1].__str__()
 
         return s
 
@@ -397,8 +440,10 @@ class class_def_node:
     def __init__(self, children, value=None):
         self.children = children
         self.value = value
+    
 
     def __str__(self):
+        global class_attributes
         global tabs_count 
         tabs_count = 1
         s = ""
@@ -407,6 +452,8 @@ class class_def_node:
         else:
             s += "class " + self.value[0] + " extends" + self.value[1] + ":\n\t" + self.children[0].__str__() + ""
         tabs_count = 0 
+        print class_attributes
+        class_attributes = []
         return s
 
 class function_def_node:
@@ -538,18 +585,23 @@ class loop_node:
                 inc_val = 1
                 for i in game_loop_exp:
                     if "start" in i:
-                        start_exp = re.findall('\d', i)
+                        start_exp = re.findall('-\d+|\d+', i)
                         start_val = start_exp[0]
                         start_exp = i.split('=')
                         variable = start_exp[0].split(" ")[1]
                      
                     elif "while" in i:
-                        end_val = re.findall('\d', i)[0]
+                        #end_val = re.findall('\d+', i)[0]
+                        end_val = re.findall('-?\d+', i)[0]
+                        print("end_val: ") 
+                        print(end_val)
+                        print("i: ")
+                        print i
                     else:
                         if "+" in i:
-                            inc_val = re.findall('\d', i)[0]
+                            inc_val = re.findall('-?\d+', i)[0]
                         elif "-" in i:
-                            inc_val = re.findall('\d', i)[0] * (-1)
+                            inc_val = re.findall('-\d+|\d+', i)[0] * (-1)
                 python_loop_exp = "range(" + start_val + ", " + end_val + ", " + inc_val + ")"
 
                 s += "for " + variable + " in " + python_loop_exp + ":\n" + self.children[1].__str__()
@@ -653,7 +705,7 @@ def p_lines(p):
 
 def p_class_lines(p):
     '''class_lines : class_lines method_def NL
-                   | class_lines variable_def NL
+                   | class_lines attribute_def NL
                    | class_lines NL
                    | '''
     print('class lines')
@@ -891,6 +943,20 @@ def p_variable_def(p):
     else:
         p[0] = variable_def_node([p[1], p[5], p[8]], [p[2]])
 
+def p_attribute_def(p):
+    '''attribute_def : var_type ID
+                    | var_type ID EQ expression
+                    | var_type ID EQ NEW var_type
+                    | var_type ID EQ NEW var_type LBRACK NL mul_variable_assign RBRACK'''
+    print('attribute def')
+    if len(p) == 3:
+        p[0] = attribute_def_node([p[1]], [p[2]])
+    elif len(p) == 5:
+            p[0] = attribute_def_node([p[1], p[4]], [p[2]])
+    elif len(p) == 6:
+        p[0] = attribute_def_node([p[1], p[5]], [p[2], p[4]])
+    else:
+        p[0] = attribute_def_node([p[1], p[5], p[8]], [p[2]])
 
 def p_mul_variable_assign(p):
     '''mul_variable_assign : mul_variable_assign assignment NL

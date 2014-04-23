@@ -9,13 +9,13 @@ def test():
 
   #Create list of file names
   for file_name in os.listdir("./source"):
-    run_case(file_name)
+    if ".game" in file_name: run_case(file_name)
   time.sleep(0.3)
 
   num_failed = 0
   print("====================================================")
   for file_name in os.listdir("./source"):
-    num_failed += compare_output(file_name)
+    if ".game" in file_name: num_failed += compare_output(file_name)
   print("{} Test Case(s) Failed\n".format(num_failed))
   print("====================================================")
 

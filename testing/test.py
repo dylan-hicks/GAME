@@ -5,18 +5,16 @@ import time
 def test():
   #System commands to compile test files
   subprocess.Popen("./gamec ./source/*.game && mv ./source/*.game.py ./target;", shell=True)
-  time.sleep(0.5)
+  time.sleep(1)
 
   #Create list of file names
-  file_names = os.listdir("./source")
-
-  for file_name in file_names:
+  for file_name in os.listdir("./source"):
     run_case(file_name)
-  time.sleep(0.1)
+  time.sleep(0.3)
 
   num_failed = 0
   print("====================================================")
-  for file_name in file_names:
+  for file_name in os.listdir("./source"):
     num_failed += compare_output(file_name)
   print("{} Test Case(s) Failed\n".format(num_failed))
   print("====================================================")

@@ -12,8 +12,7 @@ list(num) function qsort(list(num) x) {
 	
 	if (x.length <= 1) {
 		returnList = x
-	}
-	else {
+	} else {
 		pivotIndex = floor(x.length/2)
 		pivot = x.remAt(pivotIndex)
 		
@@ -23,8 +22,7 @@ list(num) function qsort(list(num) x) {
 		foreach( num i in x) {
 			if (i <= pivot) {
 				less.add(i)
-			}
-			else {
+			} else {
 				greater.add(i)
 			}
 		}

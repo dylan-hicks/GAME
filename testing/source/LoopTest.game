@@ -5,5 +5,5 @@ function main() {
     sum = sum + i
   }
 
-  print(“Total: ” + sum)
+  print("Total: " + sum)
 }

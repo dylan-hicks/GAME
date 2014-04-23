@@ -308,6 +308,7 @@ def p_expression(t):
                   | expression EXCL EQ expression %prec NOTEQ
                   | expression AND expression
                   | expression OR expression
+                  | LPAREN expression RPAREN
                   | NOT expression 
                   | MINUS expression %prec UMINUS
                   | constant

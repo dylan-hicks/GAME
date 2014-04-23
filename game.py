@@ -225,7 +225,7 @@ class variable_def_node(object):
             elif str(self.children[0]) == 'list':
                 s += self.value[0] + " = []"
         elif len(self.children) == 2 and self.value and len(self.value) == 2:
-            s += self.value[0] + " = new " + self.children[1].__str__() # same question
+            s += self.value[0] + " = " + self.children[1].__str__() + "()" # same question
         elif len(self.children) == 2 and self.value and len(self.value) == 1:
             s += self.value[0] + " = " + self.children[1].__str__()
         else:
@@ -422,6 +422,35 @@ class function_def_node:
             s += "def " + self.value + "(" + self.children[0].__str__() + "):\n" + self.children[1].__str__() + ""
         else: # for functions with return types
             s += "def " + self.value + "(" + self.children[1].__str__() + "):\n" + self.children[2].__str__() + "\treturn " + self.children[3].__str__() + "\n"
+        
+        tabs_count -= 1
+        return s
+
+class method_def_node:
+    def __init__(self, children, value=None):
+        self.children = children
+        self.value = value
+
+    def __str__(self):
+        s = ""
+        global tabs_count 
+        tabs_count += 1
+        comma1 = ""  
+        comma2 = ""
+
+        if len(self.children) == 2: # for main or void
+            if not self.children[0].__str__().strip():
+                comma1 = ""
+            else:
+                comma1 = ", "
+            s += "def " + self.value + "(self" + comma1 + self.children[0].__str__() + "):\n" + self.children[1].__str__() + ""
+        else: # for functions with return types
+            print(self.children[1].__str__())
+            if not self.children[1].__str__().strip():
+                comma2 = ""
+            else:
+                comma2 = ", "
+            s += "def " + self.value + "(self" + comma2 + self.children[1].__str__() + "):\n" + self.children[2].__str__() + insert_tabs() + "return " + self.children[3].__str__() + "\n"
         
         tabs_count -= 1
         return s
@@ -623,7 +652,7 @@ def p_lines(p):
 
 
 def p_class_lines(p):
-    '''class_lines : class_lines function_def NL
+    '''class_lines : class_lines method_def NL
                    | class_lines variable_def NL
                    | class_lines NL
                    | '''
@@ -679,6 +708,14 @@ def p_class_def(p):
     else:
         p[0] = class_def_node([p[5]], [p[2], p[4]])
 
+def p_method_def(p):
+    '''method_def : FUNCTION ID LPAREN function_args RPAREN LBRACK NL function_lines RBRACK
+                    | var_type FUNCTION ID LPAREN function_args RPAREN LBRACK NL function_lines RETURN expression NL RBRACK'''
+    print('function def')
+    if len(p) == 10:
+        p[0] = method_def_node([p[4], p[8]], p[2])
+    else:
+        p[0] = method_def_node([p[1], p[5], p[9], p[11]], p[3])
 
 def p_function_def(p):
     '''function_def : FUNCTION ID LPAREN function_args RPAREN LBRACK NL function_lines RBRACK

@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 list(num) function qsort(list(num) x) {
 	
 	list(num) returnList
@@ -31,26 +30,4 @@ list(num) function qsort(list(num) x) {
 		returnList.add(right)
 	}
 	return returnList
-=======
-function testLoops(){
-        list(num) mylist = {1, 2, 3, 4, 5}
-        num result
-        foreach(num i in mylist){
-            result = result + i
-        }
-        print("Result: " + result)
-        
-        result = 0 
-        num i 
-        loop(set i = i + 1, while i < 5, start i = 0){
-
-            result = result + mylist[i] 
-        }
-        print("Result: " + result)
-
-}
-
-function main(){
-    testLoops()
->>>>>>> 03c3ffb8389be6cc93b54bd1a8aed73341e8f0a9
 }

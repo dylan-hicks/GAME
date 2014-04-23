@@ -38,8 +38,8 @@ class BasketballPerformance {
     num fg_made
     num ft_attempted
     num ft_made
-    num threes_attempted
-    num threes_made
+    num thr_attempted
+    num thr_made
 
     num function fg_percentage() {
         return fg_made/fg_attempted
@@ -47,4 +47,50 @@ class BasketballPerformance {
     num function ft_percentage() {
         return ft_made/ft_attempted
     }
+    num function thr_percentage() {
+	return thr_made/threes_attempted
+    }
+}
+
+class BasketballPlayer {
+    text first_name
+    text last_name
+    BasketballTeam team
+    num height
+    num ppg
+    num apg
+    num rpg
+    num spg
+    num bpg
+    num thrpg
+    num fgapg
+    num fgmpg
+    num ftapg
+    num ftmpg
+    num thrapg
+    num ftapg
+    list(BasketballPerformance) performances
+    list(BasketballGame) games_played
+
+    num fg_percentage(){
+        fgmpg / fgapg
+    }
+    num ft_percentage(){
+        ftmpg / fgapg
+    }
+    num thr_percentage(){
+        thrapg / thrpg
+    }
+    
+    build (list(BasketballPerformance)) {
+        
+    }
+
+}
+
+class BasketballMoment {
+    num minute
+    text event
+    text description
+    list(BasketballPlayer) players_involved
 }

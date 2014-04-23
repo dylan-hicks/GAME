@@ -24,7 +24,7 @@ def test():
 def run_case(file_name):
   #run target/python file and pipe output into .txt file in output directory
   subprocess.Popen("python ./target/{}.py > ./output/{}.txt;".format(file_name, file_name), shell=True)
-  time.sleep(0.1)
+  time.sleep(0.25)
   #create diff in diffs directory
   subprocess.Popen("diff ./output/{}.txt ./correct/{}.txt > ./diffs/{}.txt.diff".format(file_name, file_name, file_name), shell=True)
   time.sleep(0.1)

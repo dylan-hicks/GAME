@@ -1,0 +1,14 @@
+function main() {
+  num i = 0
+  num sum = 0
+  
+loop () {
+    sum = sum + i
+    i = i + 1
+    if (i > 100) {
+      break
+    }
+  } 
+
+  print(“Total: ” + sum)
+}

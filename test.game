@@ -1,33 +1,9 @@
-list(num) function qsort(list(num) x) {
-	
-	list(num) returnList
-	
-	if (x.length <= 1) {
-		returnList = x
-	}
-	else {
-		pivotIndex = floor(x.length/2)
-		pivot = x.remAt(pivotIndex)
-		
-		list(num) less
-		list(num) greater
-		
-		foreach( num i in x) {
-			if (i <= pivot) {
-				less.add(i)
-			}
-			else {
-				greater.add(i)
-			}
-		}
-		list(num) left = qsort(less)
-		list(num) middle = { }
-		middle.add( pivot )
-		list(num) right = qsort(greater)
-	
-		returnList.add(left)
-		returnList.add(middle)
-		returnList.add(right)
-	}
-	return returnList
+function main() {
+    num sum = 0 
+    
+    loop (start num i = 1, while i <= -100, set i = i + 1){
+        sum = sum + i
+    }
+
+    print("Total: " + sum)
 }

@@ -2,6 +2,7 @@ parsetab.py
 parselog.txt
 *.out
 *.pyc
+test.game.py
 run.py
 *.swp
 *.swo

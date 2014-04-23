@@ -123,6 +123,15 @@ precedence = (
 
 # dictionary of names
 names = { }
+# number of tabs to insert
+tabs_count = 0
+
+def insert_tabs():
+    
+    s = ""
+    for i in range(0, tabs_count):
+        s += "\t"
+    return s
 
 # defining the Node class
 
@@ -214,7 +223,7 @@ class variable_def_node(object):
             elif str(self.children[0]) == 'bool':
                 s += self.value[0] + "false"
             elif str(self.children[0]) == 'list':
-                s += self.value[0] + "[]"
+                s += self.value[0] + " = []"
         elif len(self.children) == 2 and self.value and len(self.value) == 2:
             s += self.value[0] + " = new " + self.children[1].__str__() # same question
         elif len(self.children) == 2 and self.value and len(self.value) == 1:
@@ -334,7 +343,7 @@ class class_lines_node:
         elif len(self.children) == 1:
             s += self.children[0].__str__() + "\n"
         else:
-            s += self.children[0].__str__() + " " + self.children[1].__str__() + "\n"
+            s += self.children[0].__str__() + insert_tabs() + self.children[1].__str__() + "\n"
 
         return s
 
@@ -350,7 +359,7 @@ class function_lines_node:
         elif len(self.children) == 1:
             s += self.children[0].__str__() + "\n"
         else:
-            s += self.children[0].__str__() + "\t" + self.children[1].__str__() + "\n"
+            s += self.children[0].__str__() + insert_tabs() + self.children[1].__str__() + "\n"
 
         return s
 
@@ -390,12 +399,14 @@ class class_def_node:
         self.value = value
 
     def __str__(self):
+        global tabs_count 
+        tabs_count = 1
         s = ""
-        if len(value) == 1:
-            s += "class " + self.value[0] + ":\n\t" + self.children[0].__str__() + ""
+        if len(self.value) == 1:
+            s += "class " + self.value[0] + ":\n" + self.children[0].__str__() + ""
         else:
             s += "class " + self.value[0] + " extends" + self.value[1] + ":\n\t" + self.children[0].__str__() + ""
-
+        tabs_count = 0 
         return s
 
 class function_def_node:
@@ -405,12 +416,14 @@ class function_def_node:
 
     def __str__(self):
         s = ""
-
+        global tabs_count 
+        tabs_count += 1
         if len(self.children) == 2: # for main or void
             s += "def " + self.value + "(" + self.children[0].__str__() + "):\n" + self.children[1].__str__() + ""
         else: # for functions with return types
             s += "def " + self.value + "(" + self.children[1].__str__() + "):\n" + self.children[2].__str__() + "\treturn " + self.children[3].__str__() + "\n"
-
+        
+        tabs_count -= 1
         return s
 
 class function_args_node:
@@ -482,15 +495,38 @@ class loop_node:
 
     def __str__(self):
         s = ""
-
+        global tabs_count
+        tabs_count += 1
         if len(self.children) == 2:
             if self.value:
-                s += "foreach (" + self.children[0].__str__() + self.value[0] + " in " + self.value[1] + "){\n" + self.children[1].__str__() + "}"
+                s += "for " + self.value[0] + " in " + self.value[1] + ":\n" + self.children[1].__str__()
             else:
-                s += "loop (" + self.children[0].__str__() + "){\n" + self.children[1].__str__() + "}"
+                game_loop_exp = self.children[0].__str__().split(',')
+                python_loop_exp = ""
+                variable = ""
+                start_val = 0
+                end_val = 0
+                inc_val = 1
+                for i in game_loop_exp:
+                    if "start" in i:
+                        start_exp = re.findall('\d', i)
+                        start_val = start_exp[0]
+                        start_exp = i.split('=')
+                        variable = start_exp[0].split(" ")[1]
+                     
+                    elif "while" in i:
+                        end_val = re.findall('\d', i)[0]
+                    else:
+                        if "+" in i:
+                            inc_val = re.findall('\d', i)[0]
+                        elif "-" in i:
+                            inc_val = re.findall('\d', i)[0] * (-1)
+                python_loop_exp = "range(" + start_val + ", " + end_val + ", " + inc_val + ")"
+
+                s += "for " + variable + " in " + python_loop_exp + ":\n" + self.children[1].__str__()
         else:
             s += self.children[0].__str__() + self.value[0] + " = geteach (" + self.children[1].__str__() + self.value[0] + " in " + self.value[1] + " where " + self.children[2].__str__() + ")"
-
+        tabs_count -= 1
         return s
 
 class loop_expression_node:
@@ -518,7 +554,7 @@ class loop_expression_values_node:
     def __str__(self):
         s = ""
 
-        s += self.value + self.children[0].__str__()
+        s += self.value + " " + self.children[0].__str__()
         return s
 
 class if_statement_node:
@@ -716,6 +752,7 @@ def p_loop_expression(p):
 
 def p_loop_expression_values(p):
     '''loop_expression_values : START variable_def
+                              | START assignment
                               | WHILE expression
                               | SET assignment'''
     print('loop expression values')

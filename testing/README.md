@@ -28,6 +28,12 @@ _correct_
 
 - Contains the correct outputs
 
+####Cleaning Directories:
+
+    make clean
+
+This command cleans the target, output, and diffs directories.
+
 ####Pending:
 
 - Actual test cases for the the compiler

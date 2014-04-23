@@ -4,7 +4,11 @@ import time
 
 def test():
   #System commands to compile test files
-  subprocess.Popen("./gamec ./source/*.game -m target;", shell=True)
+  subprocess.Popen("./gamec ./source/*.game;", shell=True)
+  time.sleep(0.1)
+  subprocess.Popen("mv ./source/*.game.py target;", shell=True)
+  time.sleep(0.1)
+
   #Create list of file names
   file_names = os.listdir("./source")
 

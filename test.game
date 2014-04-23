@@ -1,12 +1,18 @@
-<<<<<<< HEAD
+num function mean(list(num) x) {
+	num total = 0
+	foreach(num i in x){
+		total = total + i
+	}
+	return total / x.length
+}
+
 list(num) function qsort(list(num) x) {
 	
 	list(num) returnList
 	
 	if (x.length <= 1) {
 		returnList = x
-	}
-	else {
+	} else {
 		pivotIndex = floor(x.length/2)
 		pivot = x.remAt(pivotIndex)
 		
@@ -16,8 +22,7 @@ list(num) function qsort(list(num) x) {
 		foreach( num i in x) {
 			if (i <= pivot) {
 				less.add(i)
-			}
-			else {
+			} else {
 				greater.add(i)
 			}
 		}
@@ -31,26 +36,53 @@ list(num) function qsort(list(num) x) {
 		returnList.add(right)
 	}
 	return returnList
-=======
-function testLoops(){
-        list(num) mylist = {1, 2, 3, 4, 5}
-        num result
-        foreach(num i in mylist){
-            result = result + i
-        }
-        print("Result: " + result)
-        
-        result = 0 
-        num i 
-        loop(set i = i + 1, while i < 5, start i = 0){
-
-            result = result + mylist[i] 
-        }
-        print("Result: " + result)
-
 }
 
-function main(){
-    testLoops()
->>>>>>> 03c3ffb8389be6cc93b54bd1a8aed73341e8f0a9
+num function median(list(num) x) {
+	x = qsort(x)
+	return x[floor(x.length/2)]
+}
+
+num function sqr(num x) {
+	return x * x
+}
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# TODO: add a syscall to Python's square root function
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+function stdev(list(num) x) {
+	num avg = mean(x)
+	num variance = 0
+	foreach(num n in x){
+		variance = variance + sqr(avg - n)
+	}
+	return sqrt(variance)	
+}
+
+num function min(list(num) x) {
+	num returnNum = x[0]
+	foreach(num i in x){
+		if(x[i] < returnNum) {
+			returnNum = x[i]
+		}
+	}
+	return returnNum
+}
+
+num function max(list(num) x) {
+	num returnNum = x[0]
+	foreach(num i in x){
+		if(x[i] > returnNum) {
+			returnNum = x[i]
+		}
+	}
+	return returnNum
+}
+
+num function floor(num x) {
+	return x-(x%1)
+}
+
+num function ceiling(num x) {
+	return x + (1 - (x%1))
 }

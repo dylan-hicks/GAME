@@ -12,8 +12,7 @@ list(num) function qsort(list(num) x) {
 	
 	if (x.length <= 1) {
 		returnList = x
-	}
-	else {
+	} else {
 		pivotIndex = floor(x.length/2)
 		pivot = x.remAt(pivotIndex)
 		
@@ -23,8 +22,7 @@ list(num) function qsort(list(num) x) {
 		foreach( num i in x) {
 			if (i <= pivot) {
 				less.add(i)
-			}
-			else {
+			} else {
 				greater.add(i)
 			}
 		}
@@ -45,11 +43,21 @@ num function median(list(num) x) {
 	return x[floor(x.length/2)]
 }
 
-#function stdev(list(num) x) {
-#	foreach(){
-#		
-#	}	
-#}
+num function sqr(num x) {
+	return x * x
+}
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# TODO: add a syscall to Python's square root function
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+function stdev(list(num) x) {
+	num avg = mean(x)
+	num variance = 0
+	foreach(num n in x){
+		variance = variance + sqr(avg - n)
+	}
+	return sqrt(variance)	
+}
 
 num function min(list(num) x) {
 	num returnNum = x[0]

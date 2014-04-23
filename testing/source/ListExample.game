@@ -5,7 +5,7 @@ function main() {
 
   num calc = 15
   num calc2 = 2
-  num calc3 = calc / calc1
+  num calc3 = calc / calc2
 
   print(calc3)
   print(x)

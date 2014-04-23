@@ -1,8 +1,0 @@
-function main() {
-  num points = 1
-  num games = 2
-  num average = 3
-
-  num total = points + games * average
-  print("Total: " + total)
-}

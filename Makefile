@@ -8,4 +8,4 @@ ast:
 
 .PHONY:clean
 clean:
-	rm -f parsetab.py *.out *.pyc ply/*.pyc test.game.py
+	rm -f parsetab.py *.out *.pyc ply/*.pyc test.game test.game.py

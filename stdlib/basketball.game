@@ -1,0 +1,50 @@
+class BasketballGame {
+    BasketballTeam home
+    BasketballTeam away
+    text date
+    BasketballPerformance home_team
+    BasketballPerformance away_team
+    list(BasketballPerformance) box_score
+    list(BasketballMoment) timeline
+
+    BasketballTeam function winner() {
+        BasketballTeam x
+        if(home_team.points>away_team.points)
+        {
+            x = home_team
+        } else {
+            x = away_team
+        }
+        return x
+    }
+}
+
+class BasketballTeam {
+    list(BasketballPlayer) roster
+    text city
+    text name
+    list(BasketballGame) games_played
+}
+
+class BasketballPerformance {
+    text player_or_team
+    num points
+    num rebounds
+    num assists
+    num steals
+    num blocks
+    num turnovers
+    num fg_attempted
+    num fg_made
+    num ft_attempted
+    num ft_made
+    num threes_attempted
+    num threes_made
+
+    num function fg_percentage() {
+        return fg_made/fg_attempted
+    }
+    num function ft_percentage() {
+        return ft_made/ft_attempted
+    }
+}

@@ -60,22 +60,33 @@ int main(int argc, char **argv){
         execlp("python", "python", "./game.py", compiled, 0);
       }
       else{
-        wait(&status); 
+        waitpid(child, &status, 0); 
       }
       if(mv_flag){
         char compiled[100];
         if((child = fork()) == 0){//child process
           sprintf(compiled, "./%s.py", argv[k]);
-          printf("Compiled is %s\n", compiled);
-          printf("Compiled is %s\n", mv_directory);
-
           execlp("mv", "mv", compiled, mv_directory, 0);
         }
         else{
-          wait(&status);
+          waitpid(child, &status, 0);
         }
       }
     }
   }  
+
+  //Remove .temp files
+  for(k= 1; k < argc; k++){ 
+    if(strstr(argv[k], ".game")){
+      if((child = fork()) == 0){//child process
+        char compiled[100];
+        sprintf(compiled, "./%s.temp", argv[k]);
+        execlp("rm", "rm", compiled, 0);
+      }
+      else{
+        waitpid(child, &status, 0); 
+      }
+    } 
+  }
   return 0;
 }

@@ -33,3 +33,8 @@ Usage of the "_-m_" flag allows the user to specify a directory after the flag t
     ./gamec *.game -m temp
 
 This command will compile all of the .game files in the current directory and then move them to the temp directory if it exists. If the directory doesn't exist, it will be created and then the compiled files will be moved to it.
+
+####Include Handling:
+
+The ./gamec executable will handle include statement preprocessing by executing the include.py script on each argument shortly before actual compilation. The include.py script replaces all include statements with their associated library code and prevents recursive including. The new, prepared code without include statements and with the appropriate library code is written to a temporary file named as [filename].temp. This temporary file is what is actually
+compiled and is deleted after.

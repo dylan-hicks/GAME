@@ -127,12 +127,31 @@ tabs_count = 0
 
 #our working version of a symbol table
 class_attributes = []
-local_variables = []
+variables_table = {}
+#variables_table is a dictionary mapping variable name to a tuple
+#the tuple contains two values, 1) type and 2) number of indents
 
-def insert_tabs():
+#function to remove extinct variables
+def clean_table():
+    global variables_table
+    print "just decremented tabs_count; variables_table before decrement: "
+    print variables_table        
+    #remove all exctinct variables from variables_table
+    values = variables_table.values()
+    keys = variables_table.keys()
+    for i in values:
+        if i[1] == tabs_count + 1:
+            for j in keys:
+                if variables_table.get(j, None) == i:
+                    variables_table.pop(j, None) #CHECK IF THIS WORKS --> REMOVING ENTRY FROM VARIABLES_TABLE
+    print "variables_table after decrement: "
+    print variables_table        
+
+
+def insert_tabs(x):
     
     s = ""
-    for i in range(0, tabs_count):
+    for i in range(0, x):
         s += "\t"
     return s
 
@@ -217,6 +236,12 @@ class variable_def_node(object):
     def __str__(self):
         s = ""
         # self.children[0].__str__() is the type of the variable
+        # add variable into variables_table dictionary 
+        global variables_table
+        if self.value[0] in variables_table.keys():
+            print "ERROR: VARIABLE ALREADY DEFINED" #TODO: throw compile error
+        else:
+            variables_table[self.value[0]] = [str(self.children[0]), tabs_count]
 
         if len(self.children) == 1:
             if str(self.children[0]) == 'num':
@@ -232,7 +257,7 @@ class variable_def_node(object):
         elif len(self.children) == 2 and self.value and len(self.value) == 1:
             s += self.value[0] + " = " + self.children[1].__str__()
         else:
-            s += self.value[0] + " = new " + self.children[1].__str__() + "{\n" + self.children[2].__str__() + "}"
+            += self.value[0] + " = new " + self.children[1].__str__() + "{\n" + self.children[2].__str__() + "}"
 
         return s;
 
@@ -243,7 +268,10 @@ class attribute_def_node(object):
         self.value = value
 
         global class_attributes
-        class_attributes.append(self.value[0])
+        if self.value[0] in class_attributes:
+            print "VARIABLE ALREADY DEFINED" #TODO throw compile error
+        else:
+            class_attributes.append(self.value[0])
 
     def __str__(self):
         s = ""
@@ -275,11 +303,18 @@ class obj_expression_node(object):
 
     def __str__(self):
         s = ""
-
         if len(self.children) == 1:
-            s += self.children[0].__str__() + "." + self.value
+            self1 = ""
+            if class_attributes:
+                if self.children[0].__str__() in class_attributes:
+                    self1 = "self."
+            s += self1 + self.children[0].__str__() + "." + self.value
         else:
-            s += self.value
+            self1 = ""
+            if class_attributes:
+                if self.value in class_attributes:
+                    self1 = "self."
+            s += self1 + self.value
 
         return s
 
@@ -385,7 +420,7 @@ class class_lines_node:
         elif len(self.children) == 1:
             s += self.children[0].__str__() + "\n"
         else:
-            s += self.children[0].__str__() + insert_tabs() + self.children[1].__str__() + "\n"
+            s += self.children[0].__str__() + insert_tabs(tabs_count) + self.children[1].__str__() + "\n"
 
         return s
 
@@ -401,7 +436,7 @@ class function_lines_node:
         elif len(self.children) == 1:
             s += self.children[0].__str__() + "\n"
         else:
-            s += self.children[0].__str__() + insert_tabs() + self.children[1].__str__() + "\n"
+            s += self.children[0].__str__() + insert_tabs(tabs_count) + self.children[1].__str__() + "\n"
 
         return s
 
@@ -451,6 +486,7 @@ class class_def_node:
         else:
             s += "class " + self.value[0] + " extends" + self.value[1] + ":\n\t" + self.children[0].__str__() + ""
         tabs_count = 0 
+        print "class_attributes at end of class def: "
         print class_attributes
         class_attributes = []
         return s
@@ -470,6 +506,7 @@ class function_def_node:
             s += "def " + self.value + "(" + self.children[1].__str__() + "):\n" + self.children[2].__str__() + "\treturn " + self.children[3].__str__() + "\n"
         
         tabs_count -= 1
+        clean_table()
         return s
 
 class method_def_node:
@@ -496,9 +533,10 @@ class method_def_node:
                 comma2 = ""
             else:
                 comma2 = ", "
-            s += "def " + self.value + "(self" + comma2 + self.children[1].__str__() + "):\n" + self.children[2].__str__() + insert_tabs() + "return " + self.children[3].__str__() + "\n"
+            s += "def " + self.value + "(self" + comma2 + self.children[1].__str__() + "):\n" + self.children[2].__str__() + insert_tabs(tabs_count) + "return " + self.children[3].__str__() + "\n"
         
         tabs_count -= 1
+        clean_table()
         return s
 
 class function_args_node:
@@ -607,6 +645,7 @@ class loop_node:
         else:
             s += self.children[0].__str__() + self.value[0] + " = geteach (" + self.children[1].__str__() + self.value[0] + " in " + self.value[1] + " where " + self.children[2].__str__() + ")"
         tabs_count -= 1
+        clean_table()
         return s
 
 class loop_expression_node:
@@ -644,11 +683,14 @@ class if_statement_node:
 
     def __str__(self):
         s = ""
+        global tabs_count
+        tabs_count += 1
         if len(self.children) == 2:
-            s += "if (" + self.children[0].__str__() + "){\n" + self.children[1].__str__() + "}"
+            s += "if (" + self.children[0].__str__() + "):\n" + self.children[1].__str__()
         else:
-            s += "if (" + self.children[0].__str__() + "){\n" + self.children[1].__str__() + "} else {\n" + self.children[2].__str__() + "}"
-
+            s += "if (" + self.children[0].__str__() + "):\n" + self.children[1].__str__() + insert_tabs(tabs_count - 1) + "else:\n" + self.children[2].__str__()
+        tabs_count -= 1
+        clean_table()
         return s
 
 class data_statement_node:
@@ -751,7 +793,6 @@ def p_statement(p):
         p[0] = statement_node([p[3]], p[1])
     else:
         p[0] = statement_node([p[1], p[5]], p[3])
-
 
 def p_class_def(p):
     '''class_def : CLASS ID LBRACK NL class_lines RBRACK

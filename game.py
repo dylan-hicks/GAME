@@ -257,7 +257,7 @@ class variable_def_node(object):
         elif len(self.children) == 2 and self.value and len(self.value) == 1:
             s += self.value[0] + " = " + self.children[1].__str__()
         else:
-            += self.value[0] + " = new " + self.children[1].__str__() + "{\n" + self.children[2].__str__() + "}"
+            s += self.value[0] + " = new " + self.children[1].__str__() + "{\n" + self.children[2].__str__() + "}"
 
         return s;
 
@@ -359,7 +359,7 @@ class expression_node(object): # if this messes up, look for prec as the cause
 #            else:
 #                s += self.children[0].__str__() + " " + self.value[0] + " " + self.children[1].__str__()
         elif len(self.children) == 2 and self.value and len(self.value) == 2:
-            s += self.children[0].__str__() + " " + self.value[0] + " " + self.value[1] + " " + self.children[1].__str__()
+            s += self.children[0].__str__() + " " + self.value[0] + self.value[1] + " " + self.children[1].__str__()
         elif len(self.children) == 2 and self.value and len(self.value) == 4:
             s += self.children[0].__str__() + "." + self.value[1] + "(" + self.children[1].__str__() + ")"
         elif len(self.children) == 2:
@@ -643,7 +643,12 @@ class loop_node:
 
                 s += "for " + variable + " in " + python_loop_exp + ":\n" + self.children[1].__str__()
         else:
-            s += self.children[0].__str__() + self.value[0] + " = geteach (" + self.children[1].__str__() + self.value[0] + " in " + self.value[1] + " where " + self.children[2].__str__() + ")"
+            #s += self.children[0].__str__() + self.value[0] + " = geteach (" + self.children[1].__str__() + self.value[0] + " in " + self.value[1] + " where " + self.children[2].__str__() + ")"
+            s += "result = []\n" + insert_tabs(tabs_count - 1)
+            s += "for " + self.value[1] + " in " + self.value[2] + ": \n" + insert_tabs(tabs_count)
+            s += "if " + self.children[2].__str__() + ": \n" + insert_tabs(tabs_count + 1)
+            s += "result.append(" + self.value[1] + ")\n" + insert_tabs(tabs_count - 1)
+            s += self.value[0] + " = result"
         tabs_count -= 1
         clean_table()
         return s

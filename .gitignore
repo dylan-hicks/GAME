@@ -4,6 +4,8 @@ parselog.txt
 *.pyc
 test.game
 test.game.py
+*.game~
+*.py~
 run.py
 *.swp
 *.swo

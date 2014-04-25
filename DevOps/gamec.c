@@ -5,6 +5,8 @@
 #include <string.h>
 #include <fcntl.h>
 #include <sys/stat.h>
+#define MAX_INCLUDE 100
+#define MAX_NAME_LENGTH 100
 
 int main(int argc, char **argv){
 
@@ -16,7 +18,7 @@ int main(int argc, char **argv){
   int mv_flag = 0;
   int i = 1;
   char mv_directory[100];
-  //check if -m flag was moved
+  //check if -m flag was used
   while(!mv_flag && i < argc){
     if(strcmp(argv[i], "-m") == 0){//-m flag used
       mv_flag = 1; 
@@ -25,22 +27,37 @@ int main(int argc, char **argv){
     i++;
   }
 
+  //Check and process include statements 
+  int k;
+  int status = 0;
+  for(k = 1; k < argc; k++){
+    if(strstr(argv[k], ".game")){
+      if((child = fork()) == 0){
+        char compiled[100];
+        sprintf(compiled, "./%s", argv[k]);
+        execlp("python", "python", "./include.py", compiled, 0); 
+      }
+    }
+    else{
+      wait(&status); 
+    }
+  } 
+
   //Check for existence of directory to move compiled files to if -m flag was used
   if(mv_flag){
     if(mkdir(mv_directory, S_IRWXU | S_IRWXG | S_IRWXO) < 0){// < 0 then directory already exists
     }
   }
 
-  int k = 1;
+  int k;
   pid_t child, pid; 
-  int status = 0;
   for(k= 1; k < argc; k++){ 
     if(strstr(argv[k], ".game")){
       if((child = fork()) == 0){//child process
         char compiled[100];
         int devNull = open("/dev/null", O_WRONLY);
         int result = dup2(devNull, STDOUT_FILENO);
-        sprintf(compiled, "./%s", argv[k]);
+        sprintf(compiled, "./%s.temp", argv[k]);
         execlp("python", "python", "./game.py", compiled, 0);
       }
       else{

@@ -257,7 +257,7 @@ class variable_def_node(object):
         elif len(self.children) == 2 and self.value and len(self.value) == 1:
             s += self.value[0] + " = " + self.children[1].__str__()
         else:
-            += self.value[0] + " = new " + self.children[1].__str__() + "{\n" + self.children[2].__str__() + "}"
+            s += self.value[0] + " = new " + self.children[1].__str__() + "{\n" + self.children[2].__str__() + "}"
 
         return s;
 
@@ -475,9 +475,7 @@ class statement_node:
             if self.value == "add":
                 s += self.children[0].__str__() + ".append(" + self.children[1].__str__() + ")"
             elif self.value == "rem":
-                s += "try:\n"
-                s += self.children[0].__str__() + ".remove(" + self.children[1].__str__()
-                s += ")\nexcept ValueError:\npass"
+                s += "try:\n" + insert_tabs(tabs_count + 1) + self.children[0].__str__() + ".remove(" + self.children[1].__str__() + ")\n" + insert_tabs(tabs_count) + "except ValueError:\n" + insert_tabs(tabs_count + 1) + "pass"
             else:
                s += self.children[0].__str__() + "." + self.value + "(" + self.children[1].__str__() + ")"
 

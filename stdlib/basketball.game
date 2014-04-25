@@ -1,3 +1,5 @@
+include "math.game"
+
 class BasketballGame {
     BasketballTeam home
     BasketballTeam away
@@ -62,28 +64,65 @@ class BasketballPlayer {
     num rpg
     num spg
     num bpg
-    num thrpg
+    num tpg
     num fgapg
     num fgmpg
     num ftapg
     num ftmpg
     num thrapg
-    num ftapg
+    num thrmpg
     list(BasketballPerformance) performances
     list(BasketballGame) games_played
 
-    num fg_percentage(){
-        fgmpg / fgapg
+    num function fg_percentage(){
+        return fgmpg / fgapg
     }
-    num ft_percentage(){
-        ftmpg / fgapg
+    num function ft_percentage(){
+        return ftmpg / fgapg
     }
-    num thr_percentage(){
-        thrapg / thrpg
+    num function thr_percentage(){
+        return thrapg / thrpg
     }
     
-    build (list(BasketballPerformance)) {
-        
+    function build (list(BasketballPerformance) x) {
+        list(num) totalpoints
+        list(num) totalassists
+        list(num) totalrebounds
+        list(num) totalsteals
+        list(num) totalblocks
+        list(num) totalturnovers
+        list(num) totalfga
+        list(num) totalfgm
+        list(num) totalfta
+        list(num) totalftm
+        list(num) totalthra
+        list(num) totalthrm
+        foreach (BasketballPerformace bp in x) {
+            totalpoints.add(bp.points)
+            totalassists.add(bp.assists)
+            totalsteals.add(bp.rebounds)
+            totalblocks.add(bp.steals)
+            totalturnovers.add(bp.blocks)
+            totalfga.add(bp.fg_attempted)
+            totalfgm.add(bp.fg_made)
+            totalfta.add(bp.ft_attempted)
+            totalftm.add(bp.ft_made)
+            totalthra.add(bp.thr_attempted)
+            totalthrm.add(bp.thr_made)
+        }
+
+	ppg = mean(totalpoints)
+        apg = mean(totalassists)
+	rpg = mean(totalrebounds)
+        spg = mean(totalsteals)
+        bpg = mean(totalblocks)
+        tpg = mean(totalturnovers)
+        fgapg = mean(totalfga)
+        fgmpg = mean(totalfgm)
+        ftapg = mean(totalfta)
+        ftmpg = mean(totalftm)
+        thrapg = mean(totalthra)
+        thrmpg = mean(totalthrm)
     }
 
 }

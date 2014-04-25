@@ -1,0 +1,14 @@
+#####GAME graphing library#####
+include "math.game"
+
+function graph(list(num) x_params, list(num) y_params) {
+    #Python code to go here
+}
+
+function label(text axis, text label_name) {
+
+}
+
+function show() {
+
+}

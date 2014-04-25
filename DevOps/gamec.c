@@ -29,7 +29,8 @@ int main(int argc, char **argv){
 
   //Check and process include statements 
   int k;
-  int status = 0;
+  int status = 0; 
+  pid_t child, pid; 
   for(k = 1; k < argc; k++){
     if(strstr(argv[k], ".game")){
       if((child = fork()) == 0){
@@ -49,8 +50,6 @@ int main(int argc, char **argv){
     }
   }
 
-  int k;
-  pid_t child, pid; 
   for(k= 1; k < argc; k++){ 
     if(strstr(argv[k], ".game")){
       if((child = fork()) == 0){//child process

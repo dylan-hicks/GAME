@@ -1,0 +1,15 @@
+include "basketball.game"
+include "graph.game"
+include "math.game"
+
+text function num_form(text t, num n) {
+    text output
+    ##python code goes here
+    return output
+}
+
+num function length(text t){
+    num length
+    ##python code goes here
+    return length
+}

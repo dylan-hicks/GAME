@@ -225,7 +225,7 @@ class variable_def_node(object):
             elif str(self.children[0]) == 'text':
                 s += self.value[0] + ' = ""'
             elif str(self.children[0]) == 'bool':
-                s += self.value[0] + " = false"
+                s += self.value[0] + " = False"
             elif str(self.children[0]) == 'list':
                 s += self.value[0] + " = []"
         elif len(self.children) == 2 and self.value and len(self.value) == 2:
@@ -256,7 +256,7 @@ class attribute_def_node(object):
             elif str(self.children[0]) == 'text':
                 s += self.value[0] + ' = ""'
             elif str(self.children[0]) == 'bool':
-                s += self.value[0] + " = false"
+                s += self.value[0] + " = False"
             elif str(self.children[0]) == 'list':
                 s += self.value[0] + " = []"
         elif len(self.children) == 2 and self.value and len(self.value) == 2:
@@ -314,7 +314,13 @@ class expression_node(object): # if this messes up, look for prec as the cause
         s = ""
 
         if len(self.children) == 1 and self.value and len(self.value) == 1:
-            s += self.value[0] + " " + self.children[0].__str__() # will value be NOT?
+            if self.value[0] == "-":
+                s += "(-1 * " + self.children[0].__str__() + ")"
+            else:
+                s += self.value[0] + self.children[0].__str__()
+                print "s nonsense:"
+                print s
+                #NOT expression stuff
         elif len(self.children) == 1 and self.value and len(self.value) == 3:
             s+= self.value[0] + " " + self.value[1]+ " " + self.children[0].__str__()+ " " + self.value[2]
         elif len(self.children) == 1:
@@ -327,7 +333,7 @@ class expression_node(object): # if this messes up, look for prec as the cause
         elif len(self.children) == 2 and self.value and len(self.value) == 2:
             s += self.children[0].__str__() + " " + self.value[0] + " " + self.value[1] + " " + self.children[1].__str__()
         elif len(self.children) == 2 and self.value and len(self.value) == 4:
-            s += self.children[0].__str__() + "." + self.value[1] + "(" + self.children[1].__str__() + ")"
+                s += self.children[0].__str__() + "." + self.value[1] + "(" + self.children[1].__str__() + ")"
         elif len(self.children) == 2:
             s += self.children[0].__str__() + "[int(" + self.children[1].__str__() + ")]"
 
@@ -432,7 +438,14 @@ class statement_node:
             else:
                 s += self.children[0].__str__()
         elif len(self.children) == 2:
-            s += self.children[0].__str__() + "." + self.value + "(" + self.children[1].__str__() + ")"
+            if self.value == "add":
+                s += self.children[0].__str__() + ".append(" + self.children[1].__str__() + ")"
+            elif self.value == "rem":
+                s += "try:\n"
+                s += self.children[0].__str__() + ".remove(" + self.children[1].__str__()
+                s += ")\nexcept ValueError:\npass"
+            else:
+               s += self.children[0].__str__() + "." + self.value + "(" + self.children[1].__str__() + ")"
 
         return s
 
@@ -572,6 +585,7 @@ class loop_node:
     def __str__(self):
         s = ""
         global tabs_count
+
         tabs_count += 1
         if len(self.children) == 2:
             if self.value:
@@ -585,24 +599,45 @@ class loop_node:
                 inc_val = 1
                 for i in game_loop_exp:
                     if "start" in i:
-                        start_exp = re.findall('-\d+|\d+', i)
-                        start_val = start_exp[0]
+                        print ("i:")
+                        print i
+#                        start_exp = re.findall('\d+', i)
+#                        start_val = start_exp[0]
                         start_exp = i.split('=')
+                        start_val = start_exp[1]
                         variable = start_exp[0].split(" ")[1]
                      
                     elif "while" in i:
                         #end_val = re.findall('\d+', i)[0]
-                        end_val = re.findall('-?\d+', i)[0]
-                        print("end_val: ") 
-                        print(end_val)
-                        print("i: ")
+                        print ("i:")
                         print i
+                        while_exp = ""
+#                        end_val = re.findall('\d+', i)[0]
+#                        while_exp = i.split('(=|>|<)')
+                        if re.search('=', i):
+                            while_exp = i.split('=')
+                        elif re.search('<', i):
+                            while_exp = i.split('<')
+                        elif re.search('>', i):
+                            while_exp = i.split('>')
+                        
+                        print("while exp")
+                        print while_exp
+                        end_val = while_exp[1]
+                        print("end val")
+                        print(end_val)
                     else:
                         if "+" in i:
-                            inc_val = re.findall('-?\d+', i)[0]
+#                            inc_val = re.findall('\d+', i)[0]
+                            inc_val = i.split('+')[1]
                         elif "-" in i:
-                            inc_val = re.findall('-\d+|\d+', i)[0] * (-1)
-                python_loop_exp = "range(" + start_val + ", " + end_val + ", " + inc_val + ")"
+                            print "i"
+                            print i
+                            inc_val = i.split('-')[1]
+                            print "inc_val:"
+                            print inc_val
+#                            inc_val = re.findall('\d+', i)[0]
+                python_loop_exp = "np.arange(" + str(start_val) + ", " + str(end_val) + ", " + "(" + str(inc_val) + " * -1))"
 
                 s += "for " + variable + " in " + python_loop_exp + ":\n" + self.children[1].__str__()
         else:
@@ -672,7 +707,7 @@ class data_statement_node:
 def p_program_lines(p):
     '''program_lines : include_lines lines'''
     p[0] = program_lines_node([p[1], p[2]])
-    runCommand = p[0].__str__() + "if __name__ == '__main__':main()" # TESTING
+    runCommand = p[0].__str__() + "\nimport numpy as np\n" + "if __name__ == '__main__':main()" # TESTING
     print runCommand
 
     file = open("{}.py".format(sys.argv[1]), "w")

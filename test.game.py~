@@ -1,0 +1,35 @@
+class Dude:
+	age = 0.0
+	name = ""
+	isCool = False
+	p = []
+	def build(self, a):
+		self.age = a
+		height = "house"
+		self.name = "will"
+		self.p = [1.0, 2.0, 3.0, 4.0]
+		p.append(5.0)
+
+
+	def addTen(self):
+		self.age = age + 10.0
+		p.remove(1.0)
+
+
+def main():
+	bob = Dude()
+	bob.build(12.0)
+	bob.addTen()
+	andy = Dude()
+	andy.build(15.0)
+	andy.addTen()
+	print(andy.age)
+	andy.addTen()
+	print(bob.age)
+	print(andy.age)
+	print(bob.p)
+	print(andy.p)
+
+
+import numpy as np
+if __name__ == '__main__':main()

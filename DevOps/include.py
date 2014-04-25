@@ -4,13 +4,14 @@ import os
 
 included = []
 
+#Returns what a file should look like after processing all include statements and swapping these out with the appropriate library code
 def include(file_name):
-
   file = open(file_name, "r+")
   contents = file.readlines()
+  #Screen for include statements
   for line in contents:
-    regMatch = re.match(r'[\s]*include[\s]*["][\s]*([a-zA-Z_-]*)[\s]*["][\s]*\n', line, flags=0)
-    if regMatch:
+    regMatch = re.match(r'[\s]*include[\s]*["][\s]*([a-zA-Z_-]*)[\s]*["][\s]*', line, flags=0)
+    if regMatch: #include statement match
       if regMatch.group(1) not in included:
         #get library file name
         library_file_name = "{}.game".format(regMatch.group(1))
@@ -40,10 +41,5 @@ if __name__ == '__main__':
   name = sys.argv[1]
   #create new temp file with .temp file extension
   file = open("{}.temp".format(sys.argv[1]), 'w')
-
   for line in include(name):
-
-    print line
     print>>file, line
-  print "done"
-

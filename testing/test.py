@@ -7,13 +7,11 @@ def test():
   print("")
 
   #System commands to compile test files
-  subprocess.Popen("./gamec ./source/*.game && mv ./source/*.game.py ./target;", shell=True)
-  time.sleep(1)
+  subprocess.check_call("./gamec ./source/*.game && mv ./source/*.game.py ./target;", shell=True)
 
   #Create list of file names
   for file_name in os.listdir("./source"):
     if ".game" in file_name: run_case(file_name)
-  time.sleep(0.3)
 
   num_failed = 0
   print("\n====================================================\n")
@@ -24,11 +22,9 @@ def test():
 
 def run_case(file_name):
   #run target/python file and pipe output into .txt file in output directory
-  subprocess.Popen("python ./target/{}.py > ./output/{}.txt;".format(file_name, file_name), shell=True)
-  time.sleep(0.25)
+  subprocess.check_call("python ./target/{}.py > ./output/{}.txt;".format(file_name, file_name), shell=True)
   #create diff in diffs directory
-  subprocess.Popen("diff ./output/{}.txt ./correct/{}.txt > ./diffs/{}.txt.diff".format(file_name, file_name, file_name), shell=True)
-  time.sleep(0.1)
+  subprocess.check_call("diff ./output/{}.txt ./correct/{}.txt > ./diffs/{}.txt.diff".format(file_name, file_name, file_name), shell=True)
 
 def compare_output(file_name):
   #if diff is not 0, print diff and then print expected vs. actual

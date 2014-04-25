@@ -1,3 +1,5 @@
+include "math.game"
+
 class BasketballGame {
     BasketballTeam home
     BasketballTeam away
@@ -72,17 +74,17 @@ class BasketballPlayer {
     list(BasketballPerformance) performances
     list(BasketballGame) games_played
 
-    num fg_percentage(){
-        fgmpg / fgapg
+    num function fg_percentage(){
+        return fgmpg / fgapg
     }
-    num ft_percentage(){
-        ftmpg / fgapg
+    num function ft_percentage(){
+        return ftmpg / fgapg
     }
-    num thr_percentage(){
-        thrapg / thrpg
+    num function thr_percentage(){
+        return thrapg / thrpg
     }
     
-    build (list(BasketballPerformance) x) {
+    function build (list(BasketballPerformance) x) {
         list(num) totalpoints
         list(num) totalassists
         list(num) totalrebounds

@@ -13,7 +13,10 @@ temp = json.loads(str(out))
 scan_functions = temp["functions"]
 scan_classes = temp["classes"]
 scan_errors = temp["errors"]
-print scan_functions
+if len(scan_errors)!=0:
+    for x in scan_errors:
+        print x
+    exit(0)
 
 reserved = {
    'include' : 'INCLUDE',

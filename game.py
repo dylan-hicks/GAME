@@ -86,9 +86,9 @@ t_RSQ     = r'\]'
 t_TXT     = r'"[^"]*"'
 
 def t_NUM(t):
-    r'\d+\.?d*'
+    r'\d+\.?\d*'
     try:
-        t.value = int(t.value)
+        t.value = float(t.value)
     except ValueError:
         print("Integer value too large %d", t.value)
         t.value = 0

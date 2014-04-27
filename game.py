@@ -729,6 +729,7 @@ class loop_expression_values_node:
         s = ""
 
         s += self.value + " " + self.children[0].__str__()
+        print s
         return s
 
 class if_statement_node:
@@ -1104,7 +1105,7 @@ def p_constant_list(p):
         p[0] = constant_list_node([p[1]])
 
 def p_error(p):
-    print("Syntax error at '%s'" % p.value)
+    print("Syntax error at '"+p.value+"' on line "+str(p.lineno)+".")
 
 import ply.yacc as yacc
 

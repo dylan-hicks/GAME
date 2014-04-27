@@ -1,5 +1,19 @@
 import sys
 import re
+import json
+import subprocess
+
+scan_functions = { }
+scan_classes = { }
+scan_errors = [ ]
+
+proc = subprocess.Popen(["python", "scan.py", sys.argv[1]], stdout=subprocess.PIPE, stderr=None)
+out = proc.communicate()[0]
+temp = json.loads(str(out))
+scan_functions = temp["functions"]
+scan_classes = temp["classes"]
+scan_errors = temp["errors"]
+print scan_functions
 
 reserved = {
    'include' : 'INCLUDE',

@@ -74,7 +74,6 @@ def t_NUM(t):
     try:
         t.value = float(t.value)
     except ValueError:
-        print("Integer value too large %d", t.value)
         t.value = 0
     return t
 
@@ -96,7 +95,6 @@ def t_COMMENT(t):
     return t
 
 def t_error(t):
-    print("Illegal character '%s'" % t.value[0])
     t.lexer.skip(1)
     
 # Build the lexer
@@ -341,7 +339,7 @@ def p_constant_list(t):
                      | constant'''
 
 def p_error(t):
-    print("Syntax error at '%s'" % t.value)
+    '''Do nothing'''
 
 import ply.yacc as yacc
 

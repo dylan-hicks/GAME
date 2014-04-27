@@ -1,5 +1,6 @@
 import sys
 import re
+import json
 
 reserved = { 
    'include' : 'INCLUDE',
@@ -19,7 +20,6 @@ reserved = {
    'break' : 'BREAK',
    'continue' : 'CONTINUE',
    'class' : 'CLASS',
-   'inherits' : 'INHERITS',
    'function' : 'FUNCTION',
    'return' : 'RETURN',
    'foreach' : 'FOREACH',
@@ -70,9 +70,9 @@ t_RSQ     = r'\]'
 t_TXT     = r'"[^"]*"'
 
 def t_NUM(t):
-    r'\d+\.?d*'
+    r'\d+\.?\d*'
     try:
-        t.value = int(t.value)
+        t.value = float(t.value)
     except ValueError:
         print("Integer value too large %d", t.value)
         t.value = 0
@@ -122,56 +122,64 @@ precedence = (
 # dictionary of names
 names = { }
 
+functions = { }
+classes = { }
+errors = [ ]
         
 def p_program_lines(t):
     '''program_lines : include_lines lines'''
-    print('program_lines(' + t[1] + ',' + t[2] + ')')
 
 def p_include_lines(t):
     '''include_lines : include_lines INCLUDE TXT NL
                      | include_lines NL
                      | '''
-    if len(t)==5:
-        t[0] = 'include_lines(' + t[1] + ',' + t[3] + ')'
-    elif len(t)==3:
-        t[0] = 'include_lines(' + t[1] + ')'
-    else:
-        t[0] = 'include_lines()'
 
-def p_lines(t):
-    '''lines : lines class_def NL
-             | lines function_def NL
-             | lines NL
+def p_lines_class(t):
+    '''lines : lines class_def NL'''
+    if t[2][0] in classes:
+        errors.append("Multiple definitions of class "+t[2][0]+".")
+    else:
+        classes[t[2][0]] = t[2][1]
+
+def p_lines_function(t):
+    '''lines : lines function_def NL'''
+    if t[2][0] in functions:
+        errors.append("Multiple definitions of function "+t[2][1]["name"]+".")
+    else:
+        functions[t[2][0]] = t[2][1]
+
+def p_lines_other(t):
+    '''lines : lines NL
              | '''
-    if len(t)==4:
-        t[0] = 'lines(' + t[1] + ',' + t[2] + ')'
-    elif len(t)==3:
-        t[0] = 'lines(' + t[1] + ')'
-    else:
-        t[0] = 'lines()'
 
-def p_class_lines(t):
-    '''class_lines : class_lines function_def NL
-                   | class_lines variable_def NL
-                   | class_lines NL
-                   | '''
-    if len(t)==4:
-        t[0] = 'class_lines(' + t[1] + ',' + t[2] + ')'
-    elif len(t)==3:
-        t[0] = 'class_lines(' + t[1] + ')'
+def p_class_lines_function(t):
+    '''class_lines : class_lines function_def NL'''
+    if t[2][0] in t[1]["methods"]:
+        errors.append("Multiple definitions of method "+t[2][1]["name"]+".")    
     else:
-        t[0] = 'class_lines()'
+        t[1]["methods"][t[2][0]] = t[2][1]
+    t[0] = t[1]
+
+def p_class_lines_variable(t):
+    '''class_lines : class_lines variable_def NL'''
+    if t[2][0] in t[1]["members"]:
+        errors.append("Multiple definitions of member "+t[2][0]+".")  
+    else:
+        t[1]["members"][t[2][0]] = t[2][1]
+    t[0] = t[1]
+
+def p_class_lines_newline(t):
+    '''class_lines : class_lines NL'''
+    t[0] = t[1]
+
+def p_class_lines_blank(t):
+    '''class_lines : '''
+    t[0] = {"members":{},"methods":{}}
 
 def p_function_lines(t):
     '''function_lines : function_lines statement NL
                       | function_lines NL
                       | '''
-    if len(t)==1:
-        t[0] = 'function_lines()'
-    elif len(t)==3:
-        t[0] = 'function_lines(' + t[1] + ')'
-    else:
-        t[0] = 'function_lines(' + t[1] + ',' + t[2] + ')'
 
 def p_new_lines(t):
     '''new_lines : new_lines NL
@@ -187,111 +195,83 @@ def p_statement(t):
                  | ID LPAREN function_run_args RPAREN
                  | BREAK
                  | CONTINUE'''
-    if len(t)==2:
-        t[0] = 'statement(' + t[1] + ')'
-    elif len(t)==5:
-        t[0] = 'statement(' + t[1] + ',' + t[3] + ')'
-    elif len(t)==7:
-        t[0] = 'statement(' + t[1] + ',' + t[3] + ')'
-    else:
-        t[0] = 'statement(' + t[1] + ',' + t[3] + ',' + t[5] + ')'
 
 def p_class_def(t):
-    '''class_def : CLASS ID LBRACK NL class_lines RBRACK
-                 | CLASS ID INHERITS ID LBRACK NL class_lines RBRACK'''
-    if len(t)==7:
-        t[0] = 'class_def(' + t[2] + ',' + t[5] + ')'
-    else:
-        t[0] = 'class_def(' + t[2] + ',' + t[4] + ',' + t[7] + ')' 
+    '''class_def : CLASS ID LBRACK NL class_lines RBRACK'''
+    t[0] = t[2],t[5]
 
 def p_function_def(t):
     '''function_def : FUNCTION ID LPAREN function_args RPAREN LBRACK NL function_lines RBRACK
                     | var_type FUNCTION ID LPAREN function_args RPAREN LBRACK NL function_lines RETURN expression new_lines RBRACK'''
-    if len(t)==10:
-        t[0] = 'function_def(' + t[2] + ',' + t[4] + ',' + t[8] + ')'
-    else:
-        t[0] = 'function_def(' + t[1] + ',' + t[3] + ',' + t[5] + ',' + t[9] + t[11] + ')'
+    id_param = 2 if len(t)==10 else 3
+    id_args = 4 if len(t)==10 else 5
+    func_hash = t[id_param]
+    for x in t[id_args]:
+        func_hash += "*"+t[id_args][x] 
+    to_add = { }
+    to_add["name"] = t[id_param]
+    to_add["args"] = t[id_args]
+    if len(t)!=10:
+        to_add["return"] = t[1]
+    t[0] = func_hash,to_add
 
 def p_function_args(t):
     '''function_args : function_arg_values
                      | '''
     if len(t)==1:
-        t[0] = 'function_args()'
+        t[0] = { }
     else:
-        t[0] = 'function_args(' + t[1] + ')'
+        t[0] = t[1]
 
 def p_function_arg_values(t):
     '''function_arg_values : function_arg_values COMMA function_arg_values
                            | var_type ID'''
     if len(t)==3:
-        t[0] = 'function_arg_values(' + t[1] + ',' + t[2] + ')'
+        t[0] = {t[2]:t[1]}
     else:
-        t[0] = 'function_arg_values(' + t[1] + ',' + t[3] + ')'
+        for x in t[3]:
+            if x in t[1]:
+                errors.append("Multiple definitions of input name "+x+".")
+            else:
+                t[1][x] = t[3][x] 
+        t[0] = t[1]
 
 def p_function_run_args(t):
     '''function_run_args : function_run_arg_values
                          | '''
-    if len(t)==1:
-        t[0] = 'function_run_args()'
-    else:
-        t[0] = 'function_run_args(' + t[1] + ')'
 
 def p_function_run_arg_values(t):
     '''function_run_arg_values : function_run_arg_values COMMA function_run_arg_values
                                | expression'''
-    if len(t)==2:
-        t[0] = 'function_run_arg_values(' + t[1] + ')'
-    else:
-        t[0] = 'function_run_arg_values(' + t[1] + ',' + t[3] + ')'
 
 def p_loop(t):
     '''loop : LOOP LPAREN loop_expression RPAREN LBRACK NL function_lines RBRACK
             | FOREACH LPAREN var_type ID IN ID RPAREN LBRACK NL function_lines RBRACK
             | var_type ID EQ GETEACH LPAREN var_type ID IN ID WHERE expression RPAREN'''
-    if len(t)==9:
-        t[0] = 'loop(' + t[3] + ',' + t[7] + ')'
-    elif len(t)==12:
-        t[0] = 'loop(' + t[3] + ',' + t[4] + ',' + t[6] + ',' + t[10] + ')'
-    else:    
-        t[0] = 'loop(' + t[1] + ',' + t[2] + ',' + t[6] + ',' + t[7] + ',' + t[9] + ',' + t[11] + ')'
 
 def p_loop_expression(t):
     '''loop_expression : loop_expression COMMA loop_expression
                        | loop_expression_values
                        | '''
-    if len(t)==4:
-        t[0] = 'loop_expression(' + t[1] + ',' + t[3] + ')'
-    elif len(t)==2:
-        t[0] = 'loop_expression(' + t[1] + ')'
-    else:
-        t[0] = 'loop_expression()'
 
 def p_loop_expression_values(t):
     '''loop_expression_values : START variable_def
                               | WHILE expression
                               | SET assignment'''
-    t[0] = 'loop_expression_values(' + t[2] + ')'
 
 def p_if_statement(t):
     '''if_statement : IF LPAREN expression RPAREN LBRACK NL function_lines RBRACK
                     | IF LPAREN expression RPAREN LBRACK NL function_lines RBRACK ELSE LBRACK NL function_lines RBRACK'''
-    if len(t)==9:
-        t[0] = 'if_statement(' + t[3] + ',' + t[7] + ')'
-    else:
-        t[0] = 'if_statement(' + t[3] + ',' + t[7] + ',' + t[12] + ')'
 
 def p_data_statement(t):
     '''data_statement : data_statement_load
                       | data_statement_export'''
-    t[0] = t[1]
 
 def p_data_statement_load(t):
     '''data_statement_load : LOAD obj_expression FROM expression'''
-    t[0] = 'data_statement(' + t[2] + ',' + t[4] + ')'
 
 def p_data_statement_save(t):
     '''data_statement_export : EXPORT obj_expression TO expression'''
-    t[0] = 'data_statement(' + t[2] + ',' + t[4] + ')'
 
 def p_expression(t):
     '''expression : expression PLUS expression
@@ -316,56 +296,26 @@ def p_expression(t):
                   | obj_expression DOT ID LPAREN function_run_args RPAREN
                   | obj_expression LSQ expression RSQ
                   | obj_expression'''
-    if len(t)==4:
-        t[0] = 'expression(' + t[1] + ',' + t[3] + ')'
-    elif len(t)==3:
-        t[0] = 'expression(' + t[2] + ')'
-    elif len(t)==2:
-        t[0] = 'expression(' + t[1] + ')'
-    elif len(t)==7:
-        t[0] = 'expression(' + t[1] + ',' + t[3] + ',' + t[5] + ')'
-    elif len(t)==5:
-        t[0] = 'expression(' + t[1] + ',' + t[3] + ')'
-    else:
-        t[0] = 'expression(' + t[1] + ')'
 
 def p_assignment(t):
     '''assignment : obj_expression EQ expression'''
-    t[0] = 'assignment(' + t[1] + ',' + t[3] + ')'
 
 def p_obj_expression(t):
     '''obj_expression : obj_expression DOT ID
                       | ID'''
-    if len(t)==2:
-        t[0] = 'obj_expression(' + t[1] + ')'
-    else:
-        t[0] = 'obj_expression(' + t[1] + ',' + t[3] + ')'
 
 def p_variable_def(t):
     '''variable_def : var_type ID
                     | var_type ID EQ expression
                     | var_type ID EQ NEW var_type
                     | var_type ID EQ NEW var_type LBRACK NL mul_variable_assign RBRACK'''
-    if len(t)==3:
-        t[0] = 'variable_def(' + t[1] + ',' + t[2] + ')'
-    elif len(t)==5:
-        t[0] = 'variable_def(' + t[1] + ',' + t[2] + ',' + t[4] + ')'
-    elif len(t)==6:
-        t[0] = 'variable_def(' + t[1] + ',' + t[2] + ',' + t[5] + ')'
-    else: 
-        t[0] = 'variable_def(' + t[1] + ',' + t[2] + ',' + t[5] + ',' + t[8] + ')'
+    t[0] = t[2],t[1] 
 
 def p_mul_variable_assign(t):
     '''mul_variable_assign : mul_variable_assign assignment NL
                            | data_statement_load NL
                            | mul_variable_assign NL
                            | '''
-    if len(t)==4:
-        t[0] = 'mul_variable_def(' + t[1] + ',' + t[2] + ')'
-    elif len(t)==3:
-        t[0] = 'mul_variable_def(' + t[1] + ')'
-    else:
-        t[0] = ''
 
 def p_var_type(t):
     '''var_type : TEXT_TYPE
@@ -374,9 +324,9 @@ def p_var_type(t):
                 | ID
                 | LIST LPAREN var_type RPAREN'''
     if len(t)==2:
-        t[0] = 'var_type(' + t[1] + ')'
+        t[0] = t[1]
     else:
-        t[0] = 'var_type(' + t[3] + ')'
+        t[0] = "list(" + t[3] + ")"
 
 def p_constant(t):
     '''constant : LBRACK constant_list RBRACK
@@ -385,20 +335,10 @@ def p_constant(t):
                 | TXT
                 | FALSE
                 | TRUE'''            
-    if len(t)<3:
-        t[0] = 'constant(' + str(t[1]) + ')'
-    elif len(t)==3:
-        t[0] = 'constant()'
-    else:
-        t[0] = 'constant(' + t[2] + ')'
 
 def p_constant_list(t):
     '''constant_list : constant_list COMMA constant_list
                      | constant'''
-    if len(t)==4:
-        t[0] = 'constant_list(' + t[1] + ',' + t[3] + ')'
-    else:
-        t[0] = 'constant_list(' + t[1] + ')'
 
 def p_error(t):
     print("Syntax error at '%s'" % t.value)
@@ -410,3 +350,4 @@ yacc.yacc()
 if len(sys.argv) > 1 :
     inputfile = open(sys.argv[1],'r')
     yacc.parse(inputfile.read())
+    print json.dumps({"functions":functions,"classes":classes,"errors":errors})

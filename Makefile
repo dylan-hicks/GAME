@@ -1,6 +1,6 @@
 .PHONY:all
 all:
-	python game.py test.game
+	./gamec test.game
 
 .PHONY:ast
 ast:

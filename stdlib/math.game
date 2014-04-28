@@ -47,7 +47,7 @@ num function sqr(num x) {
 	return x * x
 }
 
-function stdev(list(num) x) {
+num function stdev(list(num) x) {
 	num avg = mean(x)
 	num variance = 0
 	foreach(num n in x){

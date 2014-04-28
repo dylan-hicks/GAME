@@ -71,7 +71,7 @@ t_TXT     = r'"[^"]*"'
 def t_NUM(t):
     r'\d+\.?d*'
     try:
-        t.value = int(t.value)
+        t.value = float(t.value)
     except ValueError:
         print("Integer value too large %d", t.value)
         t.value = 0
@@ -352,22 +352,28 @@ class expression_node(object): # if this messes up, look for prec as the cause
                 s += "(-1 * " + self.children[0].__str__() + ")"
             else:
                 s += self.value[0] + self.children[0].__str__()
-                print "s nonsense:"
-                print s
-                #NOT expression stuff
         elif len(self.children) == 1 and self.value and len(self.value) == 3:
             s+= self.value[0] + " " + self.value[1]+ " " + self.children[0].__str__()+ " " + self.value[2]
         elif len(self.children) == 1:
             s += self.children[0].__str__()
         elif len(self.children) == 2 and self.value and len(self.value) == 1:
-#            if isinstance(self.children[0], int) and isinstance(self.children[1], int):
                 s += self.children[0].__str__() + " " + self.value[0] + " " + self.children[1].__str__()
-#            else:
-#                s += self.children[0].__str__() + " " + self.value[0] + " " + self.children[1].__str__()
         elif len(self.children) == 2 and self.value and len(self.value) == 2:
-            s += self.children[0].__str__() + " " + self.value[0] + " " + self.value[1] + " " + self.children[1].__str__()
+            s += self.children[0].__str__() + " " + self.value[0] + self.value[1] + " " + self.children[1].__str__()
         elif len(self.children) == 2 and self.value and len(self.value) == 4:
-                s += self.children[0].__str__() + "." + self.value[1] + "(" + self.children[1].__str__() + ")"
+            if self.value[1] == "add":
+                s += self.children[0].__str__() + ".append(" + self.children[1].__str__() + ")"
+            elif self.value[1] == "rem":
+                s += self.children[0].__str__() + ".remove(" + self.children[1].__str__() + ")"
+            elif self.value[1] == "addAt":
+                params = self.children[1].__str__().split(",")
+                s += self.children[0].__str__() + ".insert(int(" + params[0] + "), " + params[1] + ")"
+            elif self.value[1] == "remAt":
+                s += self.children[0].__str__() + ".pop(int(" + self.children[1].__str__() + "))"
+            elif self.value[1] == "get":
+                s += self.children[0].__str__() + "[int(" + self.children[1].__str__() + ")]"
+            else:
+               s += self.children[0].__str__() + "." + self.value[1] + "(" + self.children[1].__str__() + ")"
         elif len(self.children) == 2:
             s += self.children[0].__str__() + "[int(" + self.children[1].__str__() + ")]"
 
@@ -476,6 +482,13 @@ class statement_node:
                 s += self.children[0].__str__() + ".append(" + self.children[1].__str__() + ")"
             elif self.value == "rem":
                 s += "try:\n" + insert_tabs(tabs_count + 1) + self.children[0].__str__() + ".remove(" + self.children[1].__str__() + ")\n" + insert_tabs(tabs_count) + "except ValueError:\n" + insert_tabs(tabs_count + 1) + "pass"
+            elif self.value == "addAt":
+                params = self.children[1].__str__().split(",")
+                s += self.children[0].__str__() + ".insert(int(" + params[0] + "), " + params[1] + ")"
+            elif self.value == "remAt":
+                s += self.children[0].__str__() + ".pop(int(" + self.children[1].__str__() + "))"
+            elif self.value == "get":
+                s += self.children[0].__str__() + "[int(" + self.children[1].__str__() + ")]"
             else:
                s += self.children[0].__str__() + "." + self.value + "(" + self.children[1].__str__() + ")"
 
@@ -627,52 +640,43 @@ class loop_node:
                 s += "for " + self.value[0] + " in " + self.value[1] + ":\n" + self.children[1].__str__()
             else:
                 game_loop_exp = self.children[0].__str__().split(',')
+                print game_loop_exp
                 python_loop_exp = ""
                 variable = ""
                 start_val = 0
                 end_val = 0
+                while_val = 0
                 inc_val = 1
+
                 for i in game_loop_exp:
                     if "start" in i:
-                        print ("i:")
-                        print i
-#                        start_exp = re.findall('\d+', i)
-#                        start_val = start_exp[0]
                         start_exp = i.split('=')
                         start_val = start_exp[1]
-                        variable = start_exp[0].split(" ")[1]
-                     
+                        variable = start_exp[0].split(" ")[1]                     
                     elif "while" in i:
-                        #end_val = re.findall('\d+', i)[0]
-                        print ("i:")
-                        print i
                         while_exp = ""
-#                        end_val = re.findall('\d+', i)[0]
-#                        while_exp = i.split('(=|>|<)')
-                        if re.search('=', i):
-                            while_exp = i.split('=')
+
+                        if re.search('<=', i):
+                            while_exp = i.split('<=')
+                            while_val = 1
+                        elif re.search('>=', i):
+                            while_exp = i.split('>=')
+                            while_val = -1
                         elif re.search('<', i):
                             while_exp = i.split('<')
                         elif re.search('>', i):
                             while_exp = i.split('>')
                         
-                        print("while exp")
-                        print while_exp
                         end_val = while_exp[1]
-                        print("end val")
-                        print(end_val)
+                        print "END VAL"
+                        print end_val
                     else:
                         if "+" in i:
-#                            inc_val = re.findall('\d+', i)[0]
                             inc_val = i.split('+')[1]
                         elif "-" in i:
-                            print "i"
-                            print i
                             inc_val = i.split('-')[1]
-                            print "inc_val:"
-                            print inc_val
-#                            inc_val = re.findall('\d+', i)[0]
-                python_loop_exp = "np.arange(" + str(start_val) + ", " + str(end_val) + ", " + "(" + str(inc_val) + " * -1))"
+
+                python_loop_exp = "np.arange(" + str(start_val) + ", (" + str(end_val) + " + " + str(while_val) + "), " + "(" + str(inc_val) + " * 1))"
 
                 s += "for " + variable + " in " + python_loop_exp + ":\n" + self.children[1].__str__()
         else:

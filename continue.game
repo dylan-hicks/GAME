@@ -1,3 +1,5 @@
+# NEED TO GET variable assignment with methods working
+
 class Dude {
 	num age
 	text name

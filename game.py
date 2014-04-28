@@ -377,8 +377,8 @@ class expression_node(object): # if this messes up, look for prec as the cause
         elif len(self.children) == 1:
             s += self.children[0].__str__()
         elif len(self.children) == 2 and self.value and len(self.value) == 1:
-#            if isinstance(self.children[0], int) and isinstance(self.children[1], int):
-                s += self.children[0].__str__() + " " + self.value[0] + " " + self.children[1].__str__()
+            #if isinstance(self.children[0], int) and isinstance(self.children[1], int):
+             s += self.children[0].__str__() + " " + str(self.value[0]) + " " + self.children[1].__str__()
 #            else:
 #                s += self.children[0].__str__() + " " + self.value[0] + " " + self.children[1].__str__()
         elif len(self.children) == 2 and self.value and len(self.value) == 2:

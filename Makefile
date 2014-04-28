@@ -1,6 +1,6 @@
 .PHONY:all
 all:
-	./gamec test.game
+	./gamec -o test.game
 
 .PHONY:ast
 ast:

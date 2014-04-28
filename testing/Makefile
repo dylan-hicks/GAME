@@ -1,5 +1,9 @@
 .PHONY:all
 all:
+	python test.py;	make clean
+
+.PHONY:persist
+persist:
 	python test.py
 
 .PHONY:clean

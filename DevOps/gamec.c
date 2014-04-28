@@ -16,14 +16,19 @@ int main(int argc, char **argv){
     exit(1);
   }
   int mv_flag = 0;
+  int output_flag = 0;
   int i = 1;
   char mv_directory[100];
-  //check if -m flag was used
-  while(!mv_flag && i < argc){
+  //check if flags like -m or -o were used
+  while(i < argc){
     if(strcmp(argv[i], "-m") == 0){//-m flag used
       mv_flag = 1; 
       sprintf(mv_directory, "./%s", argv[++i]);
     }
+    if(strcmp(argv[i], "-o") == 0){//-m flag used
+      output_flag = 1; 
+    }
+
     i++;
   }
 
@@ -54,10 +59,10 @@ int main(int argc, char **argv){
     if(strstr(argv[k], ".game")){
       if((child = fork()) == 0){//child process
         char compiled[100];
-        /*
-        int devNull = open("/dev/null", O_WRONLY);
-        int result = dup2(devNull, STDOUT_FILENO);
-        */
+        if(!output_flag){
+          int devNull = open("/dev/null", O_WRONLY);
+          int result = dup2(devNull, STDOUT_FILENO);
+        }
         sprintf(compiled, "./%s.temp", argv[k]);
         execlp("python", "python", "./game.py", compiled, 0);
       }

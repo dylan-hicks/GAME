@@ -11,7 +11,6 @@ run.py
 *.swo
 DevOps/*.o
 DevOps/*.game.py
-DevOps/gamec
 DevOps/run.py
 testing/target
 testing/diffs

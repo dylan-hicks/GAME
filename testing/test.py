@@ -1,6 +1,7 @@
 import subprocess
 import os
 import time
+import re
 
 def test():
 
@@ -16,8 +17,9 @@ def test():
   num_failed = 0
   print("\n====================================================\n")
   for file_name in os.listdir("./source"):
-    regMatch = re.match(r'[\s]*.*.game.py$', file_name, flags=0)
-    if regMatch: num_failed += compare_output(file_name)
+    regMatch = re.match(r'[\s]*[\w\d]+\.game$', file_name, flags=0)
+    if regMatch:
+      num_failed += compare_output(file_name)
   print("{} Test Case(s) Failed\n".format(num_failed))
   print("====================================================\n")
 

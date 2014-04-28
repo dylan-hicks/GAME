@@ -24,7 +24,7 @@ def run_case(file_name):
   #run target/python file and pipe output into .txt file in output directory
   subprocess.check_call("python ./target/{}.py > ./output/{}.txt;".format(file_name, file_name), shell=True)
   #create diff in diffs directory
-  subprocess.check_call("diff ./output/{}.txt ./correct/{}.txt > ./diffs/{}.txt.diff".format(file_name, file_name, file_name), shell=True)
+  subprocess.call("diff ./output/{}.txt ./correct/{}.txt > ./diffs/{}.txt.diff".format(file_name, file_name, file_name), shell=True)
 
 def compare_output(file_name):
   #if diff is not 0, print diff and then print expected vs. actual

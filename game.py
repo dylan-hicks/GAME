@@ -197,7 +197,12 @@ class constant_node(object):
             if isinstance(self.value[0], (int, long)):
                 s += str(self.value[0]) + ".0"
             else:
-                s += str(self.value[0])
+                if str(self.value[0]) == "true":
+                    s += "True"
+                elif str(self.value[0]) == "false":
+                    s += "False"
+                else:
+                    s += str(self.value[0])
         else:
             s += '[' + self.children[0].__str__() + ']'
         return s
@@ -320,6 +325,8 @@ class obj_expression_node(object):
 
     def __str__(self):
         s = ""
+        if not self.value in variables_table:
+            print "VARIABLE " + str(self.value) + " UNDEFINED"
         if len(self.children) == 1:
             self1 = ""
             if class_attributes:
@@ -773,7 +780,7 @@ class data_statement_node:
 def p_program_lines(p):
     '''program_lines : include_lines lines'''
     p[0] = program_lines_node([p[1], p[2]])
-    runCommand = p[0].__str__() + "\nimport numpy as np\n" + "if __name__ == '__main__':main()" # TESTING
+    runCommand = p[0].__str__() + "if __name__ == '__main__':main()" # TESTING
     print runCommand
 
     file = open("{}.py".format(sys.argv[1]).replace(".temp",""), "w")
@@ -795,7 +802,6 @@ def p_lines(p):
              | lines function_def NL
              | lines NL
              | '''
-    print('lines')
     if len(p) == 3:
         p[0] = lines_node([p[1]])
     elif len(p) == 1:
@@ -812,7 +818,6 @@ def p_class_lines(p):
                    | class_lines attribute_def NL
                    | class_lines NL
                    | '''
-    print('class lines')
     if len(p) == 3:
         p[0] = class_lines_node([p[1]])
     elif len(p) == 1:
@@ -824,7 +829,6 @@ def p_function_lines(p):
     '''function_lines : function_lines statement NL
                       | function_lines NL
                       | '''
-    print('function lines')
     if len(p) == 3:
         p[0] = function_lines_node([p[1]])
     elif len(p) == 1:
@@ -843,7 +847,6 @@ def p_statement(p):
                  | ID LPAREN function_run_args RPAREN
                  | BREAK
                  | CONTINUE'''
-    print('statement')
     if len(p) == 2:
         if p[1] == "BREAK" or p[1] == "CONTINUE":
             p[0] = statement_node([ ], [p[1]])
@@ -857,7 +860,6 @@ def p_statement(p):
 def p_class_def(p):
     '''class_def : CLASS ID LBRACK NL class_lines RBRACK
                  | CLASS ID INHERITS ID LBRACK NL class_lines RBRACK'''
-    print('class def')
     if len(p) == 7:
         p[0] = class_def_node([p[5]], [p[2]])
     else:
@@ -866,7 +868,6 @@ def p_class_def(p):
 def p_method_def(p):
     '''method_def : FUNCTION ID LPAREN function_args RPAREN LBRACK NL function_lines RBRACK
                     | var_type FUNCTION ID LPAREN function_args RPAREN LBRACK NL function_lines RETURN expression new_lines NL RBRACK'''
-    print('function def')
     if len(p) == 10:
         p[0] = method_def_node([p[4], p[8]], p[2])
     else:
@@ -875,7 +876,6 @@ def p_method_def(p):
 def p_function_def(p):
     '''function_def : FUNCTION ID LPAREN function_args RPAREN LBRACK NL function_lines RBRACK
                     | var_type FUNCTION ID LPAREN function_args RPAREN LBRACK NL function_lines RETURN expression NL RBRACK'''
-    print('function def')
     if len(p) == 10:
         p[0] = function_def_node([p[4], p[8]], p[2])
     else:
@@ -884,7 +884,6 @@ def p_function_def(p):
 def p_function_args(p):
     '''function_args : function_arg_values
                      | '''
-    print('function args')
     if len(p) == 1:
         p[0] = function_args_node([ ])
     else:
@@ -893,7 +892,6 @@ def p_function_args(p):
 def p_function_arg_values(p):
     '''function_arg_values : function_arg_values COMMA function_arg_values
                            | var_type ID'''
-    print('function arg values')
     if len(p) == 3:
         p[0] = function_arg_values_node([p[1]], p[2])
     else:
@@ -902,7 +900,6 @@ def p_function_arg_values(p):
 def p_function_run_args(p):
     '''function_run_args : function_run_arg_values
                          | '''
-    print('function run args')
     if len(p) == 1:
         p[0] = function_run_args_node([ ])
     else:
@@ -911,7 +908,6 @@ def p_function_run_args(p):
 def p_function_run_arg_values(p):
     '''function_run_arg_values : function_run_arg_values COMMA function_run_arg_values
                                | expression'''
-    print('function run arg values')
     if len(p) == 2:
         p[0] = function_run_arg_values_node([p[1]])
     else:
@@ -921,7 +917,6 @@ def p_loop(p):
     '''loop : LOOP LPAREN loop_expression RPAREN LBRACK NL function_lines RBRACK
             | FOREACH LPAREN var_type ID IN ID RPAREN LBRACK NL function_lines RBRACK
             | var_type ID EQ GETEACH LPAREN var_type ID IN ID WHERE expression RPAREN'''
-    print('loop')
     if len(p) == 9:
         p[0] = loop_node([p[3], p[7]])
     elif len(p) == 12:
@@ -933,7 +928,6 @@ def p_loop_expression(p):
     '''loop_expression : loop_expression COMMA loop_expression
                        | loop_expression_values
                        | '''
-    print('loop expression')
     if len(p) == 1:
         p[0] = loop_expression_node([ ])
     elif len(p) == 2:
@@ -947,13 +941,11 @@ def p_loop_expression_values(p):
                               | START assignment
                               | WHILE expression
                               | SET assignment'''
-    print('loop expression values')
     p[0] = loop_expression_values_node([p[2]], p[1])
 
 def p_if_statement(p):
     '''if_statement : IF LPAREN expression RPAREN LBRACK NL function_lines RBRACK
                     | IF LPAREN expression RPAREN LBRACK NL function_lines RBRACK ELSE LBRACK NL function_lines RBRACK'''
-    print('if statement')
     if len(p) == 9:
         p[0] = if_statement_node([p[3], p[7]])
     else:
@@ -962,7 +954,6 @@ def p_if_statement(p):
 def p_data_statement(p):
     '''data_statement : data_statement_load
                       | data_statement_export'''
-    print('data statement')
     p[0] = data_statement_node([p[1]])
 
 def p_data_statement_load(p):
@@ -995,7 +986,6 @@ def p_expression(p):
                   | obj_expression DOT ID LPAREN function_run_args RPAREN
                   | obj_expression LSQ expression RSQ
                   | obj_expression'''
-    print('expression')
     if len(p) == 2:
         p[0] = expression_node([p[1]])
     elif len(p) == 3:
@@ -1015,18 +1005,15 @@ def p_expression(p):
 
 def p_function_call(p):
     '''expression : ID LPAREN function_run_args RPAREN'''
-    print('function call')
     p[0] = function_call_node([p[3]], p[1])
 
 def p_assignment(p):
     '''assignment : obj_expression EQ expression'''
-    print('assignment')
     p[0] = assignment_node([p[1], p[3]])
 
 def p_obj_expression(p):
     '''obj_expression : obj_expression DOT ID
                       | ID'''
-    print('obj expression')
     if len(p) == 2:
         p[0] = obj_expression_node([ ], p[1])
     else:
@@ -1037,7 +1024,6 @@ def p_variable_def(p):
                     | var_type ID EQ expression
                     | var_type ID EQ NEW var_type
                     | var_type ID EQ NEW var_type LBRACK NL mul_variable_assign RBRACK'''
-    print('variable def')
     if len(p) == 3:
         p[0] = variable_def_node([p[1]], [p[2]])
     elif len(p) == 5:
@@ -1052,7 +1038,6 @@ def p_attribute_def(p):
                     | var_type ID EQ expression
                     | var_type ID EQ NEW var_type
                     | var_type ID EQ NEW var_type LBRACK NL mul_variable_assign RBRACK'''
-    print('attribute def')
     if len(p) == 3:
         p[0] = attribute_def_node([p[1]], [p[2]])
     elif len(p) == 5:
@@ -1067,7 +1052,6 @@ def p_mul_variable_assign(p):
                            | data_statement_load NL
                            | mul_variable_assign NL
                            | '''
-    print('mul variable assign')
     if len(p) == 4:
         p[0] = mul_variable_assign_node([p[1], p[2]])
     elif len(p) == 3:
@@ -1081,7 +1065,6 @@ def p_var_type(p):
                 | BOOL_TYPE
                 | ID
                 | LIST LPAREN var_type RPAREN'''
-    print('var type')
     if len(p) == 4:
         p[0] = var_type_node([p[3]])
     else:
@@ -1093,7 +1076,6 @@ def p_constant(p):
                 | TXT
                 | FALSE
                 | TRUE'''
-    print('constant')
     if len(p) == 4:
         p[0] = constant_node([p[2]], [p[1], p[3]])
     else:
@@ -1102,7 +1084,6 @@ def p_constant(p):
 def p_constant_list(p):
     '''constant_list : constant_list COMMA constant_list
                      | constant'''
-    print('constant list')
     if len(p) == 4:
         p[0] = constant_list_node([p[1], p[3]])
     else:

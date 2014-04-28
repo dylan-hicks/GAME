@@ -291,9 +291,12 @@ class attribute_def_node(object):
 
         global class_attributes
         if self.value[0] in class_attributes:
-            print "VARIABLE ALREADY DEFINED" #TODO throw compile error
+            print "ATTRIBUTE ALREADY DEFINED" 
+        elif self.value[0] in variables_table:
+            print "VARIABLE ALREADY DEFINED"
         else:
             class_attributes.append(self.value[0])
+            variables_table[self.value[0]] = [str(self.children[0]), tabs_count] 
 
     def __str__(self):
         s = ""

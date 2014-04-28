@@ -614,6 +614,8 @@ class function_arg_values_node:
         s = ""
 
         if len(self.children) == 1:
+            #var_type is str(self.children[0])
+            variables_table[self.value] = [str(self.children[0]), tabs_count]
             s += self.value
         else:
             s += self.children[0].__str__() + ", " + self.children[1].__str__()

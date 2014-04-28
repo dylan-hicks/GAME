@@ -10,11 +10,11 @@ def include(file_name):
   contents = file.readlines()
   #Screen for include statements
   for line in contents:
-    regMatch = re.match(r'[\s]*include[\s]*["][\s]*([a-zA-Z_-]*)[\s]*["][\s]*', line, flags=0)
+    regMatch = re.match(r'[\s]*include[\s]*["][\s]*([a-zA-Z_-]*)(.game)?[\s]*["][\s]*', line, flags=0)
     if regMatch: #include statement match
       if regMatch.group(1) not in included:
         #get library file name
-        library_file_name = "{}.game".format(regMatch.group(1))
+        library_file_name = "{}.game".format(regMatch.group(1)).lower()
         #check for existence of library file
         if file_exists(library_file_name):
           #add library name to included array
@@ -42,4 +42,4 @@ if __name__ == '__main__':
   #create new temp file with .temp file extension
   file = open("{}.temp".format(sys.argv[1]), 'w')
   for line in include(name):
-    print>>file, line
+    file.write("%s" % line)

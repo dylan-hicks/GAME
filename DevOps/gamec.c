@@ -74,7 +74,6 @@ int main(int argc, char **argv){
       }
     }
   }  
-
   //Remove .temp files
   for(k= 1; k < argc; k++){ 
     if(strstr(argv[k], ".game")){

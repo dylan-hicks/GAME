@@ -54,8 +54,10 @@ int main(int argc, char **argv){
     if(strstr(argv[k], ".game")){
       if((child = fork()) == 0){//child process
         char compiled[100];
+        /*
         int devNull = open("/dev/null", O_WRONLY);
         int result = dup2(devNull, STDOUT_FILENO);
+        */
         sprintf(compiled, "./%s.temp", argv[k]);
         execlp("python", "python", "./game.py", compiled, 0);
       }

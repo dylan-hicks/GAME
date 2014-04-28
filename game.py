@@ -152,7 +152,7 @@ variables_table = {}
 def clean_table():
     global variables_table
     print "just decremented tabs_count; variables_table before decrement: "
-    print variables_table
+    print variables_table        
     #remove all exctinct variables from variables_table
     values = variables_table.values()
     keys = variables_table.keys()
@@ -162,11 +162,11 @@ def clean_table():
                 if variables_table.get(j, None) == i:
                     variables_table.pop(j, None) #CHECK IF THIS WORKS --> REMOVING ENTRY FROM VARIABLES_TABLE
     print "variables_table after decrement: "
-    print variables_table
+    print variables_table        
 
 
 def insert_tabs(x):
-
+    
     s = ""
     for i in range(0, x):
         s += "\t"
@@ -253,7 +253,7 @@ class variable_def_node(object):
     def __str__(self):
         s = ""
         # self.children[0].__str__() is the type of the variable
-        # add variable into variables_table dictionary
+        # add variable into variables_table dictionary 
         global variables_table
         if self.value[0] in variables_table.keys():
             print "ERROR: VARIABLE ALREADY DEFINED" #TODO: throw compile error
@@ -349,7 +349,7 @@ class assignment_node(object):
                 self1 = "self."
             if self.children[1].__str__() in class_attributes:
                 self2 = "self."
-
+        
         s = ""
         s += self1 + self.children[0].__str__() + " = " + self2 + self.children[1].__str__()
 
@@ -515,18 +515,18 @@ class class_def_node:
     def __init__(self, children, value=None):
         self.children = children
         self.value = value
-
+    
 
     def __str__(self):
         global class_attributes
-        global tabs_count
+        global tabs_count 
         tabs_count = 1
         s = ""
         if len(self.value) == 1:
             s += "class " + self.value[0] + ":\n" + self.children[0].__str__() + ""
         else:
             s += "class " + self.value[0] + " extends" + self.value[1] + ":\n\t" + self.children[0].__str__() + ""
-        tabs_count = 0
+        tabs_count = 0 
         print "class_attributes at end of class def: "
         print class_attributes
         class_attributes = []
@@ -539,13 +539,13 @@ class function_def_node:
 
     def __str__(self):
         s = ""
-        global tabs_count
+        global tabs_count 
         tabs_count += 1
         if len(self.children) == 2: # for main or void
             s += "def " + self.value + "(" + self.children[0].__str__() + "):\n" + self.children[1].__str__() + ""
         else: # for functions with return types
             s += "def " + self.value + "(" + self.children[1].__str__() + "):\n" + self.children[2].__str__() + "\treturn " + self.children[3].__str__() + "\n"
-
+        
         tabs_count -= 1
         clean_table()
         return s
@@ -557,9 +557,9 @@ class method_def_node:
 
     def __str__(self):
         s = ""
-        global tabs_count
+        global tabs_count 
         tabs_count += 1
-        comma1 = ""
+        comma1 = ""  
         comma2 = ""
 
         if len(self.children) == 2: # for main or void
@@ -575,7 +575,7 @@ class method_def_node:
             else:
                 comma2 = ", "
             s += "def " + self.value + "(self" + comma2 + self.children[1].__str__() + "):\n" + self.children[2].__str__() + insert_tabs(tabs_count) + "return " + self.children[3].__str__() + "\n"
-
+        
         tabs_count -= 1
         clean_table()
         return s
@@ -669,12 +669,7 @@ class loop_node:
                     if "start" in i:
                         start_exp = i.split('=')
                         start_val = start_exp[1]
-<<<<<<< Updated upstream
                         variable = start_exp[0].split(" ")[1]                     
-=======
-                        variable = start_exp[0].split(" ")[1]
-
->>>>>>> Stashed changes
                     elif "while" in i:
                         while_exp = ""
 
@@ -688,13 +683,7 @@ class loop_node:
                             while_exp = i.split('<')
                         elif re.search('>', i):
                             while_exp = i.split('>')
-<<<<<<< Updated upstream
                         
-=======
-
-                        print("while exp")
-                        print while_exp
->>>>>>> Stashed changes
                         end_val = while_exp[1]
                         print "END VAL"
                         print end_val
@@ -787,7 +776,7 @@ def p_program_lines(p):
     runCommand = p[0].__str__() + "\nimport numpy as np\n" + "if __name__ == '__main__':main()" # TESTING
     print runCommand
 
-    file = open("{}.py".format(sys.argv[1]).replace(".temp", ""), "w")
+    file = open("{}.py".format(sys.argv[1]).replace(".temp",""), "w")
     file.write(runCommand)
 
 def p_include_lines(p):

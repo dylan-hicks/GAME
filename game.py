@@ -667,45 +667,29 @@ class loop_node:
                 s += "for " + self.value[0] + " in " + self.value[1] + ":\n" + self.children[1].__str__()
             else:
                 game_loop_exp = self.children[0].__str__().split(',')
-                print game_loop_exp
-                python_loop_exp = ""
-                variable = ""
-                start_val = 0
-                end_val = 0
-                while_val = 0
-                inc_val = 1
+                start_clause = "\n"
+                while_clause = "" 
+                while_clause_list = []
+                set_clause = "\n"
 
                 for i in game_loop_exp:
                     if "start" in i:
-                        start_exp = i.split('=')
-                        start_val = start_exp[1]
-                        variable = start_exp[0].split(" ")[1]                     
+                        start_clause += insert_tabs(tabs_count - 1) + i.split('start ')[1] + "\n"
                     elif "while" in i:
-                        while_exp = ""
-
-                        if re.search('<=', i):
-                            while_exp = i.split('<=')
-                            while_val = 1
-                        elif re.search('>=', i):
-                            while_exp = i.split('>=')
-                            while_val = -1
-                        elif re.search('<', i):
-                            while_exp = i.split('<')
-                        elif re.search('>', i):
-                            while_exp = i.split('>')
-                        
-                        end_val = while_exp[1]
-                        print "END VAL"
-                        print end_val
+                        while_clause_list.append(i)
                     else:
-                        if "+" in i:
-                            inc_val = i.split('+')[1]
-                        elif "-" in i:
-                            inc_val = i.split('-')[1]
+                        set_clause += insert_tabs(tabs_count) + i.split('set ')[1] + "\n"
 
-                python_loop_exp = "np.arange(" + str(start_val) + ", (" + str(end_val) + " + " + str(while_val) + "), " + "(" + str(inc_val) + " * 1))"
+                ampNum = len(while_clause_list) - 1
 
-                s += "for " + variable + " in " + python_loop_exp + ":\n" + self.children[1].__str__()
+                for i in while_clause_list:
+                    while_clause += "(" + i.split('while ')[1] + ")"
+
+                    if ampNum > 0:
+                        while_clause += " and "
+                        ampNum -= 1
+
+                s += start_clause + insert_tabs(tabs_count - 1) + "while " + while_clause + ":\n" + self.children[1].__str__() + set_clause
         else:
             #s += self.children[0].__str__() + self.value[0] + " = geteach (" + self.children[1].__str__() + self.value[0] + " in " + self.value[1] + " where " + self.children[2].__str__() + ")"
             s += "result = []\n" + insert_tabs(tabs_count - 1)
@@ -786,7 +770,7 @@ def p_program_lines(p):
     runCommand = p[0].__str__() + "if __name__ == '__main__':main()" # TESTING
     print runCommand
 
-    file = open("{}.py".format(sys.argv[1]).replace(".temp",""), "w")
+    file = open("{}.py".format(sys.argv[1]).replace(".temp", ""), "w")
     file.write(runCommand)
 
 def p_include_lines(p):

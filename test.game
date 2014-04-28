@@ -1,44 +1,33 @@
-class Dude{
-    num age
-    text name
-    bool isCool
-    
-    function build(num a, text n, bool i){
-        age = a
-        name = n
-        isCool = i
-    }
-    
-    function addTen(){
-        age = age + 10
-    }
-    
-    function compareAge(Dude guy){
-        print("Bob's age: " + age)
-        print("John's age: " + guy.age)
-        if(guy.age > age){
-            print(guy.name + " is older than " + age)
-        } else{
-            print(guy.name + " is younger than " + name)
-        }
-    }
-    function compareCoolness(Dude guy){
-        if(isCool == false and guy.isCool == true){
-            print(guy.name + " is cooler than " + name)
-        }
-    }  
+class Dude {
+	num age
+	text name
+	bool isCool
+	list(num) p
+
+	function build(num a) {
+		age = a
+		height = "house"
+		name = "will"
+		p = {4, 3, 2, 1}
+		p.add(5)
+		p.addAt(1, 10)
+
+		loop (start num j = 0, while j <= 4, set j = j + 1, start i = 13.2, while i > 2.1, set i = i + 1) {
+			temp = p.get(j)
+			print(temp)
+		}	
+	}
+      
+	function addTen() {
+		age = age + 10
+		removed = p.remAt(1)
+		print(removed)
+	}
 }
 
-function main(){
-    Dude bob = new Dude
-    bob.build(12, "Bob", false)
-    bob.addTen()
-    
-    Dude john = new Dude
-    john.build(14, "John", true)
-    bob.compareAge(john)
-    bob.compareCoolness(john)
-    print("Bob's age: " + bob.age)
-    print("Bob's name: " + bob.name)
-    print("Is Bob cool? " + bob.isCool)
-} 
+function main() {
+	Dude bob = new Dude
+	bob.build(12)
+	bob.addTen()
+
+}

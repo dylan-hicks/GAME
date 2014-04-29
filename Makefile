@@ -7,7 +7,7 @@ temp:
 	python temp.py test.game
 
 .PHONY:test
-test:
+test: temp
 	python test.game.py
 
 .PHONY:ast

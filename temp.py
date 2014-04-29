@@ -1,4 +1,5 @@
-# Known bugs: start part of loop expression must be on left
+# Known bugs: start part of loop expression must be on left, cannot self reference in object( need to check inside of lists too)
+# missing rule? expression : NEW var_type
 
 import sys
 import re
@@ -66,6 +67,17 @@ def within_loop():
     for y in symbol_stack:
         if y[0]=="loop":
             return True
+    return False
+
+def above_is_class():
+    if len(symbol_stack)>0 and symbol_stack[len(symbol_stack)-1][0]=="class":
+        return True
+    else:
+        return False
+
+def in_class():
+    if len(symbol_stack)>0 and symbol_stack[0][0]=="class":
+        return symbol_stack[0][2]
     return False
 
 def add_tab(x):
@@ -232,13 +244,23 @@ def p_lines_empty(t):
     t[0] = ""
 
 def p_class_lines(t):
-    '''class_lines : class_lines function_def NL
-                   | class_lines variable_def NL
-                   | class_lines NL
-                   | '''
-    #if len(t)==4:
-    #elif len(t)==3:
-    #else:
+    '''class_lines : class_lines function_def NL'''
+    t[0] = t[1]+t[2]
+
+def p_class_variable(t):
+    '''class_lines : class_lines variable_def NL'''
+    if t[2]!="":
+        t[0] = t[1]+t[2]+'\n'
+    else:
+        t[0] = t[1]
+
+def p_class_ignore(t):
+    '''class_lines : class_lines NL'''
+    t[0] = t[1]
+
+def p_class_empty(t):
+    '''class_lines : '''
+    t[0] = ""
 
 def p_function_lines_statement(t):
     '''function_lines : function_lines statement NL'''
@@ -261,8 +283,28 @@ def p_new_lines(t):
 
 def p_statement(t):
     '''statement : loop
-                 | data_statement
-                 | obj_expression DOT ID LPAREN function_run_args RPAREN'''
+                 | data_statement'''
+
+def p_statement_obj_function(t):
+    '''statement : obj_expression DOT ID LPAREN function_run_args RPAREN'''
+    temp1 = scan_classes.get(t[1][1],"")
+    if temp1!="":
+        st = func_shorthand(t[3],t[5])
+        temp2 = scan_classes[t[1][1]]["methods"].get(st,"")
+        if temp2!="":
+            out = t[1][0]+"."+t[3]+"("
+            for x in range(0,len(t[5])):
+                if x!=0:
+                    out += ', '
+                out += t[5][x][0] 
+            out += ')\n'
+            t[0] = out
+        else:
+            print "'"+t[1][0]+"' has no function '"+t[3]+"'."
+            exit(0)
+    else:
+        print "'"+t[1][0]+"' has no function '"+t[3]+"'."
+        exit(0)
 
 def p_statement_assign(t):
     '''statement : assignment'''
@@ -304,33 +346,33 @@ def p_statement_function(t):
             print t[1]+" accepts "+(len(sys_out)-2)+" arguments."
             exit(0)
     else:
-        found = False
-        for x in scan_functions:
-            if scan_functions[x]["name"]==t[1]:
-                found = True
-                kk = scan_functions[x]["args"]
-                args = ""
-                for z in range(0,len(kk[1])):
-                    if z!=0:
-                        args += ", "
-                    val = kk[0][kk[1][z]]
-                    if val!=t[3][z][1]:
-                        print t[1]+" expecting argument of type '"+val+"' given '"+t[3][z][1]+"'."
-                        exit(0)
-                    else:
-                        args += t[3][z][0]
-                t[0] = t[1]+'('+args+')'+'\n'     
-        if found==False:
-            print "Unknown function '"+t[1]+"'."
+        st = func_shorthand(t[1],t[3])
+        if scan_functions.get(st,"")!="":
+            out = t[1]+'('
+            for x in range(0,len(t[3])):
+                if x!=0:
+                    out += ', '
+                out += t[3][x][0]
+            out += ')\n'
+        else:
+            print "No function named '"+t[1]+"'."
             exit(0)
+        t[0] = out
 
 def p_class_def(t):
-    '''class_def : class_st LBRACK NL class_lines RBRACK'''
+    '''class_def : class_st LBRACK class_lines RBRACK'''
+    if t[3]=="":
+        t[0] = t[1]+'\n\tpass\n'
+    else:
+        t[0] = t[1]+'\n\t'+add_tab(t[3])
     symbol_stack.pop()
 
 def p_class_start(t):
     '''class_st : CLASS ID'''
-    symbol_stack.append([ "class", { } ])
+    symbol_stack.append([ "class", { }, t[2] ])
+    for x in scan_classes[t[2]]["members"]:
+        add_stack(x,scan_classes[t[2]]["members"][x])
+    t[0] = 'class '+t[2]+':'
 
 def p_function_def_void(t):
     '''function_def : FUNCTION ID LPAREN function_args_st RPAREN LBRACK NL function_lines RBRACK'''
@@ -338,15 +380,22 @@ def p_function_def_void(t):
         if len(t[4][1])!=0:
             print "Function 'main' cannot have arguments."
             exit(0)
-    x = "def "+t[2]+"("
+    inc = in_class()
+    if inc==False:
+        x = "def "+t[2]+"("
+    else:
+        x = "def "+t[2]+"(self"
     for y in range(0,len(t[4][1])):
-        if y!=0:
+        if inc==False:
+            if y!=0:
+                x += ","
+        else:
             x += ","
         x += t[4][1][y]
     if t[8]!="":
         x += "):\n"+t[8]
     else:
-        x += "):\npass"
+        x += "):\n\tpass\n"
     symbol_stack.pop()
     t[0] = x
 
@@ -356,9 +405,16 @@ def p_function_def_return(t):
         if len(t[4][1])!=0:
             print "Function 'main' cannot have arguments."
             exit(0)
-    x = "def "+t[3]+"("
+    inc = in_class()
+    if inc==False:
+        x = "def "+t[3]+"("
+    else:
+        x = "def "+t[3]+"(self"
     for y in range(0,len(t[5][1])):
-        if y!=0:
+        if inc==False:
+            if y!=0:
+                x += ","
+        else:
             x += ","
         x += t[5][1][y]
     x += "):\n"+t[9]
@@ -597,53 +653,99 @@ def p_assignment(t):
 
 def p_obj_expression(t):
     '''obj_expression : obj_expression DOT ID'''
+    temp = scan_classes[t[1][1]]["members"].get(t[3],"")
+    if temp=="":
+        print "'"+t[1][0]+" has no member '"+t[3]+"'."
+        exit(0)
+    t[0] = [ "("+t[1][0]+"."+t[3]+")", temp ]
 
 def p_obj_expression_id(t):
     '''obj_expression : ID'''
     temp1 = check_stack(t[1])
     if temp1!=None:
-        t[0] = [ t[1], temp1[1] ]
+        if temp1[0]=="class":
+            t[0] = [ '(self.'+t[1]+')', temp1[1] ]
+        else:
+            t[0] = [ t[1], temp1[1] ]
     else:
         print "Unknown variable '"+t[1]+"'."
         exit(0)
 
 def p_variable_def(t):
-    '''variable_def : var_type ID EQ NEW var_type
-                    | var_type ID EQ NEW var_type LBRACK NL mul_variable_assign RBRACK'''
+    '''variable_def : var_type ID EQ NEW var_type'''
+                   #| var_type ID EQ NEW var_type LBRACK NL mul_variable_assign RBRACK'''
+    if not above_is_class():
+        temp = check_stack(t[2])
+        if temp==None:
+            add_stack(t[2],t[1])
+            temp2 = check_type(t[1],t[5])
+            if temp2!="":
+                if in_class():
+                    if symbol_stack[0][2]==temp2:
+                        print "Cannot instantiate a class while defining it."
+                        exit(0)
+                t[0] = t[2]+' = ('+temp2+'())'
+            else:
+               print "Type mis-match '"+t[1]+"' with '"+t[5]+"'."
+               exit(0)
+        else:
+            print "Cannot redefine variable '"+t[2]+"'."
+            exit(0)
+    else:
+        temp2 = check_type(t[1],t[5])
+        if temp2!="":
+            if in_class():
+                if symbol_stack[0][2]==temp2:
+                    print "Cannot instantiate a class while defining it."
+                    exit(0)
+            t[0] = t[2]+' = ('+temp2+'())'
+        else:
+            print "Type mis-match '"+t[1]+"' with '"+t[5]+"'."
+            exit(0)
 
 def p_variable_def_expression(t):
     '''variable_def : var_type ID EQ expression'''
-    temp = check_stack(t[2])
-    if temp==None:
-        add_stack(t[2],t[1])
+    if not above_is_class():
+        temp = check_stack(t[2])
+        if temp==None:
+            add_stack(t[2],t[1])
+            temp2 = check_type(t[1],t[4][1])
+            if temp2!="":
+                t[0] = t[2]+' = ('+t[4][0]+')'
+            else:
+                print "Type conflict with '"+t[2]+"'."
+                exit(0)
+        else:
+            print "Cannot redefine variable '"+t[2]+"'."
+            exit(0)
+    else:
         temp2 = check_type(t[1],t[4][1])
         if temp2!="":
             t[0] = t[2]+' = ('+t[4][0]+')'
         else:
             print "Type conflict with '"+t[2]+"'."
             exit(0)
-    else:
-        print "Cannot redefine variable '"+t[2]+"'."
-        exit(0)
 
 def p_variable_def_simple(t):
     '''variable_def : var_type ID'''
-    temp = check_stack(t[2])
-    if temp==None:
-        add_stack(t[2],t[1])
-        t[0] = ""
+    inc = above_is_class()
+    if inc==False:
+        temp = check_stack(t[2])
+        if temp==None:
+            add_stack(t[2],t[1])
+            t[0] = ""
+        else:
+            print "Cannot redefine variable '"+t[2]+"'."
+            exit(0)
     else:
-        print "Cannot redefine variable '"+t[2]+"'."
-        exit(0)
+# TODO: prevent declaring variable of own class name
+        t[0] = ""
 
-def p_mul_variable_assign(t):
-    '''mul_variable_assign : mul_variable_assign assignment NL
-                           | data_statement_load NL
-                           | mul_variable_assign NL
-                           | '''
-    #if len(t)==4:
-    #elif len(t)==3:
-    #else:
+#def p_mul_variable_assign(t):
+#    '''mul_variable_assign : mul_variable_assign assignment NL
+#                           | data_statement_load NL
+#                           | mul_variable_assign NL
+#                           | '''
 
 def p_var_type(t):
     '''var_type : TEXT_TYPE

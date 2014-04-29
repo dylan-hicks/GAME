@@ -40,6 +40,12 @@ def syscall(x,t):
     }
     return syscalls.get(func_shorthand(x,t),None)
 
+def syscallret(x,t):
+    syscalls = {
+    'sqrt*num': ['math.sqrt(',')','num','num'],
+    }
+    return syscalls.get(func_shorthand(x,t),None)
+
 def check_type(x,y):
     if x==y:
         return x
@@ -228,7 +234,7 @@ names = { }
         
 def p_program_lines(t):
     '''program_lines : include_lines lines'''
-    toWrite = t[2]+"main()"
+    toWrite = "import math\n"+t[2]+"main()"
     print toWrite
     out_file = open("{}.py".format(sys.argv[1]), "w")
     out_file.write(toWrite)
@@ -318,7 +324,6 @@ def p_statement_obj_function(t):
             print "'"+t[1][0]+"' has no function '"+t[3]+"'."
             exit(0)
     else:
-        #could be a list
         temp7 = list_check(t[1][1])
         if temp1!=None:
             if t[3]=="add" and len(t[5])==1:
@@ -326,8 +331,30 @@ def p_statement_obj_function(t):
                 if temp8!="":
                     t[0] = t[1][0]+".append("+t[5][0][0]+")\n"
                 else:
-                    print "Can only append type '"+temp7+"' to '"+t[1][0]+"'."
+                    print "Can only add type '"+temp7+"' to '"+t[1][0]+"'."
                     exit(0)
+            elif t[3]=="rem" and len(t[5])==1:
+                temp8 = check_type(temp7,t[5][0][1])
+                if temp8!="":
+                    t[0] = t[1][0]+".remove("+t[5][0][0]+")\n"
+                else:
+                    print "Can only remove type '"+temp7+"' from '"+t[1][0]+"'."
+                    exit(0)
+            elif t[3]=="remAt" and len(t[5])==1:
+                if t[5][0][1]=="num":
+                    t[0] = "del "+t[1][0]+"[int("+t[5][0][0]+")]\n"
+                else:
+                    print "Can only remove indice type num from '"+t[1][0]+"'."
+                    exit(0)
+            elif t[3]=="addAt" and len(t[5])==2:
+                temp8 = check_type(temp7,t[5][1][1])
+                if temp8!="" and t[5][0][1]=="num":
+                    t[0] = t[1][0]+"[int("+t[5][0][0]+")] = "+t[5][1][0]+"\n"
+                else:
+                    print "Wrong arguments for addAt."
+                    exit(0)
+            elif t[3]=="get":
+                 t[0] = ""
             else:
                 print "Cannot apply operator '"+t[3]+"' to a list."
                 exit(0)
@@ -360,6 +387,10 @@ def p_statement_function(t):
     '''statement : ID LPAREN function_run_args RPAREN'''
     # check for system calls
     sys_out = syscall(t[1],t[3])
+    if sys_out==None:
+        sys_out = syscallret(t[1],t[3])
+        if sys_out!=None:
+            sys_out.pop()
     if sys_out!=None:
         if len(sys_out)-2==len(t[3]):
             args = ""
@@ -589,8 +620,21 @@ def p_expression_obj(t):
             print "'"+t[1][0]+"' has no function '"+t[3]+"'."
             exit(0)
     else:
-        print "'"+t[1][0]+"' has no function '"+t[3]+"'."
-        exit(0)
+        temp7 = list_check(t[1][1])
+        if temp7!=None:
+            if t[3]=="get" and len(t[5])==1:
+                temp8 = check_type(temp7,t[5][0][1])
+                if t[5][0][1]=="num":
+                    t[0] = [ t[1][0]+"[int("+t[5][0][0]+")]", temp7 ]
+                else:
+                    print "Can only index into arrays with type num."
+                    exit(0)
+            else:
+                print "Cannot apply operator '"+t[3]+"' to a list."
+                exit(0)
+        else:
+            print "'"+t[1][0]+"' has no function '"+t[3]+"'."
+            exit(0)
 
 def p_expression_assign(t):
     '''expression : assignment'''
@@ -598,24 +642,40 @@ def p_expression_assign(t):
 
 def p_expression_call(t):
     '''expression : ID LPAREN function_run_args RPAREN'''
-    st = func_shorthand(t[1],t[3])
-    if scan_functions.get(st,"")!="":
-        out = t[1]+'('
-        for x in range(0,len(t[3])):
-            if x!=0:
-                out += ', '
-            out += t[3][x][0]
-        out += ')'
-        returnt = scan_functions[st].get("return","")
-        if returnt=="":
-            print "Function '"+t[1]+"' does not return a value."
-            exit(0)
+    sys_out = syscallret(t[1],t[3])
+    if sys_out!=None:
+        if len(sys_out)-3==len(t[3]):
+            args = ""
+            for z in range(0,len(sys_out)-3):
+               if sys_out[z+2]!=t[3][z][1]:
+                   print t[1]+" expecting argument of type '"+sys_out[z+2]+"' given '"+t[3][z][1]+"'."
+                   exit(0)
+               if z!=0:
+                    args += ", "
+               args += t[3][z][0]
+            t[0] = [ sys_out[0]+args+sys_out[1]+'\n', sys_out[len(sys_out)-1] ] 
         else:
-            out = [ out, returnt ]
+            print t[1]+" accepts "+(len(sys_out)-2)+" arguments."
+            exit(0)
     else:
-        print "No function named '"+t[1]+"'."
-        exit(0)
-    t[0] = out 
+        st = func_shorthand(t[1],t[3])
+        if scan_functions.get(st,"")!="":
+            out = t[1]+'('
+            for x in range(0,len(t[3])):
+                if x!=0:
+                    out += ', '
+                out += t[3][x][0]
+            out += ')'
+            returnt = scan_functions[st].get("return","")
+            if returnt=="":
+                print "Function '"+t[1]+"' does not return a value."
+                exit(0)
+            else:
+                out = [ out, returnt ]
+        else:
+            print "No function named '"+t[1]+"'."
+            exit(0)
+        t[0] = out 
 
 def p_expression_obje(t):
     '''expression : obj_expression'''
@@ -854,7 +914,7 @@ def p_constant_bool_false(t):
 
 def p_constant_list(t):
     '''constant_list : constant_list COMMA constant_list
-                     | constant'''
+                     | expression'''
     if len(t)==4:
         temp = check_type(t[1][1],t[3][1])
         if temp!="":

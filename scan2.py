@@ -337,7 +337,7 @@ def p_constant(t):
 
 def p_constant_list(t):
     '''constant_list : constant_list COMMA constant_list
-                     | constant'''
+                     | expression'''
 
 def p_error(t):
     '''Do nothing'''

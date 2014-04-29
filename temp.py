@@ -1,5 +1,8 @@
-# Known bugs: start part of loop expression must be on left, cannot self reference in object( need to check inside of lists too)
+# Known bugs?: start part of loop expression must be on left
 # missing rule? expression : NEW var_type
+# some syntax errors cause prescanner problems
+
+# TODO: loops, syscalls with a return value
 
 import sys
 import re
@@ -30,11 +33,12 @@ if found!=1:
 
 symbol_stack = [ ]
 
-def syscall(x):
+def syscall(x,t):
     syscalls = {
-    'print': ['print(',')','text']
+    'print*text': ['print(',')','text'],
+    'print*num': ['print(',')','num']
     }
-    return syscalls.get(x,None)
+    return syscalls.get(func_shorthand(x,t),None)
 
 def check_type(x,y):
     if x==y:
@@ -52,6 +56,17 @@ def check_type(x,y):
             return x
         else:
             return ""
+
+def get_root_type(x):
+    while len(x) > 5 and x[:5]=="list(":
+        x = x[5:-1]
+    return x
+
+def list_check(x):
+    if len(x) > 5 and x[:5]=="list(":
+        return x[5:-1]
+    else:
+        return None
 
 def check_stack(x):
     for y in symbol_stack:
@@ -303,8 +318,22 @@ def p_statement_obj_function(t):
             print "'"+t[1][0]+"' has no function '"+t[3]+"'."
             exit(0)
     else:
-        print "'"+t[1][0]+"' has no function '"+t[3]+"'."
-        exit(0)
+        #could be a list
+        temp7 = list_check(t[1][1])
+        if temp1!=None:
+            if t[3]=="add" and len(t[5])==1:
+                temp8 = check_type(temp7,t[5][0][1])
+                if temp8!="":
+                    t[0] = t[1][0]+".append("+t[5][0][0]+")\n"
+                else:
+                    print "Can only append type '"+temp7+"' to '"+t[1][0]+"'."
+                    exit(0)
+            else:
+                print "Cannot apply operator '"+t[3]+"' to a list."
+                exit(0)
+        else:
+            print "'"+t[1][0]+"' has no function '"+t[3]+"'."
+            exit(0)
 
 def p_statement_assign(t):
     '''statement : assignment'''
@@ -330,7 +359,7 @@ def p_statement_if_statement(t):
 def p_statement_function(t):
     '''statement : ID LPAREN function_run_args RPAREN'''
     # check for system calls
-    sys_out = syscall(t[1])
+    sys_out = syscall(t[1],t[3])
     if sys_out!=None:
         if len(sys_out)-2==len(t[3]):
             args = ""
@@ -518,7 +547,6 @@ def p_else_st(t):
 def p_data_statement(t):
     '''data_statement : data_statement_load
                       | data_statement_export'''
-    #t[0] = t[1]
 
 def p_data_statement_load(t):
     '''data_statement_load : LOAD obj_expression FROM expression'''
@@ -527,8 +555,42 @@ def p_data_statement_save(t):
     '''data_statement_export : EXPORT obj_expression TO expression'''
 
 def p_expression(t):
-    '''expression : obj_expression DOT ID LPAREN function_run_args RPAREN
-                  | obj_expression LSQ expression RSQ'''
+    '''expression : obj_expression LSQ expression RSQ'''
+    temp1 = list_check(t[1][1])
+    if temp1!=None:
+        if t[3][1]=="num":
+            t[0] = [ "("+t[1][0]+"[int("+t[3][0]+")])", temp1 ]
+        else:
+            print "'"+t[3][0]+"' is not a number and cannot be used as an array index."
+            exit(0)
+    else:
+        print "'"+t[1][0]+"' is not a list and cannot use the [ ] operator."
+        exit(0)
+
+def p_expression_obj(t):
+    '''expression : obj_expression DOT ID LPAREN function_run_args RPAREN'''
+    temp1 = scan_classes.get(t[1][1],"")
+    if temp1!="":
+        st = func_shorthand(t[3],t[5])
+        temp2 = scan_classes[t[1][1]]["methods"].get(st,"")
+        if temp2!="":
+            temp3 = temp2.get("return","")
+            if temp3!="":
+                out = "("+t[1][0]+"."+t[3]+"("
+                for x in range(0,len(t[5])):
+                    if x!=0:
+                        out += ', '
+                    out += t[5][x][0]
+                out += '))'
+                t[0] = out, temp3
+            else:
+                print "'"+t[1][0]+"."+t[3]+" has no return type."
+        else:
+            print "'"+t[1][0]+"' has no function '"+t[3]+"'."
+            exit(0)
+    else:
+        print "'"+t[1][0]+"' has no function '"+t[3]+"'."
+        exit(0)
 
 def p_expression_assign(t):
     '''expression : assignment'''
@@ -695,7 +757,7 @@ def p_variable_def(t):
         temp2 = check_type(t[1],t[5])
         if temp2!="":
             if in_class():
-                if symbol_stack[0][2]==temp2:
+                if symbol_stack[0][2]==get_root_type(temp2):
                     print "Cannot instantiate a class while defining it."
                     exit(0)
             t[0] = t[2]+' = ('+temp2+'())'
@@ -738,8 +800,10 @@ def p_variable_def_simple(t):
             print "Cannot redefine variable '"+t[2]+"'."
             exit(0)
     else:
-# TODO: prevent declaring variable of own class name
         t[0] = ""
+        if get_root_type(t[1])==symbol_stack[0][2]:
+            print "Cannot have a class inside a class of the same type."
+            exit(0)
 
 #def p_mul_variable_assign(t):
 #    '''mul_variable_assign : mul_variable_assign assignment NL
@@ -761,12 +825,12 @@ def p_var_type(t):
 def p_constant(t):
     '''constant : LBRACK constant_list RBRACK
                 | LBRACK RBRACK'''
-    if len(t)==3:
+    if len(t)==4:
         out = "[ "
         for x in range(0,len(t[2][0])):
             if x!=0:
                 out += ', '
-            t[2][0][x]
+            out += t[2][0][x]
         out += " ]"
         t[0] = [ out, t[2][1] ]
     else:

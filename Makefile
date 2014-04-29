@@ -4,7 +4,7 @@ all:
 
 .PHONY:temp
 temp:
-	python temp.py test.game
+	python temp.py test2.game
 
 .PHONY:test
 test: temp

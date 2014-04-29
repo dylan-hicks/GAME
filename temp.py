@@ -534,25 +534,33 @@ def p_function_run_arg_values(t):
         t[0] = t[1]
 
 def p_loop(t):
-    '''loop : LOOP LPAREN loop_expression RPAREN LBRACK NL function_lines RBRACK
-            | FOREACH LPAREN var_type ID IN ID RPAREN LBRACK NL function_lines RBRACK
+    '''loop : FOREACH LPAREN var_type ID IN ID RPAREN LBRACK NL function_lines RBRACK
             | var_type ID EQ GETEACH LPAREN var_type ID IN ID WHERE expression RPAREN'''
-    #if len(t)==9:
-    #elif len(t)==12:
-    #else:    
+
+def p_loop_all(t):
+    '''loop : loop_st LPAREN loop_expression RPAREN LBRACK NL function_lines RBRACK'''
+    symbol_stack.pop()
+
+def p_loop_st(t):
+    '''loop_st : LOOP'''
+    symbol_stack.append([ "loop", { } ])
 
 def p_loop_expression(t):
     '''loop_expression : loop_expression COMMA loop_expression
                        | loop_expression_values
                        | '''
-    #if len(t)==4:
-    #elif len(t)==2:
-    #else:
 
 def p_loop_expression_values(t):
     '''loop_expression_values : START variable_def
                               | WHILE expression
                               | SET assignment'''
+    if t[0]=="start":
+        print t[1]
+    elif t[0]=="while":
+        print t[1]
+    elif t[0]=="set":
+        print t[1]
+    exit(0)
 
 def p_if_statement(t):
     '''if_statement : if_st LPAREN expression RPAREN LBRACK NL function_lines RBRACK

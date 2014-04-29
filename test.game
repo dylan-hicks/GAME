@@ -1,16 +1,33 @@
-function main(){
- hi yo = new hi
- yo.y4.add()
- pr()
+class Dude {
+	num age
+	text name
+	bool isCool
+	list(num) p
+
+	function build(num a) {
+		age = a
+		height = "house"
+		name = "will"
+		p = {4, 3, 2, 1}
+		p.add(5)
+		p.addAt(1, 10)
+
+		loop (start num j = 0, while j <= 4, set j = j + 1, start i = 13.2, while i > 2.1, set i = i + 1) {
+			temp = p.get(j)
+			print(temp)
+		}	
+	}
+      
+	function addTen() {
+		age = age + 10
+		removed = p.remAt(1)
+		print(removed)
+	}
 }
-class hi {
-    hi y4
-    num l = 3
-    num z = 2
-    function add(){
-        print(l+"")
-    }
-}
-function pr(){
- print("hi")
+
+function main() {
+	Dude bob = new Dude
+	bob.build(12)
+	bob.addTen()
+
 }

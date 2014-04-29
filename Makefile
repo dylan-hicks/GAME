@@ -2,6 +2,14 @@
 all:
 	./gamec -o test.game
 
+.PHONY:temp
+temp:
+	python temp.py test.game
+
+.PHONY:test
+test:
+	python test.game.py
+
 .PHONY:ast
 ast:
 	python ast.py test.game

@@ -2,6 +2,8 @@
 # adds extra line after loop (bug?)
 # TODO: geteach, mul_variable def 
 
+# start : assignment
+
 import sys
 import re
 import json
@@ -563,7 +565,7 @@ def p_loop_foreach(t):
     else:
         print "Unkown variable '"+t[3]+"'."
         exit(0)
-    t[0] = out 
+    t[0] = out+"\n" 
     symbol_stack.pop()
 
 def p_foreach_st(t):
@@ -676,6 +678,7 @@ def p_if_statement(t):
         else:
             out += '\tpass\n'
         t[0] = out
+    t[0] = t[0]+"\n"
 
 def p_if_st(t):
     '''if_st : IF'''

@@ -205,8 +205,8 @@ def p_function_def(t):
     id_param = 2 if len(t)==10 else 3
     id_args = 4 if len(t)==10 else 5
     func_hash = t[id_param]
-    for x in t[id_args][0]:
-        func_hash += "*"+t[id_args][0][x] 
+    for x in range(0,len(t[id_args][1])):
+        func_hash += "*"+t[id_args][0][t[id_args][1][x]] 
     to_add = { }
     to_add["name"] = t[id_param]
     to_add["args"] = t[id_args]

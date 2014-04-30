@@ -4,6 +4,11 @@
 
 # start : assignment
 
+# too careful for class in class
+# default instantiation
+
+# concatonate bool?
+
 import sys
 import re
 import json
@@ -105,6 +110,8 @@ def add_tab(x):
     return x.replace("\n","\n\t")
 
 def func_shorthand(x,y):
+    print x
+    print y
     z = x
     for l in y:
         z += '*'+l[1]
@@ -483,7 +490,7 @@ def p_function_def_return(t):
     if temp1=="":
         print "Function '"+t[3]+" returns the wrong type."
         exit(0)
-    x += '\treturn ('+t[11][0]+')'
+    x += '\treturn ('+t[11][0]+')\n'
     symbol_stack.pop()
     t[0] = x
 
@@ -864,12 +871,16 @@ def p_expression_numeric(t):
 
 def p_expression_plus(t):
     '''expression : expression PLUS expression'''
+    print t[3][1]
+    print t[1][1]
     if t[1][1]=="num" and t[3][1]=="num":
         t[0] = [ '('+t[1][0]+')+('+t[3][0]+')', "num" ]
     elif t[1][1]=="num" and t[3][1]=="text":
         t[0] = [ '(str('+t[1][0]+'))+('+t[3][0]+')', "text" ]
     elif t[1][1]=="text" and t[3][1]=="num":
         t[0] = [ '('+t[1][0]+')+(str('+t[3][0]+'))', "text" ]
+    elif t[1][1]=="text" and t[3][1]=="text":
+        t[0] = [ '('+t[1][0]+')+('+t[3][0]+')', "text" ]
     else:
         print "Cannot apply '+' operator to "+t[1][1]+" and "+t[3][1]+"."
         exit(0)
@@ -916,10 +927,6 @@ def p_variable_def(t):
             add_stack(t[2],t[1])
             temp2 = check_type(t[1],t[5])
             if temp2!="":
-                if in_class():
-                    if symbol_stack[0][2]==get_root_type(temp2):
-                        print "Cannot instantiate a class while defining it."
-                        exit(0)
                 t[0] = t[2]+' = ('+temp2+'())'
             else:
                print "Type mis-match '"+t[1]+"' with '"+t[5]+"'."
@@ -930,10 +937,9 @@ def p_variable_def(t):
     else:
         temp2 = check_type(t[1],t[5])
         if temp2!="":
-            if in_class():
-                if symbol_stack[0][2]==get_root_type(temp2):
-                    print "Cannot instantiate a class while defining it."
-                    exit(0)
+            if symbol_stack[0][2]==get_root_type(temp2):
+                print "Cannot instantiate a class while defining it."
+                exit(0)
             t[0] = t[2]+' = ('+temp2+'())'
         else:
             print "Type mis-match '"+t[1]+"' with '"+t[5]+"'."
@@ -969,15 +975,27 @@ def p_variable_def_simple(t):
         temp = check_stack(t[2])
         if temp==None:
             add_stack(t[2],t[1])
-            t[0] = ""
         else:
             print "Cannot redefine variable '"+t[2]+"'."
             exit(0)
     else:
-        t[0] = ""
         if get_root_type(t[1])==symbol_stack[0][2]:
             print "Cannot have a class inside a class of the same type."
             exit(0)
+    t[0] = t[2]+" = "
+    temp20 = list_check(t[1])
+    if temp20==None:
+        if t[1]=="num":
+            t[0] += "0"
+        elif t[1]=="text":
+            t[0] += '""'
+        elif t[1]=="bool":
+            t[0] += "False"
+        else:
+            t[0] += t[1]+"()"
+    else:
+        t[0] += "[ ]"
+    
 
 #def p_mul_variable_assign(t):
 #    '''mul_variable_assign : mul_variable_assign assignment NL

@@ -29,7 +29,8 @@ function main(){
     bob.build(12, "Bob", false)
     #bob.addTen()
     list(num) lll = {1,2,3,4}
-    print(lll)
+    list(num) kkk = geteach(num i in lll where i>2)
+    print(kkk)
     
     Dude john = new Dude
     john.build(14, "John", true)

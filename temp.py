@@ -37,8 +37,8 @@ symbol_stack = [ ]
 
 def syscall(x,t): #syscalls with no return value, print is an exception and is below in statement    
     syscalls = {
-    'print*text': ['print(',')','text'],
-    'print*num': ['print(',')','num']
+    #'print*text': ['print(',')','text'],
+    #'print*num': ['print(',')','num']
     }
     return syscalls.get(func_shorthand(x,t),None)
 
@@ -549,7 +549,44 @@ def p_function_run_arg_values(t):
         t[0] = t[1]
 
 def p_loop(t):
-    '''loop : var_type ID EQ GETEACH LPAREN var_type ID IN ID WHERE expression RPAREN'''
+    '''loop : geteach_st WHERE expression RPAREN'''
+    if t[3][1]=="bool":
+        t[0] = t[1][0] + " = [ ]\n\tfor "+ t[1][1] + " in " + t[1][2] + ":\n\t\tif (" + t[3][0] + "):\n\t\t\t" + t[1][0] + ".append("+t[1][1]+")\n"
+    else:
+        print "An expression inside a get each statement must return a boolean value."
+        exit(0)
+    print t[1]
+    symbol_stack.pop()
+
+def p_geteach_st(t):
+    '''geteach_st : var_type ID EQ GETEACH LPAREN var_type ID IN ID'''
+    if check_stack(t[2])==None:
+        add_stack(t[2],t[1])
+        symbol_stack.append([ "loop", { } ])
+        temp2 = check_stack(t[9])
+        if temp2!=None and check_type(temp2[1],t[1])!="":
+            temp7 = list_check(t[1])
+            if temp7!=None:
+                if check_type(temp7,t[6])!="":
+                    temp3 = check_stack(t[7])
+                    if temp3==None:
+                        add_stack(t[7],t[6])
+                        t[0] = [ t[2], t[7], t[9] ]
+                    else:
+                        print "Cannot redefine '"+t[7]+"'."
+                        exit(0)
+                else:
+                    print "The temporary variable in the list you are iterating must be the same type the list contains."
+                    exit(0)
+            else:
+                print "The geteach statement can only operator on lists."
+                exit(0)
+        else:
+            print "Variable '"+t[9]+"' must be defined and be of type "+t[1]+"."
+            exit(0)
+    else:
+        print "Cannot redefine '"+t[2]+"'."
+        exit(0)
 
 def p_loop_foreach(t):
     '''loop : foreach_st IN ID RPAREN LBRACK NL function_lines RBRACK'''

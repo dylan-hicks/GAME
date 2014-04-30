@@ -29,8 +29,12 @@ function main(){
     bob.build(12, "Bob", false)
     #bob.addTen()
     list(num) lll = {1,2,3,4}
-    print(lll)
-    
+    list(num) ddd = geteach(num i in lll where i > 2)
+    print(ddd)
+    foreach(num i in lll){
+        print(i)
+    }
+     
     Dude john = new Dude
     john.build(14, "John", true)
     print("Bob's age: " + bob.age)

@@ -1,7 +1,6 @@
 # Known bugs?: start part of loop expression must be on left
 # adds extra lines in random places, not really an issue
 
-# missing? expression = NEW var_type
 # how about using geteach to return to an already defined variable?
 
 import sys
@@ -552,7 +551,6 @@ def p_loop(t):
     else:
         print "An expression inside a get each statement must return a boolean value."
         exit(0)
-    print t[1]
     symbol_stack.pop()
 
 def p_geteach_st(t):
@@ -751,6 +749,14 @@ def p_data_statement_load(t):
 def p_data_statement_save(t):
     '''data_statement_export : EXPORT obj_expression TO expression'''
 
+def p_expression_new(t):
+    '''expression : NEW ID'''
+    if scan_classes.get(t[2],"")!="":
+        t[0] = t[2]+"()" , t[2]
+    else:
+        print "No object of type '"+t[2]+"'."
+        exit(0)
+
 def p_expression(t):
     '''expression : obj_expression LSQ expression RSQ'''
     temp1 = list_check(t[1][1])
@@ -916,8 +922,6 @@ def p_expression_numeric(t):
 
 def p_expression_plus(t):
     '''expression : expression PLUS expression'''
-    print t[3][1]
-    print t[1][1]
     if t[1][1]=="num" and t[3][1]=="num":
         t[0] = [ '('+t[1][0]+')+('+t[3][0]+')', "num" ]
     elif t[1][1]=="num" and t[3][1]=="text":
@@ -967,32 +971,6 @@ def p_obj_expression_id(t):
         print "Unknown variable '"+t[1]+"'."
         exit(0)
 
-def p_variable_def(t):
-    '''variable_def : var_type ID EQ NEW var_type'''
-    if not above_is_class():
-        temp = check_stack(t[2])
-        if temp==None:
-            add_stack(t[2],t[1])
-            temp2 = check_type(t[1],t[5])
-            if temp2!="":
-                t[0] = t[2]+' = ('+temp2+'())'
-            else:
-               print "Type mis-match '"+t[1]+"' with '"+t[5]+"'."
-               exit(0)
-        else:
-            print "Cannot redefine variable '"+t[2]+"'."
-            exit(0)
-    else:
-        temp2 = check_type(t[1],t[5])
-        if temp2!="":
-            if symbol_stack[0][2]==get_root_type(temp2):
-                print "Cannot instantiate a class while defining it."
-                exit(0)
-            t[0] = t[2]+' = ('+temp2+'())'
-        else:
-            print "Type mis-match '"+t[1]+"' with '"+t[5]+"'."
-            exit(0)
-
 def p_variable_def_expression(t):
     '''variable_def : var_type ID EQ expression'''
     if not above_is_class():
@@ -1011,6 +989,9 @@ def p_variable_def_expression(t):
     else:
         temp2 = check_type(t[1],t[4][1])
         if temp2!="":
+            if symbol_stack[0][2]==get_root_type(temp2):
+                print "Cannot instantiate a class while defining it."
+                exit(0)
             t[0] = t[2]+' = ('+t[4][0]+')'
         else:
             print "Type conflict with '"+t[2]+"'."

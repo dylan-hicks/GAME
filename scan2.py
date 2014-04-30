@@ -292,6 +292,7 @@ def p_expression(t):
                   | NOT expression 
                   | MINUS expression %prec UMINUS
                   | constant
+                  | NEW ID
                   | assignment
                   | ID LPAREN function_run_args RPAREN
                   | obj_expression DOT ID LPAREN function_run_args RPAREN
@@ -307,8 +308,7 @@ def p_obj_expression(t):
 
 def p_variable_def(t):
     '''variable_def : var_type ID
-                    | var_type ID EQ expression
-                    | var_type ID EQ NEW var_type'''
+                    | var_type ID EQ expression'''
     t[0] = t[2],t[1] 
 
 def p_var_type(t):

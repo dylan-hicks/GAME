@@ -1,8 +1,6 @@
 # Known bugs?: start part of loop expression must be on left
 # adds extra lines in random places, not really an issue
-# TODO: geteach, mul_variable def 
 
-# start : assignment
 # missing? expression = NEW var_type
 # how about using geteach to return to an already defined variable?
 
@@ -108,8 +106,6 @@ def add_tab(x):
     return x.replace("\n","\n\t")
 
 def func_shorthand(x,y):
-    print x
-    print y
     z = x
     for l in y:
         z += '*'+l[1]
@@ -241,6 +237,7 @@ def p_program_lines(t):
     '''program_lines : include_lines lines'''
     sys_calls = open("syscalls.py",'r')
     toWrite = sys_calls.read()+"\n"+t[2]+"main()"
+    #toWrite = re.sub(r"\n(\t\n)*\n","\n",toWrite) #removes excess lines
     print toWrite
     out_file = open("{}.py".format(sys.argv[1]), "w")
     out_file.write(toWrite)
@@ -705,6 +702,10 @@ def p_loop_expression_values(t):
     elif t[1]=="set":
         t[0] = t[1], t[2][0]
 
+def p_loop_expression_start_assign(t):
+    '''loop_expression_values : START assignment'''
+    t[0] = "start", t[2][0]
+
 def p_if_statement(t):
     '''if_statement : if_st LPAREN expression RPAREN LBRACK NL function_lines RBRACK
                     | if_st LPAREN expression RPAREN LBRACK NL function_lines RBRACK else_st LBRACK NL function_lines RBRACK'''
@@ -968,7 +969,6 @@ def p_obj_expression_id(t):
 
 def p_variable_def(t):
     '''variable_def : var_type ID EQ NEW var_type'''
-                   #| var_type ID EQ NEW var_type LBRACK NL mul_variable_assign RBRACK'''
     if not above_is_class():
         temp = check_stack(t[2])
         if temp==None:
@@ -1043,13 +1043,6 @@ def p_variable_def_simple(t):
             t[0] += t[1]+"()"
     else:
         t[0] += "[ ]"
-    
-
-#def p_mul_variable_assign(t):
-#    '''mul_variable_assign : mul_variable_assign assignment NL
-#                           | data_statement_load NL
-#                           | mul_variable_assign NL
-#                           | '''
 
 def p_var_type(t):
     '''var_type : TEXT_TYPE

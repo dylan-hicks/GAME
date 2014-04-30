@@ -256,6 +256,7 @@ def p_loop_expression(t):
 
 def p_loop_expression_values(t):
     '''loop_expression_values : START variable_def
+                              | START assignment
                               | WHILE expression
                               | SET assignment'''
 
@@ -307,15 +308,8 @@ def p_obj_expression(t):
 def p_variable_def(t):
     '''variable_def : var_type ID
                     | var_type ID EQ expression
-                    | var_type ID EQ NEW var_type
-                    | var_type ID EQ NEW var_type LBRACK NL mul_variable_assign RBRACK'''
+                    | var_type ID EQ NEW var_type'''
     t[0] = t[2],t[1] 
-
-def p_mul_variable_assign(t):
-    '''mul_variable_assign : mul_variable_assign assignment NL
-                           | data_statement_load NL
-                           | mul_variable_assign NL
-                           | '''
 
 def p_var_type(t):
     '''var_type : TEXT_TYPE

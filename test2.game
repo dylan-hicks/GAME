@@ -1,13 +1,10 @@
 function main() {
- num i = 0
- num sum = 0
-
-loop () {
- sum = sum + i
- i = i + 1
- if (i>100) {
-  break
- }
-}
- print("Total: "+sum)
+    list(num) x = { 1, 2, 3, 4, 5}
+    list(num) y = { }
+    foreach(num i in x){
+       if(i > 3){
+           y.add(i)
+       }
+    }
+    print(y.get(1))
 }

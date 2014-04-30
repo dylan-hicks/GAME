@@ -1,10 +1,35 @@
-function main() {
-    list(num) x = { 1, 2, 3, 4, 5}
-    list(num) y = { }
-    foreach(num i in x){
-       if(i > 3){
-           y.add(i)
-       }
+class Dude{
+    num age
+    text name
+    bool isCool
+    
+    function build(num a, text n, bool i){
+        age = a
+        name = n
+        isCool = i
     }
-    print(num_form("#.##",y.get(1)))
-}
+    
+    function addTen(){
+        age = age + 10
+    }
+}    
+
+function main(){
+    Dude bob = new Dude
+    bob.build(12, "Bob", false)
+    #bob.addTen()
+    list(num) lll = {1,2,3,4}
+    print(lll)
+    
+    Dude john = new Dude
+    john.build(14, "John", true)
+    print("Bob's age: " + bob.age)
+    print("Bob's name: " + bob.name)
+    print("Is Bob cool? " + bob.isCool)
+
+    if (john.age > bob.age){
+        print(john.name + " is older than " + bob.name)
+    } else{
+        print(bob.name + " is older than " + john.name)
+    }        
+} 

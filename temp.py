@@ -1,13 +1,10 @@
 # Known bugs?: start part of loop expression must be on left
-# adds extra line after loop (bug?)
+# adds extra lines in random places, not really an issue
 # TODO: geteach, mul_variable def 
 
 # start : assignment
-
-# too careful for class in class
-# default instantiation
-
-# concatonate bool?
+# missing? expression = NEW var_type
+# how about using geteach to return to an already defined variable?
 
 import sys
 import re
@@ -38,14 +35,14 @@ if found!=1:
 
 symbol_stack = [ ]
 
-def syscall(x,t):
+def syscall(x,t): #syscalls with no return value, print is an exception and is below in statement    
     syscalls = {
     'print*text': ['print(',')','text'],
     'print*num': ['print(',')','num']
     }
     return syscalls.get(func_shorthand(x,t),None)
 
-def syscallret(x,t):
+def syscallret(x,t): #syscalls with a return value (last type in array)
     syscalls = {
     'sqrt*num': ['math.sqrt(',')','num','num'],
     'num_form*text*num': ['num_form(',')','text','num','text']
@@ -396,38 +393,46 @@ def p_statement_if_statement(t):
 def p_statement_function(t):
     '''statement : ID LPAREN function_run_args RPAREN'''
     # check for system calls
-    sys_out = syscall(t[1],t[3])
-    if sys_out==None:
-        sys_out = syscallret(t[1],t[3])
-        if sys_out!=None:
-            sys_out.pop()
-    if sys_out!=None:
-        if len(sys_out)-2==len(t[3]):
-            args = ""
-            for z in range(0,len(sys_out)-2):
-               if sys_out[z+2]!=t[3][z][1]:
-                   print t[1]+" expecting argument of type '"+sys_out[z+2]+"' given '"+t[3][z][1]+"'."
-                   exit(0)
-               if z!=0:
-                    args += ", "
-               args += t[3][z][0]
-            t[0] = sys_out[0]+args+sys_out[1]+'\n'
+    if t[1]=="print" and len(t[3])==1:
+        temp1 = get_root_type(t[3][0][1])
+        if temp1=="" or temp1=="num" or temp1=="text" or temp1=="bool":
+            t[0] = "print("+t[3][0][0]+")\n"
         else:
-            print t[1]+" accepts "+(len(sys_out)-2)+" arguments."
+            print "Print needs an argument of native type"
             exit(0)
     else:
-        st = func_shorthand(t[1],t[3])
-        if scan_functions.get(st,"")!="":
-            out = t[1]+'('
-            for x in range(0,len(t[3])):
-                if x!=0:
-                    out += ', '
-                out += t[3][x][0]
-            out += ')\n'
+        sys_out = syscall(t[1],t[3])
+        if sys_out==None:
+            sys_out = syscallret(t[1],t[3])
+            if sys_out!=None:
+                sys_out.pop()
+        if sys_out!=None:
+            if len(sys_out)-2==len(t[3]):
+                args = ""
+                for z in range(0,len(sys_out)-2):
+                    if sys_out[z+2]!=t[3][z][1]:
+                        print t[1]+" expecting argument of type '"+sys_out[z+2]+"' given '"+t[3][z][1]+"'."
+                        exit(0)
+                    if z!=0:
+                        args += ", "
+                    args += t[3][z][0]
+                t[0] = sys_out[0]+args+sys_out[1]+'\n'
+            else:
+                print t[1]+" accepts "+(len(sys_out)-2)+" arguments."
+                exit(0)
         else:
-            print "No function named '"+t[1]+"'."
-            exit(0)
-        t[0] = out
+            st = func_shorthand(t[1],t[3])
+            if scan_functions.get(st,"")!="":
+                out = t[1]+'('
+                for x in range(0,len(t[3])):
+                    if x!=0:
+                        out += ', '
+                    out += t[3][x][0]
+                out += ')\n'
+            else:
+                print "No function named '"+t[1]+"'."
+                exit(0)
+            t[0] = out
 
 def p_class_def(t):
     '''class_def : class_st LBRACK class_lines RBRACK'''
@@ -880,6 +885,10 @@ def p_expression_plus(t):
     elif t[1][1]=="num" and t[3][1]=="text":
         t[0] = [ '(str('+t[1][0]+'))+('+t[3][0]+')', "text" ]
     elif t[1][1]=="text" and t[3][1]=="num":
+        t[0] = [ '('+t[1][0]+')+(str('+t[3][0]+'))', "text" ]
+    elif t[1][1]=="bool" and t[3][1]=="text":
+        t[0] = [ '(str('+t[1][0]+'))+('+t[3][0]+')', "text" ]
+    elif t[1][1]=="text" and t[3][1]=="bool":
         t[0] = [ '('+t[1][0]+')+(str('+t[3][0]+'))', "text" ]
     elif t[1][1]=="text" and t[3][1]=="text":
         t[0] = [ '('+t[1][0]+')+('+t[3][0]+')', "text" ]

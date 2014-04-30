@@ -1,5 +1,4 @@
 import math
-
 def num_form(format, number):
 	if (isinstance(format, basestring) and isinstance(number, (int, long, float, complex))):
 		if (format == "#"):

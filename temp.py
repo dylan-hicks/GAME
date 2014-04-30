@@ -48,6 +48,7 @@ def syscall(x,t):
 def syscallret(x,t):
     syscalls = {
     'sqrt*num': ['math.sqrt(',')','num','num'],
+    'num_form*text*num': ['num_form(',')','text','num','text']
     }
     return syscalls.get(func_shorthand(x,t),None)
 
@@ -241,7 +242,8 @@ names = { }
         
 def p_program_lines(t):
     '''program_lines : include_lines lines'''
-    toWrite = "import math\n"+t[2]+"main()"
+    sys_calls = open("syscalls.py",'r')
+    toWrite = sys_calls.read()+"\n"+t[2]+"main()"
     print toWrite
     out_file = open("{}.py".format(sys.argv[1]), "w")
     out_file.write(toWrite)

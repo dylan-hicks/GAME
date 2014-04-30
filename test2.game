@@ -6,5 +6,5 @@ function main() {
            y.add(i)
        }
     }
-    print(y.get(1))
+    print(num_form("#.##",y.get(1)))
 }

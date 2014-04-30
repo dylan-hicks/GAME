@@ -4,6 +4,7 @@ parselog.txt
 *.pyc
 test.game
 test.game.py
+test2.game.py
 *.game~
 *.py~
 run.py

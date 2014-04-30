@@ -12,6 +12,16 @@ class Dude{
     function addTen(){
         age = age + 10
     }
+
+    bool function compareTo(Dude two){
+    bool result
+    if(age==two.age and name==two.name and isCool==two.isCool){
+        result = true
+    } else {
+        result = false
+    }
+    return result
+    }
 }    
 
 function main(){
@@ -31,5 +41,6 @@ function main(){
         print(john.name + " is older than " + bob.name)
     } else{
         print(bob.name + " is older than " + john.name)
-    }        
+    }
+    print(bob.compareTo(john))        
 } 

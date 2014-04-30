@@ -1,8 +1,6 @@
 # Known bugs?: start part of loop expression must be on left
-# missing rule? expression : NEW var_type
-# some syntax errors cause prescanner problems
-
-# TODO: loops, syscalls with a return value
+# adds extra line after loop (bug?)
+# TODO: geteach, mul_variable def 
 
 import sys
 import re
@@ -305,6 +303,7 @@ def p_new_lines(t):
 def p_statement(t):
     '''statement : loop
                  | data_statement'''
+    t[0] = t[1]
 
 def p_statement_obj_function(t):
     '''statement : obj_expression DOT ID LPAREN function_run_args RPAREN'''
@@ -534,11 +533,88 @@ def p_function_run_arg_values(t):
         t[0] = t[1]
 
 def p_loop(t):
-    '''loop : FOREACH LPAREN var_type ID IN ID RPAREN LBRACK NL function_lines RBRACK
-            | var_type ID EQ GETEACH LPAREN var_type ID IN ID WHERE expression RPAREN'''
+    '''loop : var_type ID EQ GETEACH LPAREN var_type ID IN ID WHERE expression RPAREN'''
+
+def p_loop_foreach(t):
+    '''loop : foreach_st IN ID RPAREN LBRACK NL function_lines RBRACK'''
+    ftype = t[1][0]
+    fid = t[1][1]
+    out = ""
+    temp2 = check_stack(t[3])
+    if temp2!=None:
+        temp3 = list_check(temp2[1])
+        if temp3!=None:
+            temp4 = check_type(temp3,ftype)
+            if temp4!="":
+                if temp2[0]!="class":
+                    out += "for "+fid+" in "+t[3]+":\n\t"
+                else:
+                    out += "for "+fid+" in self."+t[3]+":\n\t"
+                if t[7]!="":
+                    out += add_tab(t[7])
+                else:
+                    out += "\tpass\n"
+            else:
+                print "Foreach loop variable type mis-match."
+                exit(0)
+        else:
+            print "Variable '"+t[3]+"' is not a list."
+            exit(0)
+    else:
+        print "Unkown variable '"+t[3]+"'."
+        exit(0)
+    t[0] = out 
+    symbol_stack.pop()
+
+def p_foreach_st(t):
+    '''foreach_st : FOREACH LPAREN var_type ID'''
+    symbol_stack.append([ "loop", { } ])
+    if check_stack(t[4])!=False:
+        add_stack(t[4],t[3])
+    else:
+        print "Cannot redefine '"+t[4]+"'."
+        exit(0)
+    t[0] = t[3], t[4]
 
 def p_loop_all(t):
     '''loop : loop_st LPAREN loop_expression RPAREN LBRACK NL function_lines RBRACK'''
+    out = ""
+    first = True
+    for x in t[3]["start"]:
+        if not first:
+            out+="\t"
+        first = False
+        out += x+"\n"
+    if len(t[3]["start"])!=0:
+        out += "\twhile ("
+    else:
+        out += "while ("
+    first = True
+    for x in t[3]["while"]:
+        if not first:
+            out += " and "
+        first = False
+        out += "("+x+")"
+    if len(t[3]["while"])==0:
+        out += "True"
+    out += "):\n"
+    if t[7]=="" and len(t[3]["set"])==0:
+        out += "\t\tpass"
+    else:
+        if t[7]!="":
+            out += "\t"
+        out += add_tab(t[7])
+        if t[7]=="":
+            out += "\t"
+        first = True
+        for x in t[3]["set"]:
+            if not first:
+                 out+="\t\t"
+            else:
+                 out+="\t"
+            first = False
+            out += x+"\n"
+    t[0] = out+"\n"
     symbol_stack.pop()
 
 def p_loop_st(t):
@@ -546,21 +622,35 @@ def p_loop_st(t):
     symbol_stack.append([ "loop", { } ])
 
 def p_loop_expression(t):
-    '''loop_expression : loop_expression COMMA loop_expression
-                       | loop_expression_values
-                       | '''
+    '''loop_expression : loop_expression COMMA loop_expression'''
+    t[1]["start"].extend(t[3]["start"])
+    t[1]["while"].extend(t[3]["while"])
+    t[1]["set"].extend(t[3]["set"])
+    t[0] = t[1]
+
+def p_loop_expression_single(t):
+    '''loop_expression : loop_expression_values'''
+    t[0] = {"start":[ ],"while":[ ],"set":[ ]}
+    t[0][t[1][0]].append(t[1][1])
+
+def p_loop_expression_empty(t):
+    '''loop_expression : '''
+    t[0] = {"start":[ ],"while":[ ],"set":[ ]}
 
 def p_loop_expression_values(t):
     '''loop_expression_values : START variable_def
                               | WHILE expression
                               | SET assignment'''
-    if t[0]=="start":
-        print t[1]
-    elif t[0]=="while":
-        print t[1]
-    elif t[0]=="set":
-        print t[1]
-    exit(0)
+    if t[1]=="start":
+        t[0] = t[1], t[2]
+    elif t[1]=="while":
+        if t[2][1]=="bool":
+            t[0] = t[1], t[2][0]
+        else:
+            print "Loop while expressions must have arguments of type bool."
+            exit(0)
+    elif t[1]=="set":
+        t[0] = t[1], t[2][0]
 
 def p_if_statement(t):
     '''if_statement : if_st LPAREN expression RPAREN LBRACK NL function_lines RBRACK
@@ -570,9 +660,22 @@ def p_if_statement(t):
         print "If must have a boolean argument."
         exit(0)
     if len(t)==9:
-        t[0] = 'if ('+t[3][0]+'):\n\t'+add_tab(t[7])
+        if t[7]!="":
+            t[0] = 'if ('+t[3][0]+'):\n\t'+add_tab(t[7])
+        else:
+            t[0] = 'if ('+t[3][0]+'):\n\t\tpass\n'
     else:
-        t[0] = 'if ('+t[3][0]+'):\n\t'+add_tab(t[7])+'\n\telse:\n\t'+add_tab(t[12]) 
+        out = 'if ('+t[3][0]+'):\n\t'
+        if t[7]!="":
+            out += add_tab(t[7])
+        else:
+            out += '\tpass\n'
+        out += '\n\telse:\n\t'
+        if t[12]!="":
+            out += add_tab(t[12]) 
+        else:
+            out += '\tpass\n'
+        t[0] = out
 
 def p_if_st(t):
     '''if_st : IF'''
@@ -811,7 +914,7 @@ def p_variable_def(t):
             temp2 = check_type(t[1],t[5])
             if temp2!="":
                 if in_class():
-                    if symbol_stack[0][2]==temp2:
+                    if symbol_stack[0][2]==get_root_type(temp2):
                         print "Cannot instantiate a class while defining it."
                         exit(0)
                 t[0] = t[2]+' = ('+temp2+'())'

@@ -1,30 +1,13 @@
-class Dude {
-	num age
-	text name
-	bool isCool
-	list(num) p
-
-	function build(num a) {
-		age = a
-		text height = "house"
-		name = "will"
-		p = {4, 3, 2, 1}
-		p.add(5)
-		p.addAt(1, 10)
-		loop (start num j = 0, while j <= 4, set j = j + 1, start num i = 13.2, while i > 2.1, set i = i + 1) {
-			num temp = p.get(j)
-			print(temp)
-		}	
-	}
-      
-	function addTen() {
-		age = age + 10
-	}
-}
-
 function main() {
-	Dude bob = new Dude
-	bob.build(12)
-	bob.addTen()
+ num i = 0
+ num sum = 0
 
+loop () {
+ sum = sum + i
+ i = i + 1
+ if (i>100) {
+  break
+ }
+}
+ print("Total: "+sum)
 }

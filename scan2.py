@@ -95,6 +95,7 @@ def t_COMMENT(t):
     return t
 
 def t_error(t):
+    errors.append("Invalid token '"+t.value+"'.")
     t.lexer.skip(1)
     
 # Build the lexer
@@ -340,7 +341,7 @@ def p_constant_list(t):
                      | expression'''
 
 def p_error(t):
-    '''Do nothing'''
+    errors.append("Syntax error at '"+str(t)+"'.")
 
 import ply.yacc as yacc
 

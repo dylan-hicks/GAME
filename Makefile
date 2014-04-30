@@ -8,7 +8,7 @@ temp:
 
 .PHONY:test
 test: temp
-	python test.game.py
+	python test2.game.py
 
 .PHONY:ast
 ast:
@@ -16,7 +16,7 @@ ast:
 
 .PHONY:scan
 scan:
-	python scan2.py test.game
+	python scan2.py test2.game
 
 .PHONY:clean
 clean:

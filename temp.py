@@ -49,6 +49,13 @@ def syscallret(x,t): #syscalls with a return value (last type in array)
 def check_type(x,y):
     if x==y:
         return x
+    elif x=="list()" or y=="list()":
+        if x=="list()":
+            if len(y) > 5 and y[:5]=="list(":
+                return y
+        else:
+            if len(x) > 5 and x[:5]=="list(":
+                return x
     else:
         t1 = x
         t2 = y

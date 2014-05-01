@@ -772,8 +772,11 @@ def p_expression(t):
             print "'"+t[3][0]+"' is not a number and cannot be used as an array index."
             exit(0)
     else:
-        print "'"+t[1][0]+"' is not a list and cannot use the [ ] operator."
-        exit(0)
+        if t[1][1]=="text" and t[3][1]=="num":
+            t[0] = [ t[1][0]+"[int("+t[3][0]+")]", "text" ]
+        else:
+            print "'"+t[1][0]+"' is not a list or text and cannot use the [ ] operator."
+            exit(0)
 
 def p_expression_obj(t):
     '''expression : obj_expression DOT ID LPAREN function_run_args RPAREN'''

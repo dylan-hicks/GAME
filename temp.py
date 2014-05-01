@@ -358,12 +358,17 @@ def p_statement_obj_function(t):
                     exit(0)
             elif t[3]=="get":
                  t[0] = ""
+            elif t[3]=="length":
+                 t[0] = ""
             else:
                 print "Cannot apply operator '"+t[3]+"' to a list."
                 exit(0)
         else:
-            print "'"+t[1][0]+"' has no function '"+t[3]+"'."
-            exit(0)
+            if t[1][1]=="text" and t[3]=="length" and len(t[5])==0:
+                t[0] = ""
+            else:
+                print "'"+t[1][0]+"' has no function '"+t[3]+"'."
+                exit(0)
 
 def p_statement_assign(t):
     '''statement : assignment'''
@@ -801,9 +806,13 @@ def p_expression_obj(t):
                 else:
                     print "Can only index into arrays with type num."
                     exit(0)
+            elif t[3]=="length" and len(t[5])==0:
+                t[0] = [ "len("+t[1][0]+")" , "num" ]
             else:
                 print "Cannot apply operator '"+t[3]+"' to a list."
                 exit(0)
+        elif t[1][1]=="text" and t[3]=="length" and len(t[5])==0:
+             t[0] = [ "len("+t[1][0]+")" , "num" ]
         else:
             print "'"+t[1][0]+"' has no function '"+t[3]+"'."
             exit(0)

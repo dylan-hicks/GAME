@@ -552,7 +552,7 @@ def p_function_run_arg_values(t):
 def p_loop(t):
     '''loop : geteach_st WHERE expression RPAREN'''
     if t[3][1]=="bool":
-        t[0] = t[1][0] + " = [ ]\n\tfor "+ t[1][1] + " in " + t[1][2] + ":\n\t\tif (" + t[3][0] + "):\n\t\t\t" + t[1][0] + ".append("+t[1][1]+")\n"
+        t[0] = t[1][0] + " = [ ]\n\tfor "+ t[1][1] + " in "+ t[1][2] + ":\n\t\tif (" + t[3][0] + "):\n\t\t\t" + t[1][0] + ".append("+t[1][1]+")\n"
     else:
         print "An expression inside a get each statement must return a boolean value."
         exit(0)
@@ -571,7 +571,7 @@ def p_geteach_st(t):
                     temp3 = check_stack(t[7])
                     if temp3==None:
                         add_stack(t[7],t[6])
-                        t[0] = [ t[2], t[7], t[9] ]
+                        t[0] = [ t[2], t[7], ("self." if temp2[0]=="class" else "")+t[9] ]
                     else:
                         print "Cannot redefine '"+t[7]+"'."
                         exit(0)

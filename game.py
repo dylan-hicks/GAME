@@ -26,9 +26,6 @@ found = 0
 for x in scan_functions:
     if scan_functions[x]["name"]=="main":
         found = 1
-if found!= 1:
-    print "The program must have a 'main' function defined"
-    exit(0)
 
 symbol_stack = [ ]
 
@@ -1022,6 +1019,7 @@ def p_obj_expression(t):
             exit(0)
     else:
         print "'"+t[1][0]+"' is not a class."
+        exit(0)
     t[0] = [ "("+t[1][0]+"."+t[3]+")", temp ]
 
 def p_obj_expression_id(t):

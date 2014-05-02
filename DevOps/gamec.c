@@ -87,7 +87,7 @@ int main(int argc, char **argv){
       if((child = fork()) == 0){//child process
         char compiled[100];
         sprintf(compiled, "./%s.temp", argv[k]);
-        execlp("rm", "rm", compiled, 0);
+        execlp("rm", "rm", compiled, (char *)0);
       }
       else{
         waitpid(child, &status, 0); 

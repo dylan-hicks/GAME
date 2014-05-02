@@ -16,20 +16,20 @@ You will only need to run this command once for a directory as the ./gamec execu
 
 ####Compile Operation Flow:
 
-    When you run the following command:
+When you run the following command:
     
     ./gamec [.game file]
 
-    The compiler sets -m and -o flags for moving and output and then executes
+The compiler sets -m and -o flags for moving and output and then executes
 
     python include.py [.game file]
 
-    and then creates a .game.temp file that has the include statements removed and the appropriate library code inserted.
+and then creates a .game.temp file that has the include statements removed and the appropriate library code inserted.
 
-    Then, the gamec executable runs
+Then, the gamec executable runs
 
     python game.py [.game.temp file]
 
-    which will run the parser and other compile operations on the .game.temp file and write the resulting python code to a .game.py file.
+which will run the parser and other compile operations on the .game.temp file and write the resulting python code to a .game.py file.
 
-    The gamec exectuable then cleans up the .game.temp file.
+The gamec exectuable then cleans up the .game.temp file.

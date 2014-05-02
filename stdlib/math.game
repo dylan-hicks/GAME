@@ -8,8 +8,8 @@ num function mean(list(num) x) {
 
 list(num) function qsort(list(num) x) {
 
-  list(num) originalList
-  originalList.add(x)
+  	list(num) originalList
+  	originalList.add(x)
 	
 	list(num) returnList
 	

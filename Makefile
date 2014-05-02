@@ -4,11 +4,11 @@ all:
 
 .PHONY:temp
 temp:
-	python temp.py test2.game
+	python game.py test.game
 
 .PHONY:test
 test: temp
-	python test2.game.py
+	python test.game.py
 
 .PHONY:ast
 ast:
@@ -16,7 +16,7 @@ ast:
 
 .PHONY:scan
 scan:
-	python scan.py test2.game
+	python scan.py test.game
 
 .PHONY:clean
 clean:

@@ -7,20 +7,23 @@ num function mean(list(num) x) {
 }
 
 list(num) function qsort(list(num) x) {
+
+  list(num) originalList
+  originalList.add(x)
 	
 	list(num) returnList
 	
-	if (x.length() <= 1) {
-		returnList = x
+	if (originalList.length() <= 1) {
+		returnList = originalList
 	} else {
-		num pivotIndex = floor(x.length()/2)
-		num pivot = x.get(pivotIndex)
-		x.remAt(pivotIndex)
+		num pivotIndex = floor(originalList.length()/2)
+		num pivot = originalList.get(pivotIndex)
+		originalList.remAt(pivotIndex)
 		
 		list(num) less
 		list(num) greater
 		
-		foreach( num i in x) {
+		foreach( num i in originalList) {
 			if (i <= pivot) {
 				less.add(i)
 			} else {

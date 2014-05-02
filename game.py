@@ -1012,10 +1012,14 @@ def p_assignment(t):
 
 def p_obj_expression(t):
     '''obj_expression : obj_expression DOT ID'''
-    temp = scan_classes[t[1][1]]["members"].get(t[3],"")
-    if temp=="":
-        print "'"+t[1][0]+" has no member '"+t[3]+"'."
-        exit(0)
+    temp10 = scan_classes.get(t[1][1],"")
+    if temp10!="":
+        temp = scan_classes[t[1][1]]["members"].get(t[3],"")
+        if temp=="":
+            print "'"+t[1][0]+" has no member '"+t[3]+"'."
+            exit(0)
+    else:
+        print "'"+t[1][0]+"' is not a class."
     t[0] = [ "("+t[1][0]+"."+t[3]+")", temp ]
 
 def p_obj_expression_id(t):

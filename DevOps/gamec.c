@@ -41,7 +41,7 @@ int main(int argc, char **argv){
       if((child = fork()) == 0){
         char compiled[100];
         sprintf(compiled, "./%s", argv[k]);
-        execlp("python", "python", "./include.py", compiled, 0); 
+        execlp("python", "python", "./include.py", compiled, (char *)0); 
       }
     }
     else{
@@ -64,7 +64,7 @@ int main(int argc, char **argv){
           int result = dup2(devNull, STDOUT_FILENO);
         }
         sprintf(compiled, "./%s.temp", argv[k]);
-        execlp("python", "python", "./game.py", compiled, 0);
+        execlp("python", "python", "./game.py", compiled, (char *)0);
       }
       else{
         waitpid(child, &status, 0); 
@@ -73,7 +73,7 @@ int main(int argc, char **argv){
         char compiled[100];
         if((child = fork()) == 0){//child process
           sprintf(compiled, "./%s.py", argv[k]);
-          execlp("mv", "mv", compiled, mv_directory, 0);
+          execlp("mv", "mv", compiled, mv_directory, (char *)0);
         }
         else{
           waitpid(child, &status, 0);

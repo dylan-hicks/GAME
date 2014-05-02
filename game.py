@@ -26,6 +26,9 @@ found = 0
 for x in scan_functions:
     if scan_functions[x]["name"]=="main":
         found = 1
+if found!= 1:
+    print "The program must have a 'main' function defined"
+    exit(0)
 
 symbol_stack = [ ]
 

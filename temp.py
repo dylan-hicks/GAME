@@ -341,8 +341,11 @@ def p_statement_obj_function(t):
                 if temp8!="":
                     t[0] = t[1][0]+".append("+t[5][0][0]+")\n"
                 else:
-                    print "Can only add type '"+temp7+"' to '"+t[1][0]+"'."
-                    exit(0)
+                    if t[5][0][1]==t[1][1]:
+                        t[0] = t[1][0]+".extend("+t[5][0][0]+")\n"
+                    else:
+                        print "Can only add type '"+temp7+"' to '"+t[1][0]+"'."
+                        exit(0)
             elif t[3]=="rem" and len(t[5])==1:
                 temp8 = check_type(temp7,t[5][0][1])
                 if temp8!="":

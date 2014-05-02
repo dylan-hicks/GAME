@@ -431,8 +431,23 @@ def p_statement_function(t):
                     out += t[3][x][0]
                 out += ')\n'
             else:
-                print "No function named '"+t[1]+"'."
-                exit(0)
+                temp9 = in_class()
+                if temp9!=False:
+                    temp10 = scan_classes[temp9]
+                    st = func_shorthand(t[1],t[3])
+                    if temp10["methods"].get(st,"")!="":
+                        out = 'self.'+t[1]+'('
+                        for x in range(0,len(t[3])):
+                            if x!=0:
+                                out += ', '
+                            out += t[3][x][0]
+                        out += ')\n'
+                    else:
+                        print "No function named '"+t[1]+"'."
+                        exit(0)
+                else:
+                    print "No function named '"+t[1]+"'."
+                    exit(0)
             t[0] = out
 
 def p_class_def(t):
@@ -857,8 +872,30 @@ def p_expression_call(t):
             else:
                 out = [ out, returnt ]
         else:
-            print "No function named '"+t[1]+"'."
-            exit(0)
+            temp9 = in_class()
+            if temp9!=False:
+                temp10 = scan_classes[temp9]
+                st = func_shorthand(t[1],t[3])
+                if temp10["methods"].get(st,"")!="":
+                    temp11 = temp10["methods"][st].get("return","")
+                    if temp11!="":
+                        print temp10["methods"]
+                        out = 'self.'+t[1]+'('
+                        for x in range(0,len(t[3])):
+                            if x!=0:
+                                out += ', '
+                            out += t[3][x][0]
+                        out += ')'
+                        out = [ out, temp11 ]
+                    else:
+                        print "No function named '"+t[1]+"'."
+                        exit(0)
+                else:
+                    print "No function named '"+t[1]+"'."
+                    exit(0)
+            else:
+                print "No function named '"+t[1]+"'."
+                exit(0)
         t[0] = out 
 
 def p_expression_obje(t):

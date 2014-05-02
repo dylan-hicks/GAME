@@ -16,7 +16,7 @@ ast:
 
 .PHONY:scan
 scan:
-	python scan2.py test2.game
+	python scan.py test2.game
 
 .PHONY:clean
 clean:

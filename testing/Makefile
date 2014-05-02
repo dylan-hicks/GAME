@@ -8,4 +8,4 @@ persist:
 
 .PHONY:clean
 clean:
-	rm -f target/*.py output/*.txt diffs/*.diff source/*.temp
+	rm -f target/*.py output/*.txt diffs/*.diff source/*.temp source/*.temp.py

@@ -59,8 +59,8 @@ num function stdev(list(num) x) {
 num function min(list(num) x) {
 	num returnNum = x[0]
 	foreach(num i in x){
-		if(x[i] < returnNum) {
-			returnNum = x[i]
+		if(i < returnNum) {
+			returnNum = i
 		}
 	}
 	return returnNum
@@ -69,8 +69,8 @@ num function min(list(num) x) {
 num function max(list(num) x) {
 	num returnNum = x[0]
 	foreach(num i in x){
-		if(x[i] > returnNum) {
-			returnNum = x[i]
+		if(i > returnNum) {
+			returnNum = i
 		}
 	}
 	return returnNum

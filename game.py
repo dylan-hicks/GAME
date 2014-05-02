@@ -32,7 +32,7 @@ if found!=1:
 
 symbol_stack = [ ]
 
-def syscall(x,t): #syscalls with no return value, print is an exception and is below in statement    
+def syscall(x,t): #syscalls with no return value, print is an exception and is below in statement
     syscalls = {
     #'print*text': ['print(',')','text'],
     #'print*num': ['print(',')','num']
@@ -117,7 +117,7 @@ def func_shorthand(x,y):
         z += '*'+l[1]
     return z
 
-reserved = { 
+reserved = {
    'include' : 'INCLUDE',
    'if' : 'IF',
    'else' : 'ELSE',
@@ -154,7 +154,7 @@ reserved = {
 tokens = [
     'ID','NUM','EQ','EXCL', 'TXT',
     'PLUS','MINUS','TIMES','DIVIDE', 'MOD',
-    'LPAREN','RPAREN', 'NL' , 'LBRACK', 'RBRACK', 
+    'LPAREN','RPAREN', 'NL' , 'LBRACK', 'RBRACK',
     'COMMA', 'GT', 'LT', 'EQEQ' , 'DOT' , 'LSQ' , 'RSQ'
     ] + list(reserved.values())
 
@@ -214,7 +214,7 @@ def t_COMMENT(t):
 def t_error(t):
     print("Illegal character '%s'" % t.value[0])
     t.lexer.skip(1)
-    
+
 # Build the lexer
 import ply.lex as lex
 lex.lex()
@@ -238,14 +238,14 @@ precedence = (
 # dictionary of names
 names = { }
 
-        
+
 def p_program_lines(t):
     '''program_lines : include_lines lines'''
     sys_calls = open("syscalls.py",'r')
     toWrite = sys_calls.read()+"\n"+t[2]+"main()"
     toWrite = re.sub(r"\n[\t\n ]*\n","\n",toWrite) #removes excess lines
     print toWrite
-    out_file = open("{}.py".format(sys.argv[1]), "w")
+    out_file = open("{}.py".format(sys.argv[1]).replace(".temp", ""), "w")
     out_file.write(toWrite)
 
 def p_include_lines(t):
@@ -327,7 +327,7 @@ def p_statement_obj_function(t):
             for x in range(0,len(t[5])):
                 if x!=0:
                     out += ', '
-                out += t[5][x][0] 
+                out += t[5][x][0]
             out += ')\n'
             t[0] = out
         else:
@@ -394,7 +394,7 @@ def p_statement_flow(t):
         exit(0)
 
 def p_statement_variable(t):
-    '''statement : variable_def''' 
+    '''statement : variable_def'''
     t[0] = t[1] + '\n'
 
 def p_statement_if_statement(t):
@@ -554,7 +554,7 @@ def p_function_arg_values(t):
     else:
         for x in t[3][1]:
             t[1][0][x] = t[3][0][x]
-            t[1][1].append(x)   
+            t[1][1].append(x)
         t[0] = t[1]
 
 def p_function_run_args(t):
@@ -641,7 +641,7 @@ def p_loop_foreach(t):
     else:
         print "Unkown variable '"+t[3]+"'."
         exit(0)
-    t[0] = out+"\n" 
+    t[0] = out+"\n"
     symbol_stack.pop()
 
 def p_foreach_st(t):
@@ -754,7 +754,7 @@ def p_if_statement(t):
             out += '\tpass\n'
         out += '\n\telse:\n\t'
         if t[12]!="":
-            out += add_tab(t[12]) 
+            out += add_tab(t[12])
         else:
             out += '\tpass\n'
         t[0] = out
@@ -847,7 +847,7 @@ def p_expression_obj(t):
 
 def p_expression_assign(t):
     '''expression : assignment'''
-    t[0] = t[1] 
+    t[0] = t[1]
 
 def p_expression_call(t):
     '''expression : ID LPAREN function_run_args RPAREN'''
@@ -862,7 +862,7 @@ def p_expression_call(t):
                if z!=0:
                     args += ", "
                args += t[3][z][0]
-            t[0] = [ sys_out[0]+args+sys_out[1]+'\n', sys_out[len(sys_out)-1] ] 
+            t[0] = [ sys_out[0]+args+sys_out[1]+'\n', sys_out[len(sys_out)-1] ]
         else:
             print t[1]+" accepts "+(len(sys_out)-2)+" arguments."
             exit(0)
@@ -906,7 +906,7 @@ def p_expression_call(t):
             else:
                 print "No function named '"+t[1]+"'."
                 exit(0)
-        t[0] = out 
+        t[0] = out
 
 def p_expression_obje(t):
     '''expression : obj_expression'''
@@ -926,7 +926,7 @@ def p_expression_not(t):
         t[0] = [ 'not ('+t[2][0]+')', "bool" ]
     else:
         print "Cannot apply '"+t[1]+"' operator to "+t[2][1]+"."
-        exit(0) 
+        exit(0)
 
 def p_expression_bool(t):
     '''expression : expression AND expression
@@ -935,7 +935,7 @@ def p_expression_bool(t):
         t[0] = [ '('+t[1][0]+') '+t[2]+' ('+t[3][0]+')', "bool" ]
     else:
         print "Cannot apply '"+t[2]+"' operator to "+t[1][1]+" and "+t[3][1]+"."
-        exit(0)    
+        exit(0)
 
 def p_expression_paren(t):
     '''expression : LPAREN expression RPAREN'''
@@ -996,7 +996,7 @@ def p_expression_plus(t):
     else:
         print "Cannot apply '+' operator to "+t[1][1]+" and "+t[3][1]+"."
         exit(0)
-    
+
 def p_expression_constant(t):
     '''expression : constant'''
     t[0] = t[1]

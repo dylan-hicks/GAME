@@ -95,7 +95,6 @@ def t_COMMENT(t):
     return t
 
 def t_error(t):
-    errors.append("Invalid token '"+t.value+"'.")
     t.lexer.skip(1)
     
 # Build the lexer
@@ -205,8 +204,8 @@ def p_function_def(t):
     id_param = 2 if len(t)==10 else 3
     id_args = 4 if len(t)==10 else 5
     func_hash = t[id_param]
-    for x in range(0,len(t[id_args][1])):
-        func_hash += "*"+t[id_args][0][t[id_args][1][x]] 
+    for x in t[id_args]:
+        func_hash += "*"+t[id_args][x] 
     to_add = { }
     to_add["name"] = t[id_param]
     to_add["args"] = t[id_args]
@@ -218,7 +217,7 @@ def p_function_args(t):
     '''function_args : function_arg_values
                      | '''
     if len(t)==1:
-        t[0] = [ { } , [ ] ]
+        t[0] = { }
     else:
         t[0] = t[1]
 
@@ -226,14 +225,13 @@ def p_function_arg_values(t):
     '''function_arg_values : function_arg_values COMMA function_arg_values
                            | var_type ID'''
     if len(t)==3:
-        t[0] = {t[2]:t[1]},[ t[2] ]
+        t[0] = {t[2]:t[1]}
     else:
-        for x in t[3][0]:
+        for x in t[3]:
             if x in t[1]:
                 errors.append("Multiple definitions of input name "+x+".")
             else:
-                t[1][0][x] = t[3][0][x]
-                t[1][1].extend(t[3][1]) 
+                t[1][x] = t[3][x] 
         t[0] = t[1]
 
 def p_function_run_args(t):
@@ -256,7 +254,6 @@ def p_loop_expression(t):
 
 def p_loop_expression_values(t):
     '''loop_expression_values : START variable_def
-                              | START assignment
                               | WHILE expression
                               | SET assignment'''
 
@@ -292,7 +289,6 @@ def p_expression(t):
                   | NOT expression 
                   | MINUS expression %prec UMINUS
                   | constant
-                  | NEW ID
                   | assignment
                   | ID LPAREN function_run_args RPAREN
                   | obj_expression DOT ID LPAREN function_run_args RPAREN
@@ -308,8 +304,16 @@ def p_obj_expression(t):
 
 def p_variable_def(t):
     '''variable_def : var_type ID
-                    | var_type ID EQ expression'''
+                    | var_type ID EQ expression
+                    | var_type ID EQ NEW var_type
+                    | var_type ID EQ NEW var_type LBRACK NL mul_variable_assign RBRACK'''
     t[0] = t[2],t[1] 
+
+def p_mul_variable_assign(t):
+    '''mul_variable_assign : mul_variable_assign assignment NL
+                           | data_statement_load NL
+                           | mul_variable_assign NL
+                           | '''
 
 def p_var_type(t):
     '''var_type : TEXT_TYPE
@@ -332,10 +336,10 @@ def p_constant(t):
 
 def p_constant_list(t):
     '''constant_list : constant_list COMMA constant_list
-                     | expression'''
+                     | constant'''
 
 def p_error(t):
-    errors.append("Syntax error at '"+str(t)+"'.")
+    '''Do nothing'''
 
 import ply.yacc as yacc
 

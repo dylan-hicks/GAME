@@ -862,7 +862,7 @@ def p_expression_call(t):
                if z!=0:
                     args += ", "
                args += t[3][z][0]
-            t[0] = [ sys_out[0]+args+sys_out[1]+'\n', sys_out[len(sys_out)-1] ] 
+            t[0] = [ sys_out[0]+args+sys_out[1], sys_out[len(sys_out)-1] ] 
         else:
             print t[1]+" accepts "+(len(sys_out)-2)+" arguments."
             exit(0)

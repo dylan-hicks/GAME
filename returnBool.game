@@ -1,0 +1,11 @@
+bool function moreThan5(num x){
+    if (x > 5){
+        return true
+    } else{
+        return false
+    }
+}
+
+function main(){
+    print(moreThan5(7))
+}

@@ -49,11 +49,19 @@ num function sqr(num x) {
 }
 
 num function stdev(list(num) x) {
+print("---------WITHIN stdev()---------")
+print("WE ARE GOING TO CALC STDEV FOR ")
+print(x)
 	num avg = mean(x)
+print("mean " + avg)
 	num variance = 0
 	foreach(num n in x){
 		variance = variance + sqr(avg - n)
 	}
+print ("variance " + variance)
+print ("variance/x.length()" + variance/x.length())
+print ("sqrt(variance/x.length()) == stdev == " + sqrt(variance/x.length()))
+print ("---------END OF stdev()---------")
 	return sqrt(variance/x.length())	
 }
 
@@ -83,4 +91,41 @@ num function floor(num x) {
 
 num function ceiling(num x) {
 	return x + (1 - (x%1))
+}
+
+function main() {
+	list(num) points_scored = { 15, 9, 27, 38, 49, 12, 64, 63, 78, 90, 22 }
+	print("LIST AT START:")
+	print(points_scored)
+	print("max [90.0] == " + max(points_scored))
+	print("min [9.0] == " + min(points_scored))
+	####print("median " + median(points_scored))
+	print("stdev [26.8509814832] == " + stdev(points_scored))
+	print("mean [42.4545454545] == " + mean(points_scored))
+	
+	print(" ")
+	print(" ")
+
+	num avg = mean(points_scored)
+	print("ceiling of mean [43.0] == " + ceiling(avg))
+	print("floor of mean [42.0] == " + floor(avg))
+	print("sqr of mean [1802.38842975] == " + sqr(avg))
+	print("mean rounded to 2 dec places " + num_form( "#.##", avg))
+	
+	print(" ")
+	print(" ")
+
+	#
+	#Section of Code to identify error
+	#
+	print(points_scored)
+	print("median [38.0] == " + median(points_scored))
+	print("stdev " + stdev(points_scored))
+	points_scored = qsort(points_scored)
+	print(points_scored)
+
+	print(" ")
+	print(" ")
+	print("LIST AT END")
+	print(points_scored)
 }

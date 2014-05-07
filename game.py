@@ -33,6 +33,10 @@ def syscall(x,t): #syscalls with no return value, print is an exception and is b
     syscalls = {
     #'print*text': ['print(',')','text'],
     #'print*num': ['print(',')','num']
+    'graph*list(num)*list(num)*text*text*text': ['graph(',')','list(num)', 'list(num)', 'text', 'text', 'text'],
+    'display': ['display(',')'],
+    'label*text*text': ['label(', ')', 'text', 'text'],
+    'axis*list(num)*list(num)': ['axis(', ')', 'list(num)', 'list(num)']
     }
     return syscalls.get(func_shorthand(x,t),None)
 
@@ -776,7 +780,7 @@ def p_data_statement(t):
 def p_data_statement_load(t):
     '''data_statement_load : LOAD obj_expression FROM expression'''
     if t[4][1]=="text":
-        t[0] = t[2][0]+" = load_function("+t[2][0]+","+t[4][0]+")"
+        t[0] = t[2][0]+" = load_function("+t[2][0]+","+t[4][0]+")\n"
     else:
         print 'Data statements load from text type.'
         exit(0)
@@ -784,7 +788,7 @@ def p_data_statement_load(t):
 def p_data_statement_save(t):
     '''data_statement_export : EXPORT obj_expression TO expression'''
     if t[4][1]=="text":
-        t[0] = t[2][0]+" = export_function("+t[2][0]+","+t[4][0]+")"
+        t[0] = t[2][0]+" = export_function("+t[2][0]+","+t[4][0]+")\n"
     else:
         print 'Data statements export to text type.'
         exit(0)

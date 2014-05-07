@@ -9,6 +9,7 @@ def include(file_name):
   file = open(file_name, "r+")
   contents = file.readlines()
   #Screen for include statements
+  i = 0
   for line in contents:
     regMatch = re.match(r'[\s]*include[\s]*["][\s]*([a-zA-Z_-]*)(.game)?[\s]*["][\s]*', line, flags=0)
     if regMatch: #include statement match
@@ -22,13 +23,14 @@ def include(file_name):
           #recursively call include on library file to get prepared content
           to_append = include(library_file_name)
           #add file contents of prepared library file to our contents and remove include line
-          contents.remove(line)
+          contents[i] = ""
           contents = contents + to_append
         else:
           print "{} does not exist\n".format(library_file_name)
           sys.exit()
       else:
         contents.remove(line)
+    i = i + 1;
   file.close()
   return contents
 

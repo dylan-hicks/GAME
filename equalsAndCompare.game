@@ -1,0 +1,32 @@
+class dude{
+
+    num coolness
+
+    bool function equals(dude other){
+        if (coolness == other.coolness){
+            return true
+        } else {
+            return false
+        }
+    }
+    #num function compareTo(dude other){
+    #    if equals(other){
+    #        return 0
+    #    }
+    #    else {
+    #        if (coolness < other.coolness){
+    #            return -1
+    #        } else { 
+    #            return 1
+    #        }
+    #    }
+    #}
+}
+
+function main(){
+    dude bob = new dude
+    bob.coolness = 6
+    dude john = new dude
+    john.coolness = 8
+    print(bob.equals(john))
+}

@@ -1,0 +1,29 @@
+include "math.game"
+
+function main() {
+	list(num) points_scored = { 15, 9, 27, 38, 49, 12, 64, 63, 78, 90, 22 }
+	
+	print("LIST AT START:")
+	print(points_scored)
+	
+	print("max [90.0] == " + max(points_scored))
+	print("min [9.0] == " + min(points_scored))
+	print("median [38.0] == " + median(points_scored))
+	print("stdev [26.8509814832] == " + stdev(points_scored))
+	print("mean [42.4545454545] == " + mean(points_scored))
+	num avg = mean(points_scored)
+	print("ceiling of mean [43.0] == " + ceiling(avg))
+	print("floor of mean [42.0] == " + floor(avg))
+	print("sqr of mean [1802.38842975] == " + sqr(avg))
+	print("mean rounded to 2 dec places " + num_form( "#.##", avg))
+	
+	print(" ")
+
+	print("SORTED VERSION OF LIST:")
+	print(qsort(points_scored))
+
+	print(" ")
+
+	print("LIST AT END:")
+	print(points_scored)
+}

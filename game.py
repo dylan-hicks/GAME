@@ -26,9 +26,6 @@ found = 0
 for x in scan_functions:
     if scan_functions[x]["name"]=="main":
         found = 1
-if found!=1:
-    print "Must have 'main' function."
-    exit(0)
 
 symbol_stack = [ ]
 
@@ -63,6 +60,8 @@ def check_type(x,y):
             if t1[:5]=="list(" and t1[:5]==t2[:5]:
                 t1 = t1[5:]
                 t2 = t2[5:]
+            else:
+                break
         if t1[:1]==')' and not (len(t2) > 5 and t2[:5]=="list("):
             return y
         elif t2[:1]==')' and not (len(t1) > 5 and t1[:5]=="list("):
@@ -1018,7 +1017,7 @@ def p_assignment(t):
     if temp1!="":
         t[0] = [ t[1][0]+' = '+t[3][0], temp1 ]
     else:
-        print t[1][0]+"does not have type '"+t[3][1]+"'."
+        print "'"+t[1][0]+"' does not have type '"+t[3][1]+"'."
         exit(0)
 
 def p_obj_expression(t):
@@ -1031,6 +1030,7 @@ def p_obj_expression(t):
             exit(0)
     else:
         print "'"+t[1][0]+"' is not a class."
+        exit(0)
     t[0] = [ "("+t[1][0]+"."+t[3]+")", temp ]
 
 def p_obj_expression_id(t):

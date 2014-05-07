@@ -3,23 +3,27 @@ num function mean(list(num) x) {
 	foreach(num i in x){
 		total = total + i
 	}
-	return total / length(x)
+	return total / x.length()
 }
 
 list(num) function qsort(list(num) x) {
+
+  	list(num) originalList
+  	originalList.add(x)
 	
 	list(num) returnList
 	
-	if (length(x) <= 1) {
-		returnList = x
+	if (originalList.length() <= 1) {
+		returnList = originalList
 	} else {
-		pivotIndex = floor(length(x)/2)
-		pivot = x.remAt(pivotIndex)
+		num pivotIndex = floor(originalList.length()/2)
+		num pivot = originalList.get(pivotIndex)
+		originalList.remAt(pivotIndex)
 		
 		list(num) less
 		list(num) greater
 		
-		foreach( num i in x) {
+		foreach( num i in originalList) {
 			if (i <= pivot) {
 				less.add(i)
 			} else {
@@ -40,7 +44,7 @@ list(num) function qsort(list(num) x) {
 
 num function median(list(num) x) {
 	x = qsort(x)
-	return x[floor(length(x)/2)]
+	return x[floor(x.length()/2)]
 }
 
 num function sqr(num x) {
@@ -53,7 +57,7 @@ num function stdev(list(num) x) {
 	foreach(num n in x){
 		variance = variance + sqr(avg - n)
 	}
-	return sqrt(variance)	
+	return sqrt(variance/x.length())	
 }
 
 num function min(list(num) x) {

@@ -6,4 +6,4 @@ test.game.py: test.game syscalls.py
 	./gamec -o test.game
 
 clean:
-	rm -f parsetab.py *.out *.pyc ply/*.pyc test.game test.game.py
+	rm -f parsetab.py *.out *.pyc ply/*.pyc test.game test.game.py *.game.py *.game.temp

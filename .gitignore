@@ -7,12 +7,10 @@ test.game.py
 test2.game.py
 *.game~
 *.py~
-run.py
 *.swp
 *.swo
 DevOps/*.o
 DevOps/*.game.py
-DevOps/run.py
 testing/target
 testing/diffs
 testing/output

@@ -13,11 +13,6 @@ def num_form(format, number):
 		printformat = "%" + "1." + str(len(decimalplaces)) + "f"
 		return printformat % number
 
-type_boolean = False
-type_str = "test"
-type_float = 10.0
-type_list = []
-
 def list_check(x):
     if len(x) > 5 and x[:5]=="list(":
         return x[5:-1]
@@ -67,13 +62,13 @@ def load_recurse(in_class,types,data):
 #attr is the actual attribute
 def is_primitive(ele, attr):
   is_prim = False
-  if attr.__class__ == type_boolean.__class__:
+  if isinstance(attr, bool):
     is_prim = True
-  elif attr.__class__ == type_str.__class__:
+  elif isinstance(attr, basestring):
     is_prim = True
-  elif attr.__class__ == type_float.__class__:
+  elif isinstance(attr, float):
     is_prim = True
-  elif attr.__class__ == type_list.__class__:
+  elif isinstance(attr, list):
     is_prim = True
   if id_has_underscore_tag(ele):
     is_prim = False

@@ -772,12 +772,23 @@ def p_else_st(t):
 def p_data_statement(t):
     '''data_statement : data_statement_load
                       | data_statement_export'''
+    t[0] = t[1]
 
 def p_data_statement_load(t):
     '''data_statement_load : LOAD obj_expression FROM expression'''
+    if t[4][1]=="text":
+        t[0] = t[2][0]+" = load_function("+t[2][1]+","+t[4][0]+")"
+    else:
+        print 'Data statements load from text type.'
+        exit(0)
 
 def p_data_statement_save(t):
     '''data_statement_export : EXPORT obj_expression TO expression'''
+    if t[4][1]=="text":
+        t[0] = t[2][0]+" = export_function("+t[2][1]+","+t[4][0]+")"
+    else:
+        print 'Data statements export to text type.'
+        exit(0)
 
 def p_expression_new(t):
     '''expression : NEW ID'''

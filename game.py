@@ -248,7 +248,6 @@ def p_program_lines(t):
     sys_calls = open("syscalls.py",'r')
     toWrite = sys_calls.read()+"\nscan_classes = "+json.dumps(scan_classes)+"\n"+t[2]+"main()"
     toWrite = re.sub(r"\n[\t\n ]*\n","\n",toWrite) #removes excess lines
-    print toWrite
     out_file = open("{}.py".format(sys.argv[1]).replace(".temp", ""), "w")
     out_file.write(toWrite)
 

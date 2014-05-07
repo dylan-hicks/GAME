@@ -1,5 +1,8 @@
-include "basketball.game"
 include "math.game"
+
+class BasketballPerformance{
+    num fg_attempted
+}
 
 function main(){
 
@@ -38,4 +41,16 @@ function main(){
     num loss_avg_fg = mean(loss_attempts)
 
     print("FG attempted in wins: " + win_avg_fg + ", FG attempted in losses: " + loss_avg_fg)
+
+    list(num) loss_index = {2, 3, 5, 7}
+    list(num) win_index = {1, 4, 6}    
+
+    graph(win_index, win_attempts, "green", "circle", "FG att. in wins")
+    graph(loss_index, loss_attempts, "red", "circle", "FG att. in losses")
+    axis({0, 8}, {0, 35})
+    label("title", "Stephen Curry's FG Attempts in Clippers Series")
+    label("y", "FG Attempts")
+    label("x", "Game Number")
+    display()
+
 }

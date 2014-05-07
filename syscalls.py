@@ -1,6 +1,9 @@
+import matplotlib.pyplot as plt
+import numpy as np
 import math
 import json
 import sys
+
 def num_form(format, number):
 	if (format == "#"):
 		return str(math.floor(number))
@@ -177,3 +180,7 @@ def export_function(obj, file_name):
   hash_obj['GAME'] = export_GAME(obj)
   with open("{}".format(file_name), 'w') as outfile:
     json.dump(hash_obj, outfile)
+
+def bestfit(x, y, color, style, lbl):
+    p = np.polyfit(x, y, 1)
+    graph(x,np.polyval(p,x), color, style, lbl)

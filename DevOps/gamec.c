@@ -81,7 +81,7 @@ int main(int argc, char **argv){
     }
   }  
   //Remove .temp files
-  for(k= 1; k < argc; k++){ 
+  /*for(k= 1; k < argc; k++){ 
     if(strstr(argv[k], ".game")){
       if((child = fork()) == 0){//child process
         char compiled[100];
@@ -92,6 +92,6 @@ int main(int argc, char **argv){
         waitpid(child, &status, 0); 
       }
     } 
-  }
+  }*/
   return 0;
 }

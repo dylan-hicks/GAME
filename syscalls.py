@@ -2,6 +2,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import math
 import json
+import copy
 import sys
 
 def num_form(format, number):
@@ -53,9 +54,9 @@ def load_recurse(in_class,types,data):
                         if temp2 == "":
                                 temp11.append(load_recurse(None,temp1,x))
                         else:
-                                new1 = globals()[temp1]
-                                temp11.append(load_recurse(new1,temp1,x))
-                return temp11
+				new1 = eval(temp1+"()")
+                                temp11.append(load_recurse(copy.deepcopy(new1),temp1,x))
+		return temp11
         return in_class
 
 #ele is the string of the attribute

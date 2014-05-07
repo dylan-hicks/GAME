@@ -10,14 +10,15 @@ class BasketballGame {
     list(BasketballMoment) timeline
 
     BasketballTeam function winner() {
-        BasketballTeam x
+        BasketballTeam w
         if(home_team.points>away_team.points)
         {
-            x = home_team
+            w = home
         } else {
-            x = away_team
-        }
-        return x
+	    w = away
+	}
+
+        return w
     }
 }
 
@@ -81,10 +82,10 @@ class BasketballPlayer {
         return ftmpg / fgapg
     }
     num function thr_percentage(){
-        return thrapg / thrpg
+        return thrmpg / thrapg
     }
     
-    function build (list(BasketballPerformance) x) {
+    function build (list(BasketballPerformance) y) {
         list(num) totalpoints
         list(num) totalassists
         list(num) totalrebounds
@@ -97,7 +98,7 @@ class BasketballPlayer {
         list(num) totalftm
         list(num) totalthra
         list(num) totalthrm
-        foreach (BasketballPerformace bp in x) {
+        foreach (BasketballPerformance bp in y) {
             totalpoints.add(bp.points)
             totalassists.add(bp.assists)
             totalsteals.add(bp.rebounds)

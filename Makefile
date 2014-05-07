@@ -1,23 +1,9 @@
 .PHONY:all
-all:
-	./gamec -o test.game
-
-.PHONY:temp
-temp:
-	python game.py test.game
-
-.PHONY:test
-test: temp
+all: test.game.py
 	python test.game.py
 
-.PHONY:ast
-ast:
-	python ast.py test.game
+test.game.py: test.game syscalls.py
+	./gamec -o test.game
 
-.PHONY:scan
-scan:
-	python scan.py test.game
-
-.PHONY:clean
 clean:
-	rm -f parsetab.py *.out *.pyc ply/*.pyc test.game test.game.py
+	rm -f parsetab.py *.out *.pyc ply/*.pyc test.game test.game.py *.game.py *.game.temp

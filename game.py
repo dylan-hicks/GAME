@@ -36,7 +36,8 @@ def syscall(x,t): #syscalls with no return value, print is an exception and is b
     'graph*list(num)*list(num)*text*text*text': ['graph(',')','list(num)', 'list(num)', 'text', 'text', 'text'],
     'display': ['display(',')'],
     'label*text*text': ['label(', ')', 'text', 'text'],
-    'axis*list(num)*list(num)': ['axis(', ')', 'list(num)', 'list(num)']
+    'axis*list(num)*list(num)': ['axis(', ')', 'list(num)', 'list(num)'],
+    'bestfit*list(num)*list(num)*text*text*text': ['bestfit(',')','list(num)', 'list(num)', 'text', 'text', 'text']
     }
     return syscalls.get(func_shorthand(x,t),None)
 
@@ -245,7 +246,7 @@ names = { }
 def p_program_lines(t):
     '''program_lines : include_lines lines'''
     sys_calls = open("syscalls.py",'r')
-    toWrite = sys_calls.read()+"\n"+t[2]+"main()"
+    toWrite = sys_calls.read()+"\nscan_classes = "+json.dumps(scan_classes)+"\n"+t[2]+"main()"
     toWrite = re.sub(r"\n[\t\n ]*\n","\n",toWrite) #removes excess lines
     print toWrite
     out_file = open("{}.py".format(sys.argv[1]).replace(".temp", ""), "w")
@@ -780,7 +781,7 @@ def p_data_statement(t):
 def p_data_statement_load(t):
     '''data_statement_load : LOAD obj_expression FROM expression'''
     if t[4][1]=="text":
-        t[0] = t[2][0]+" = load_function("+t[2][0]+","+t[4][0]+")\n"
+        t[0] = t[2][0]+" = load_function("+t[2][0]+',"'+t[2][1]+'",'+t[4][0]+")\n"
     else:
         print 'Data statements load from text type.'
         exit(0)

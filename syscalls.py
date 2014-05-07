@@ -1,3 +1,4 @@
+import matplotlib.pyplot as plt
 import math
 def num_form(format, number):
 	if (format == "#"):
@@ -59,3 +60,55 @@ def get_attr_and_obj(obj):
   attr_obj['attributes'] = attributes
   attr_obj['objects'] = objects
   return attr_obj
+
+def graph(x, y, color, style, lbl):
+    
+    mode = ""
+    if (color == "green"):
+        mode += 'g'
+    elif (color == "blue"):
+        mode += 'g'
+    elif (color == "red"):
+        mode += 'r'
+    elif (color == "cyan"):
+        mode += 'c'
+    elif (color == "magenta"):
+        mode += 'm'
+    elif (color == "yellow"):
+        mode += 'y'
+    elif (color == "white"):
+        mode += 'w'
+    else:
+        mode += 'k'
+    
+    
+    if (style == "solid"):
+        mode += '-'
+    elif (style == "dashed"):
+        mode += '--'
+    elif (style == "circle"):
+        mode += 'o'
+    elif (style == "triangle"):
+        mode += '^'
+    elif (style == "x"):
+        mode += 'x'
+    else:
+        mode += '-'
+
+
+    plt.plot(x, y, mode, label= lbl)
+
+def display():
+    plt.legend(loc='upper right')
+    plt.show()
+
+def label(loc, name):
+    if (loc == "x"):
+        plt.xlabel(name)
+    elif (loc == "y"):
+        plt.ylabel(name)
+    else:
+        plt.title(name)
+
+def axis(x, y):
+    plt.axis(x + y)

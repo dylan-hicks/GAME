@@ -33,6 +33,10 @@ def syscall(x,t): #syscalls with no return value, print is an exception and is b
     syscalls = {
     #'print*text': ['print(',')','text'],
     #'print*num': ['print(',')','num']
+    'graph*list(num)*list(num)*text*text*text': ['graph(',')','list(num)', 'list(num)', 'text', 'text', 'text'],
+    'display': ['display(',')'],
+    'label*text*text': ['label(', ')', 'text', 'text'],
+    'axis*list(num)*list(num)': ['axis(', ')', 'list(num)', 'list(num)']
     }
     return syscalls.get(func_shorthand(x,t),None)
 

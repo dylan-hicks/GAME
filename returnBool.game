@@ -4,6 +4,7 @@ bool function moreThan5(num x){
     } else{
         return false
     }
+    return true
 }
 
 function main(){

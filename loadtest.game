@@ -1,0 +1,17 @@
+Class Team {
+	num yearFounded
+	Player mvp
+}
+Class Player {
+	text name
+	num height
+}
+function main () {
+	Team miamiHeat
+	load miamiHeat from "loadtest.json"
+
+	print ("Miami Heat Info:")
+	print ("year founded: " + miamiHeat.yearFounded)
+	print ("mvp: " + miamiHeat.mvp.name)
+	print ("height :" + miamiHeat.mvp.height)
+}

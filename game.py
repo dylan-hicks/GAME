@@ -246,7 +246,7 @@ names = { }
 def p_program_lines(t):
     '''program_lines : include_lines lines'''
     sys_calls = open("syscalls.py",'r')
-    toWrite = sys_calls.read()+"\nscan_classes = "+json.dumps(scan_classes)+"\n"+t[2]+"main()"
+    toWrite = sys_calls.read()+"\nscan_classes = "+json.dumps(scan_classes)+"\n"+t[2]+"if __name__ == '__main__': main()"
     toWrite = re.sub(r"\n[\t\n ]*\n","\n",toWrite) #removes excess lines
     out_file = open("{}.py".format(sys.argv[1]).replace(".temp", ""), "w")
     out_file.write(toWrite)

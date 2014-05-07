@@ -14,5 +14,8 @@ function main() {
     list(tPlayer) players
     load players from "tennis_2011.json"
     list(tPlayer) goodPlayers = geteach(tPlayer i in players where i.avg_aces > 10)
-    export goodPlayers to "loads"	 
+    foreach(tPlayer x in goodPlayers){
+        print(x.avg_aces)
+    }
+    export goodPlayers to "loads.json"	 
 }

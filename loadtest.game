@@ -6,12 +6,13 @@ class Team {
 	num yearFounded
 	Player mvp
 }
-function main () {
+function main() {
 	Team miamiHeat
 	load miamiHeat from "loadtest.json"
-
-	print ("Miami Heat Info:")
-	print ("year founded: " + miamiHeat.yearFounded)
-	print ("mvp: " + miamiHeat.mvp.name)
-	print ("height :" + miamiHeat.mvp.height)
+	print("Miami Heat Info:")
+	print("year founded: " + miamiHeat.yearFounded)
+	print("mvp: " + miamiHeat.mvp.name)
+	print("height :" + miamiHeat.mvp.height)
+	print(miamiHeat.mvp.name)
+	export miamiHeat to "loads.json"
 }

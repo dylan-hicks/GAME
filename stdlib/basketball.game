@@ -1,34 +1,5 @@
 include "math.game"
 
-class BasketballGame {
-    BasketballTeam home
-    BasketballTeam away
-    text date
-    BasketballPerformance home_team
-    BasketballPerformance away_team
-    list(BasketballPerformance) box_score
-    list(BasketballMoment) timeline
-
-    BasketballTeam function winner() {
-        BasketballTeam w
-        if(home_team.points>away_team.points)
-        {
-            w = home
-        } else {
-	    w = away
-	}
-
-        return w
-    }
-}
-
-class BasketballTeam {
-    list(BasketballPlayer) roster
-    text city
-    text name
-    list(BasketballGame) games_played
-}
-
 class BasketballPerformance {
     text player_or_team
     num points
@@ -51,14 +22,41 @@ class BasketballPerformance {
         return ft_made/ft_attempted
     }
     num function thr_percentage() {
-	return thr_made/thr_attempted
+        return thr_made/thr_attempted
+    }
+}
+
+class BasketballMoment {
+    num minute
+    text event
+    text description
+    list(text) players_involved
+}
+
+class BasketballGame {
+    text date
+    BasketballPerformance home_team
+    BasketballPerformance away_team
+    list(BasketballPerformance) box_score
+    list(BasketballMoment) timeline
+
+    text function winner() {
+        text w
+        if(home_team.points>away_team.points)
+        {
+            w = home_team.player_or_team
+	} else {
+	    w = away_team.player_or_team
+	}
+
+        text w
     }
 }
 
 class BasketballPlayer {
     text first_name
     text last_name
-    BasketballTeam team
+    text team
     num height
     num ppg
     num apg
@@ -128,9 +126,10 @@ class BasketballPlayer {
 
 }
 
-class BasketballMoment {
-    num minute
-    text event
-    text description
-    list(BasketballPlayer) players_involved
+class BasketballTeam {
+    list(BasketballPlayer) roster
+    text city
+    text name
+    list(BasketballGame) games_played
 }
+

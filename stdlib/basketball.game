@@ -50,7 +50,7 @@ class BasketballPerformance {
         return ft_made/ft_attempted
     }
     num function thr_percentage() {
-	return thr_made/threes_attempted
+	return thr_made/thr_attempted
     }
 }
 

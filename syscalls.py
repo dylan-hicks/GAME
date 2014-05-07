@@ -1,4 +1,3 @@
-import matplotlib.pyplot as plt
 import math
 import json
 import sys
@@ -176,5 +175,5 @@ def export_GAME(obj):
 def export_function(obj, file_name):
   hash_obj = {}
   hash_obj['GAME'] = export_GAME(obj)
-  with open("{}.json".format(file_name), 'w') as outfile:
+  with open("{}".format(file_name), 'w') as outfile:
     json.dump(hash_obj, outfile)

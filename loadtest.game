@@ -1,10 +1,10 @@
-Class Team {
+class Player {
+        text name
+        num height
+}
+class Team {
 	num yearFounded
 	Player mvp
-}
-Class Player {
-	text name
-	num height
 }
 function main () {
 	Team miamiHeat

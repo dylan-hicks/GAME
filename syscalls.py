@@ -1,5 +1,6 @@
 import matplotlib.pyplot as plt
 import math
+import json
 def num_form(format, number):
 	if (format == "#"):
 		return str(math.floor(number))
@@ -112,3 +113,22 @@ def label(loc, name):
 
 def axis(x, y):
     plt.axis(x + y)
+
+def export_GAME(obj):
+  attr_obj = get_attr_and_obj(obj)
+  attributes = attr_obj['attributes']
+  objects = attr_obj['objects']
+  hash_obj = {}
+  #iterate through attributes
+  for attr in attributes:
+    hash_obj[attr] = getattr(obj, attr)
+  #iterate through objects
+  for attr in objects:
+    hash_obj[attr] = export_GAME(getattr(obj, attr))
+  return hash_obj
+
+def export_function(obj, file_name):
+  hash_obj = {}
+  hash_obj['GAME'] = export_GAME(obj)
+  with open("{}.json".format(file_name), 'w') as outfile:
+    json.dump(hash_obj, outfile)

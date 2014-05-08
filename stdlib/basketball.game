@@ -49,7 +49,7 @@ class BasketballGame {
 	    w = away_team.player_or_team
 	}
 
-        text w
+        return w
     }
 }
 

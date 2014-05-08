@@ -3,7 +3,13 @@ num function mean(list(num) x) {
 	foreach(num i in x){
 		total = total + i
 	}
-	return total / x.length()
+	num val
+	if(x.length()!=0) {
+		val = total / x.length()
+	} else {
+		val = 0
+	}
+	return val 
 }
 
 list(num) function qsort(list(num) x) {

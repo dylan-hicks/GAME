@@ -10,6 +10,7 @@ test2.game.py
 *.swp
 *.swo
 DevOps/*.o
+DevOps/gamec
 DevOps/*.game.py
 testing/target
 testing/diffs

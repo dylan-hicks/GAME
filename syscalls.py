@@ -159,17 +159,25 @@ def axis(x, y):
     plt.axis(x + y)
 
 def export_GAME(obj):
-  attr_obj = get_attr_and_obj(obj)
-  attributes = attr_obj['attributes']
-  objects = attr_obj['objects']
-  hash_obj = {}
-  #iterate through attributes
-  for attr in attributes:
-    hash_obj[attr] = getattr(obj, attr)
-  #iterate through objects
-  for attr in objects:
-    hash_obj[attr] = export_GAME(getattr(obj, attr))
-  return hash_obj
+  if isinstance(obj, list):
+    array_obj = []
+    for ele in obj:
+      array_obj.append(export_GAME(ele))
+    return array_obj
+  elif isinstance(obj, bool) or isinstance(obj, basestring) or isinstance(obj, float):
+    return obj
+  else:
+    attr_obj = get_attr_and_obj(obj)
+    attributes = attr_obj['attributes']
+    objects = attr_obj['objects']
+    hash_obj = {}
+    #iterate through attributes
+    for attr in attributes:
+      hash_obj[attr] = getattr(obj, attr)
+    #iterate through objects
+    for attr in objects:
+      hash_obj[attr] = export_GAME(getattr(obj, attr))
+    return hash_obj
 
 def export_function(obj, file_name):
   hash_obj = {}

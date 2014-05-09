@@ -24,7 +24,8 @@ def include(file_name):
           to_append = include(library_file_name)
           #add file contents of prepared library file to our contents and remove include line
           contents[i] = ""
-          contents = contents + to_append
+          contents [i:i] = to_append
+          #contents = contents + to_append
         else:
           print "{} does not exist\n".format(library_file_name)
           sys.exit()

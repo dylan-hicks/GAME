@@ -112,7 +112,7 @@ def graph(x, y, color, style, lbl):
     if (color == "green"):
         mode += 'g'
     elif (color == "blue"):
-        mode += 'g'
+        mode += 'b'
     elif (color == "red"):
         mode += 'r'
     elif (color == "cyan"):

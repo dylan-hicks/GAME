@@ -1,0 +1,60 @@
+class tPlayer {
+      text Player
+      num height
+      num aces
+      num matches
+      num avg_aces
+      num win_perc_clay
+      num win_perc_grass
+      num win_perc_hard
+      num ranking
+}
+
+function main() {
+    list(tPlayer) players
+    load players from "tennis_2011.json"
+    
+    list(num) win_clay 
+    list(num) win_hard
+    list(num) win_grass  
+    list(num) av_aces
+    foreach(tPlayer i in players){
+        win_clay.add(i.win_perc_clay)
+        win_hard.add(i.win_perc_hard)
+        win_grass.add(i.win_perc_grass)
+        av_aces.add(i.avg_aces)
+    }
+   
+    subgraph(3, 1, 1) 
+    graph(av_aces, win_clay, "red", "circle", "Clay")
+    axis({0, 16}, {0, 1})
+    label("title", "Correlation between aces and winning")
+    label("y", "Win percentage (clay)")
+    bestfit(av_aces, win_clay, "black", "solid", "Best Fit")
+    legend()
+
+    subgraph(3, 1, 2) 
+    graph(av_aces, win_hard, "blue", "circle", "Hard")
+    axis({0, 16}, {0, 1})
+    label("y", "Win percentage (hard)")
+    bestfit(av_aces, win_hard, "black", "solid", "Best Fit")
+    legend()
+
+    subgraph(3, 1, 3) 
+    graph(av_aces, win_grass, "green", "circle", "Grass")
+    axis({0, 16}, {0, 1})
+    label("y", "Win percentage (grass)")
+    label("x", "Average aces/ match")
+    bestfit(av_aces, win_grass, "black", "solid", "Best Fit")
+    legend()
+   
+    
+    display()
+  
+  #list(tPlayer) goodPlayers = geteach(tPlayer i in players where i.avg_aces > 10)
+    #print("Players with more than 10 aces per game:")
+    #foreach(tPlayer x in goodPlayers){
+    #    print(x.Player + ": " + x.avg_aces)
+    #}
+    #export goodPlayers to "loads.json"	 
+}

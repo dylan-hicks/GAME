@@ -1,0 +1,92 @@
+class TennisPlayer{
+    text first
+    text last
+    num height
+    num age
+    num rank
+    
+    list(TennisMatch) matchesPlayed
+
+    bool function equals(TennisPlayer other){
+        if (first == other.first and last = other.last){
+            return true
+        } else {
+        return false
+        }
+    }
+
+    num function winPercentage(){
+        num wins = 0
+        num losses = 0
+        foreach(TennisMatch i in matchesPlayed){
+            if equals(i.matchWinner()){
+                wins += 1
+            } else {
+                losses += 1
+            }
+        }
+        return wins/losses
+    }
+
+    num function winPercentageOnSurface(text s){
+        num wins = 0
+        num losses = 0
+        list(TennisMatch) l = geteach(TennisMatch i in matchesPlayed where i.surface == s){
+        foreach(TennisMatch i in l){
+            if equals(i.matchWinner()){
+                wins += 1
+            } else {
+                losses += 1
+            }
+        }
+        return wins/losses
+    }
+    
+}
+
+class TennisMatch{
+    TennisPlayer p1
+    TennisPlayer p2
+    text surface
+    num numsets
+    list(Set) sets
+
+    TennisPlayer function matchWinner(){ 
+        num p1setsWon = 0
+        num p2setsWon = 0
+        for(Set i in sets){
+            if (i.setWinner().equals(p1)){
+                p1setsWon += 1
+            }
+            else { 
+                p2setsWon += 1
+            }
+        }
+        if (p1setsWon > p2setsWon){
+            return p1
+        }
+        else { 
+            return p2
+        }
+    }  
+}
+
+class Set{
+    TennisPlayer p1
+    TennisPlayer p2
+    num p1games
+    num p2games
+    num time
+
+    TennisPlayer function setWinner(){
+        if (p1games > p2games){
+            return p1
+        } else{
+            return p2
+        }
+    }
+}    
+
+function main(){
+
+}

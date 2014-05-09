@@ -1,0 +1,136 @@
+include "math.game"
+
+class BasketballGame {
+    BasketballTeam home
+    BasketballTeam away
+    text date
+    BasketballPerformance home_team
+    BasketballPerformance away_team
+    list(BasketballPerformance) box_score
+    list(BasketballMoment) timeline
+
+    BasketballTeam function winner() {
+        BasketballTeam w
+        if(home_team.points>away_team.points)
+        {
+            w = home
+        } else {
+	    w = away
+	}
+
+        return w
+    }
+}
+
+class BasketballTeam {
+    list(BasketballPlayer) roster
+    text city
+    text name
+    list(BasketballGame) games_played
+}
+
+class BasketballPerformance {
+    text player_or_team
+    num points
+    num rebounds
+    num assists
+    num steals
+    num blocks
+    num turnovers
+    num fg_attempted
+    num fg_made
+    num ft_attempted
+    num ft_made
+    num thr_attempted
+    num thr_made
+
+    num function fg_percentage() {
+        return fg_made/fg_attempted
+    }
+    num function ft_percentage() {
+        return ft_made/ft_attempted
+    }
+    num function thr_percentage() {
+	return thr_made/thr_attempted
+    }
+}
+
+class BasketballPlayer {
+    text first_name
+    text last_name
+    BasketballTeam team
+    num height
+    num ppg
+    num apg
+    num rpg
+    num spg
+    num bpg
+    num tpg
+    num fgapg
+    num fgmpg
+    num ftapg
+    num ftmpg
+    num thrapg
+    num thrmpg
+    list(BasketballPerformance) performances
+    list(BasketballGame) games_played
+
+    num function fg_percentage(){
+        return fgmpg / fgapg
+    }
+    num function ft_percentage(){
+        return ftmpg / fgapg
+    }
+    num function thr_percentage(){
+        return thrmpg / thrapg
+    }
+    
+    function build (list(BasketballPerformance) y) {
+        list(num) totalpoints
+        list(num) totalassists
+        list(num) totalrebounds
+        list(num) totalsteals
+        list(num) totalblocks
+        list(num) totalturnovers
+        list(num) totalfga
+        list(num) totalfgm
+        list(num) totalfta
+        list(num) totalftm
+        list(num) totalthra
+        list(num) totalthrm
+        foreach (BasketballPerformance bp in y) {
+            totalpoints.add(bp.points)
+            totalassists.add(bp.assists)
+            totalsteals.add(bp.rebounds)
+            totalblocks.add(bp.steals)
+            totalturnovers.add(bp.blocks)
+            totalfga.add(bp.fg_attempted)
+            totalfgm.add(bp.fg_made)
+            totalfta.add(bp.ft_attempted)
+            totalftm.add(bp.ft_made)
+            totalthra.add(bp.thr_attempted)
+            totalthrm.add(bp.thr_made)
+        }
+
+	ppg = mean(totalpoints)
+        apg = mean(totalassists)
+	rpg = mean(totalrebounds)
+        spg = mean(totalsteals)
+        bpg = mean(totalblocks)
+        tpg = mean(totalturnovers)
+        fgapg = mean(totalfga)
+        fgmpg = mean(totalfgm)
+        ftapg = mean(totalfta)
+        ftmpg = mean(totalftm)
+        thrapg = mean(totalthra)
+        thrmpg = mean(totalthrm)
+    }
+
+}
+
+class BasketballMoment {
+    num minute
+    text event
+    text description
+    list(BasketballPlayer) players_involved
+}

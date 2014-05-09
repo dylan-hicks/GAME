@@ -40,7 +40,9 @@ def syscall(x,t): #syscalls with no return value, print is an exception and is b
     'display': ['display(',')'],
     'label*text*text': ['label(', ')', 'text', 'text'],
     'axis*list(num)*list(num)': ['axis(', ')', 'list(num)', 'list(num)'],
-    'bestfit*list(num)*list(num)*text*text*text': ['bestfit(',')','list(num)', 'list(num)', 'text', 'text', 'text']
+    'bestfit*list(num)*list(num)*text*text*text': ['bestfit(',')','list(num)', 'list(num)', 'text', 'text', 'text'],
+    'subgraph*num*num*num': ['subgraph(', ')', 'num', 'num', 'num'],
+    'legend': ['legend(',')']
     }
     return syscalls.get(func_shorthand(x,t),None)
 

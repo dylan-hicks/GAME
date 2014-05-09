@@ -51,6 +51,7 @@ function main(){
     label("title", "Stephen Curry's FG Attempts in Clippers Series")
     label("y", "FG Attempts")
     label("x", "Game Number")
+    
     display()
 
 }

@@ -188,3 +188,9 @@ def export_function(obj, file_name):
 def bestfit(x, y, color, style, lbl):
     p = np.polyfit(x, y, 1)
     graph(x,np.polyval(p,x), color, style, lbl)
+
+def subgraph(x, y, z):
+    plt.subplot(x, y, z)
+
+def legend():
+    plt.legend()

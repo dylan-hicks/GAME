@@ -1,0 +1,22 @@
+class tPlayer {
+      text Player
+      num height
+      num aces
+      num matches
+      num avg_aces
+      num win_perc_clay
+      num win_perc_grass
+      num win_perc_hard
+      num ranking
+}
+
+function main() {
+    list(tPlayer) players
+    load players from "tennis_2011.json"
+    list(tPlayer) goodPlayers = geteach(tPlayer i in players where i.avg_aces > 10)
+    print("Players with more than 10 aces per game:")
+    foreach(tPlayer x in goodPlayers){
+        print(x.Player + ": " + x.avg_aces)
+    }
+    export goodPlayers to "loads.json"	 
+}

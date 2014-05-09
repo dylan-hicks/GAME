@@ -11,11 +11,11 @@ def include(file_name):
   #Screen for include statements
   i = 0
   for line in contents:
-    regMatch = re.match(r'[\s]*include[\s]*["][\s]*([a-zA-Z_-]*)(.game)?[\s]*["][\s]*', line, flags=0)
+    regMatch = re.match(r'[\s]*include[\s]*["][\s]*(stdlib/)?([a-zA-Z_-]*)(.game)?[\s]*["][\s]*', line, flags=0)
     if regMatch: #include statement match
-      if regMatch.group(1) not in included:
+      if regMatch.group(2) not in included:
         #get library file name
-        library_file_name = "{}.game".format(regMatch.group(1)).lower()
+        library_file_name = "{}.game".format(regMatch.group(2)).lower()
         #check for existence of library file
         if file_exists(library_file_name):
           #add library name to included array

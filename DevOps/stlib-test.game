@@ -1,0 +1,28 @@
+include "stdlib/basketball.game"
+
+function main() {
+	list(BasketballPerformance) season
+	BasketballPerformance g1
+	BasketballPerformance g2
+	BasketballPerformance g3
+	
+	g1 = buildg1()
+	g2 = buildg2()
+	g3 = buildg3()
+		
+	season.add(g1)
+	season.add(g2)
+	season.add(g3)
+
+	BasketballPlayer bMason
+	bMason.first_name = "Bobby"
+	bMason.last_name = "Mason"
+	bMason.height = 180.33
+	bMason.build(season)
+
+	print("Bobby has the following season stats:")
+	print("fg percentage: " + bMason.fg_percentage)
+	print("ft percentage: " + bMason.ft_percantage)
+	print("thr percentage: " + bMason.thr_percentage)
+}
+

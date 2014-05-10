@@ -1,4 +1,4 @@
-include "math.game"
+include "stdlib/math.game"
 
 class BasketballPerformance{
     num fg_attempted

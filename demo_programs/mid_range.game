@@ -17,9 +17,8 @@ function main(){
     }
 
     graph(perc_from_mid, total_points, "blue", "circle", "% Midrange vs. Total")
-    graph(perc_from_mid, total_points, "blue", "dashed", "")
     bestfit(perc_from_mid, total_points, "green", "solid", "Best fit line")
-    axis({0, 0.5},{50, 150})
+    axis({0.2, 0.5},{80, 120})
     label("x", "% of Points from Mid-range")
     label("y", "Total points (Avg)")
     label("title", "Relationship between % of points scored from mid and total points")

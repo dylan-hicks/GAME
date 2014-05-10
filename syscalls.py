@@ -7,7 +7,7 @@ import sys
 
 def num_form(format, number):
 	if (format == "#"):
-		return str(math.floor(number))
+		return str(int(math.floor(number)))
 	else:
 		pieces = format.split('.', 1)
 		decimalplaces = pieces[1]

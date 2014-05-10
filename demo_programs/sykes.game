@@ -342,25 +342,43 @@ p13.fg_made = 9
   iSykes.performances = season
   iSykes.build(iSykes.performances)
 
-  list(num) points
+  list(num) pointsEachGame
   list(num) game_number
   BasketballPerformance x
   loop(start num i=0, set i = i + 1, while i < season.length()) {
     x = season[i]
-    points.add(x.points)
+    pointsEachGame.add(x.points)
     game_number.add(i+1)
   }
-  list(num) ppgAvg = {iSykes.ppg, iSykes.ppg}
-  list(num) ppgIndex = {1, game_number.length()}
-  #list(num) game_number = {1, 2, 3, 4, 5, 6, 7, 8}
+  list(num) ppgSeasonAvg = {iSykes.ppg, iSykes.ppg}
+  list(num) seasonAvgIndex = {1, game_number.length()}
 
-  graph(game_number, points, "blue", "dashed", "Points Per Game")
-  graph(game_number, points, "blue", "circle", "")
-  graph(ppgIndex, ppgAvg, "cyan", "solid", "Season Average")
-  axis({0, game_number.length() + 1}, {0, max(points) + 5})
-  label("title", "Isaiah Sykes' Points Per Game for '13 season")
+  subgraph(2,1,1)
+  graph(game_number, pointsEachGame, "blue", "dashed", "Points Per Game")
+  graph(game_number, pointsEachGame, "blue", "circle", "")
+  graph(seasonAvgIndex, ppgSeasonAvg, "cyan", "solid", "Season Average")
+  axis({0, game_number.length() + 1}, {0, max(pointsEachGame) + 10})
+  label("title", "Isaiah Sykes' Points Per Game for '13-'14 season")
   label("y", "Points Per Game")
   label("x", "Game Number")
+  legend()
+
+  list(num) fgpEachGame
+  foreach(BasketballPerformance bp in season) {
+    fgpEachGame.add(bp.fg_percentage())
+  }
+  list(num) fgpSeasonAvg = {iSykes.fg_percentage(), iSykes.fg_percentage()}
+
+  subgraph(2,1,2)
+  graph(game_number, fgpEachGame, "red", "dashed", "FG Percentage Per Game")
+  graph(game_number, fgpEachGame, "red", "circle", "")
+  graph(seasonAvgIndex, fgpSeasonAvg, "yellow", "solid", "Season Average")
+  axis({0, game_number.length() + 1}, {0, 1.5})
+  label("title", "Isaiah Sykes' Field Goal Percentages Per Game for '13-'14 season")
+  label("y", "FG Percentage Per Game")
+  label("x", "Game Number")
+  legend()
+
   display()
 
 }

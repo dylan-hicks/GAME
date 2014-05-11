@@ -51,10 +51,4 @@ function main() {
     
     display()
   
-  #list(tPlayer) goodPlayers = geteach(tPlayer i in players where i.avg_aces > 10)
-    #print("Players with more than 10 aces per game:")
-    #foreach(tPlayer x in goodPlayers){
-    #    print(x.Player + ": " + x.avg_aces)
-    #}
-    #export goodPlayers to "loads.json"	 
 }

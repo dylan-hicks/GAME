@@ -9,6 +9,7 @@ test2.game.py
 *.py~
 *.swp
 *.swo
+*.game.py
 DevOps/*.o
 DevOps/gamec
 DevOps/*.game.py

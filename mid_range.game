@@ -1,0 +1,26 @@
+class NBATeam{
+    text Team
+    num points
+    num in_paint
+    num from_threes
+}
+function main(){
+    list(NBATeam) teams
+    load teams from "nba_teams.json"
+
+    list(num) perc_from_mid
+    list(num) total_points
+    foreach(NBATeam i in teams){
+        num points_from_mid = i.points - i.in_paint - i.from_threes
+        perc_from_mid.add(points_from_mid / i.points)
+        total_points.add(i.points)
+    }
+
+    graph(perc_from_mid, total_points, "blue", "circle", "% Midrange vs. Total")
+    bestfit(perc_from_mid, total_points, "green", "solid", "Best fit line")
+    axis({0.2, 0.5},{80, 120})
+    label("x", "% of Points from Mid-range")
+    label("y", "Total points (Avg)")
+    label("title", "Relationship between % of points scored from mid and total points")
+    display()
+}

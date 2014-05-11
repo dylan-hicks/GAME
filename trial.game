@@ -1,0 +1,17 @@
+
+function main() {
+    list(num) points_scored = { 15, 9, 27 }
+
+    foreach (num i in points_scored) {      
+        print(num_form("#", i) + " ")
+    }
+
+    points_scored.rem(9)                
+    points_scored.add(22)           
+
+    foreach (num i in points_scored) {
+        print(num_form("#", i) + " ")
+    }
+
+}  
+

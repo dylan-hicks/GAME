@@ -1,0 +1,95 @@
+num function mean(list(num) x) {
+	num total = 0
+	foreach(num i in x){
+		total = total + i
+	}
+	num val
+	if(x.length()!=0) {
+		val = total / x.length()
+	} else {
+		val = 0
+	}
+	return val 
+}
+
+list(num) function qsort(list(num) x) {
+
+  	list(num) originalList
+  	originalList.add(x)
+	
+	list(num) returnList
+	
+	if (originalList.length() <= 1) {
+		returnList = originalList
+	} else {
+		num pivotIndex = floor(originalList.length()/2)
+		num pivot = originalList.get(pivotIndex)
+		originalList.remAt(pivotIndex)
+		
+		list(num) less
+		list(num) greater
+		
+		foreach( num i in originalList) {
+			if (i <= pivot) {
+				less.add(i)
+			} else {
+				greater.add(i)
+			}
+		}
+		list(num) left = qsort(less)
+		list(num) middle = { }
+		middle.add( pivot )
+		list(num) right = qsort(greater)
+	
+		returnList.add(left)
+		returnList.add(middle)
+		returnList.add(right)
+	}
+	return returnList
+}
+
+num function median(list(num) x) {
+	x = qsort(x)
+	return x[floor(x.length()/2)]
+}
+
+num function sqr(num x) {
+	return x * x
+}
+
+num function stdev(list(num) x) {
+	num avg = mean(x)
+	num variance = 0
+	foreach(num n in x){
+		variance = variance + sqr(avg - n)
+	}
+	return sqrt(variance/x.length())	
+}
+
+num function min(list(num) x) {
+	num returnNum = x[0]
+	foreach(num i in x){
+		if(i < returnNum) {
+			returnNum = i
+		}
+	}
+	return returnNum
+}
+
+num function max(list(num) x) {
+	num returnNum = x[0]
+	foreach(num i in x){
+		if(i > returnNum) {
+			returnNum = i
+		}
+	}
+	return returnNum
+}
+
+num function floor(num x) {
+	return x-(x%1)
+}
+
+num function ceiling(num x) {
+	return x + (1 - (x%1))
+}

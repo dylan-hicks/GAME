@@ -1,0 +1,6 @@
+include "basketball.game"
+
+function main() {
+load list(BasketballPerformance) season from "sykes_season.json"
+print(season)
+}

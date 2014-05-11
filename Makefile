@@ -9,42 +9,42 @@ test.game.py: test.game syscalls.py gamec game.py
 serve: serve.game.py
 	python serve.game.py
 
-serve.game.py:
+serve.game.py: gamec
 	./gamec -o serve.game
 
 .PHONY:mid_range
 mid_range: mid_range.game.py
 	python mid_range.game.py
 
-mid_range.game.py:
+mid_range.game.py: gamec
 	./gamec -o mid_range.game
 
 .PHONY:avg_aces
 avg_aces: avg_aces.game.py
 	python avg_aces.game.py
 
-avg_aces.game.py:
+avg_aces.game.py: gamec
 	./gamec -o avg_aces.game
 
 .PHONY:sykes
 sykes: sykes.game.py
 	python sykes.game.py
 
-sykes.game.py:
+sykes.game.py: gamec
 	./gamec -o sykes.game
 
 .PHONY:sykes2
 sykes2: sykes2.game.py
 	python sykes2.game.py
 
-sykes2.game.py:
+sykes2.game.py: gamec
 	./gamec -o sykes2.game
 
 .PHONY:curry
 curry: curry.game.py
 	python curry.game.py
 
-curry.game.py:
+curry.game.py: gamec
 	./gamec -o curry.game
 
 gamec:

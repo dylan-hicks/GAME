@@ -1,3 +1,8 @@
+# This file creates class and function structure information for game.py.
+# This makes up for the fact that the GAME programming language does not have header files.
+
+# Note: this file is similar in structure to game.py
+
 import sys
 import re
 import json

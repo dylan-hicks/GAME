@@ -1,13 +1,11 @@
-# Known bugs?: start part of loop expression must be on left
-# adds extra lines in random places, not really an issue
-
-# how about using geteach to return to an already defined variable?
+#This file takes in a resolved (no #include statements) GAME file and produces the output.
 
 import sys
 import re
 import json
 import subprocess
 
+#First the scanner is called, which return structure information on functions and classes.
 scan_functions = { }
 scan_classes = { }
 scan_errors = [ ]
@@ -22,6 +20,9 @@ if len(scan_errors)!=0:
     for x in scan_errors:
         print x
     exit(0)
+
+
+#Make sure that there is a "main" function.
 found = 0
 for x in scan_functions:
     if scan_functions[x]["name"]=="main":
@@ -30,12 +31,13 @@ if found!=1:
     print "Needs a main function to run."
     exit(0)
 
+#Whenever a variable or function or class is added to the scope, it needs to
+#go into the symbol stack so the compiler can track it.
 symbol_stack = [ ]
 
+#Given a system call and an argument, these functions determine if it exists and what the output code should be.
 def syscall(x,t): #syscalls with no return value, print is an exception and is below in statement
     syscalls = {
-    #'print*text': ['print(',')','text'],
-    #'print*num': ['print(',')','num']
     'graph*list(num)*list(num)*text*text*text': ['graph(',')','list(num)', 'list(num)', 'text', 'text', 'text'],
     'display': ['display(',')'],
     'label*text*text': ['label(', ')', 'text', 'text'],
@@ -53,6 +55,7 @@ def syscallret(x,t): #syscalls with a return value (last type in array)
     }
     return syscalls.get(func_shorthand(x,t),None)
 
+#Given two different data types, this function determines if they are equivalent.
 def check_type(x,y):
     if x==y:
         return x
@@ -79,17 +82,20 @@ def check_type(x,y):
         else:
             return ""
 
+#Given a data type, such as list(list(bla)), determine the root type, which in this case would be bla.
 def get_root_type(x):
     while len(x) > 5 and x[:5]=="list(":
         x = x[5:-1]
     return x
 
+#Check if a data type is a list.
 def list_check(x):
     if len(x) > 5 and x[:5]=="list(":
         return x[5:-1]
     else:
         return None
 
+#Check the stack to see if it contains a symbol x, if so return what type it is as well.
 def check_stack(x):
     for y in symbol_stack:
         temp = y[1].get(x,"")
@@ -97,35 +103,42 @@ def check_stack(x):
             return y[0], temp
     return None
 
+#Add something to the stack, also say what type it is.
 def add_stack(name,t):
     symbol_stack[len(symbol_stack)-1][1][name] = t
 
+#Check if the stack has a loop on it.
 def within_loop():
     for y in symbol_stack:
         if y[0]=="loop":
             return True
     return False
 
+#Check if the highest item in the stack is a class.
 def above_is_class():
     if len(symbol_stack)>0 and symbol_stack[len(symbol_stack)-1][0]=="class":
         return True
     else:
         return False
 
+#Check if there is a class on the stack, if so return it's name.
 def in_class():
     if len(symbol_stack)>0 and symbol_stack[0][0]=="class":
         return symbol_stack[0][2]
     return False
 
+#Add a tab to each line of the input string.
 def add_tab(x):
     return x.replace("\n","\n\t")
 
+#Given a function x and it's argument types y, create a descriptive string.
 def func_shorthand(x,y):
     z = x
     for l in y:
         z += '*'+l[1]
     return z
 
+#Words reserved by the GAME language that may not be used as variables/functions/classes.
 reserved = {
    'include' : 'INCLUDE',
    'if' : 'IF',
@@ -160,6 +173,7 @@ reserved = {
    'true' : 'TRUE'
 }
 
+#All the tokens used by lex and yacc (compiler generator).
 tokens = [
     'ID','NUM','EQ','EXCL', 'TXT',
     'PLUS','MINUS','TIMES','DIVIDE', 'MOD',
@@ -167,7 +181,8 @@ tokens = [
     'COMMA', 'GT', 'LT', 'EQEQ' , 'DOT' , 'LSQ' , 'RSQ'
     ] + list(reserved.values())
 
-# Tokens
+#Regular expressions for each token.
+
 def t_LBRACK(t):
     r'(\n|\#.*\n|[ ]|\t)*{'
     t.type = 'LBRACK'
@@ -244,18 +259,24 @@ precedence = (
     ('left','DOT'),
     )
 
-# dictionary of names
-names = { }
+#Now for the grammar rules and attached actions. These rules take the tokens from lex
+#and use them to follow these rules and execute the actions that generate the compiled file.
 
+#Basic layout of one of these funtions:
+#def p_name_of_rule(t):
+#    '''name_of_rule : rule content'''
+#    various actions that are used to ultimately produce output code
 
+#This rule is special because it is the starting rule, all other rules must descend from it.
 def p_program_lines(t):
     '''program_lines : include_lines lines'''
     sys_calls = open("syscalls.py",'r')
-    toWrite = sys_calls.read()+"\nscan_classes = "+json.dumps(scan_classes)+"\n"+t[2]+"main()"
+    toWrite = sys_calls.read()+"\nscan_classes = "+json.dumps(scan_classes)+"\n"+t[2]+"main()" #write in our syscalls and code from descending rules (t[2])
     toWrite = re.sub(r"\n[\t\n ]*\n","\n",toWrite) #removes excess lines
     out_file = open("{}.py".format(sys.argv[1]).replace(".temp", ""), "w")
     out_file.write(toWrite)
 
+#There shouldn't be an include statements at this point, so throw an error if there are.
 def p_include_lines(t):
     '''include_lines : include_lines INCLUDE TXT NL'''
     print 'Preprocessor error, include statement unresolved.'
@@ -265,6 +286,7 @@ def p_include_lines_other(t):
     '''include_lines : include_lines NL
                      | '''
 
+#Rules such as the next one are strictly for the structure of the language. The usually just concatonate all child rules.
 def p_lines_class(t):
     '''lines : lines class_def NL'''
     t[0] = t[1] + t[2] + "\n"
@@ -289,7 +311,7 @@ def p_class_variable(t):
     '''class_lines : class_lines variable_def NL'''
     if t[2]!="":
         t[0] = t[1]+t[2]+'\n'
-    else:
+    else: # if variable_def is empty for some reason, just pass up class_lines
         t[0] = t[1]
 
 def p_class_ignore(t):
@@ -324,6 +346,9 @@ def p_statement(t):
                  | data_statement'''
     t[0] = t[1]
 
+#The obj_expression rule is used when class method is called.
+#It determines what type of class the object is, if the function is available
+#what the functions returns, and outputs the appropriate compiled code.
 def p_statement_obj_function(t):
     '''statement : obj_expression DOT ID LPAREN function_run_args RPAREN'''
     temp1 = scan_classes.get(t[1][1],"")
@@ -392,6 +417,7 @@ def p_statement_assign(t):
     '''statement : assignment'''
     t[0] = t[1][0]+'\n'
 
+#Break/continue statements are simple. If you are within a loop, allow them. Otherwise don't.
 def p_statement_flow(t):
     '''statement : BREAK
                  | CONTINUE'''
@@ -409,9 +435,12 @@ def p_statement_if_statement(t):
     '''statement : if_statement'''
     t[0] = t[1]
 
+#This rule allows functions with no return arguments to be used.
+#First it checks if the function exists, then verifies that the arguments are correct.
+#Then it outputs the compiled code.
 def p_statement_function(t):
     '''statement : ID LPAREN function_run_args RPAREN'''
-    # check for system calls
+    # check if it is a system call
     if t[1]=="print" and len(t[3])==1:
         temp1 = get_root_type(t[3][0][1])
         if temp1=="" or temp1=="num" or temp1=="text" or temp1=="bool":
@@ -468,6 +497,9 @@ def p_statement_function(t):
                     exit(0)
             t[0] = out
 
+#The following two rules allow classes to be created.
+#First the class is added to the symbol stack, then all child rules are 
+#executed, and then the class is popped from the symbol stack and the compiled code is generated.
 def p_class_def(t):
     '''class_def : class_st LBRACK class_lines RBRACK'''
     if t[3]=="":
@@ -483,6 +515,7 @@ def p_class_start(t):
         add_stack(x,scan_classes[t[2]]["members"][x])
     t[0] = 'class '+t[2]+':'
 
+#This functions generates the compiled code for functions with no return type.
 def p_function_def_void(t):
     '''function_def : FUNCTION ID LPAREN function_args_st RPAREN LBRACK NL function_lines RBRACK'''
     if t[2]=='main':
@@ -508,6 +541,7 @@ def p_function_def_void(t):
     symbol_stack.pop()
     t[0] = x
 
+#Same as previous function, but WITH return types.
 def p_function_def_return(t):
     '''function_def : var_type FUNCTION ID LPAREN function_args_st RPAREN LBRACK NL function_lines RETURN expression new_lines RBRACK'''
     if t[3]=='main':
@@ -535,6 +569,8 @@ def p_function_def_return(t):
     symbol_stack.pop()
     t[0] = x
 
+#The following 5 functions process function/method arguments.
+#They pass up the resulting data which is used by the function rules.
 def p_function_args_st(t):
     '''function_args_st : function_args'''
     symbol_stack.append([ "function", { } ])
@@ -582,6 +618,9 @@ def p_function_run_arg_values(t):
         t[1].extend(t[3])
         t[0] = t[1]
 
+#The following two functions handle the geteach loop type.
+#First the loop is added to the symbol stack, then the child rules are executed,
+#then the loop is removed from the symbol stack and the compiled code is generated.
 def p_loop(t):
     '''loop : geteach_st WHERE expression RPAREN'''
     if t[3][1]=="bool":
@@ -621,6 +660,8 @@ def p_geteach_st(t):
         print "Cannot redefine '"+t[2]+"'."
         exit(0)
 
+
+#The next 4 functions operate similarly on the standard loop and the geteach loop.
 def p_loop_foreach(t):
     '''loop : foreach_st IN ID RPAREN LBRACK NL function_lines RBRACK'''
     ftype = t[1][0]
@@ -707,6 +748,7 @@ def p_loop_st(t):
     '''loop_st : LOOP'''
     symbol_stack.append([ "loop", { } ])
 
+#The next 5 functions process the arguments for loops, and pass them up to the apporpriate loop type.
 def p_loop_expression(t):
     '''loop_expression : loop_expression COMMA loop_expression'''
     t[1]["start"].extend(t[3]["start"])
@@ -742,6 +784,9 @@ def p_loop_expression_start_assign(t):
     '''loop_expression_values : START assignment'''
     t[0] = "start", t[2][0]
 
+#The next 3 functions produce the output code for if statements. 
+#The if frame is added to the stack, the child rules are run, the code is generated,
+# and then the if frame is popped from the stack.
 def p_if_statement(t):
     '''if_statement : if_st LPAREN expression RPAREN LBRACK NL function_lines RBRACK
                     | if_st LPAREN expression RPAREN LBRACK NL function_lines RBRACK else_st LBRACK NL function_lines RBRACK'''
@@ -782,6 +827,7 @@ def p_data_statement(t):
                       | data_statement_export'''
     t[0] = t[1]
 
+#The load and save statements simply are replaced by function calls we have written.
 def p_data_statement_load(t):
     '''data_statement_load : LOAD obj_expression FROM expression'''
     if t[4][1]=="text":
@@ -798,6 +844,11 @@ def p_data_statement_save(t):
         print 'Data statements export to text type.'
         exit(0)
 
+#The upcoming rules are called expressions.
+#Expressions return code that produces a value and also return the type of that value.
+#For example, for j = 6, it would return 'j' and 'num'.
+
+#This rule allows the creation of new objects.
 def p_expression_new(t):
     '''expression : NEW ID'''
     if scan_classes.get(t[2],"")!="":
@@ -806,6 +857,7 @@ def p_expression_new(t):
         print "No object of type '"+t[2]+"'."
         exit(0)
 
+#If an object is a list, this rule allows you to use brackets to index into it.
 def p_expression(t):
     '''expression : obj_expression LSQ expression RSQ'''
     temp1 = list_check(t[1][1])
@@ -822,6 +874,7 @@ def p_expression(t):
             print "'"+t[1][0]+"' is not a list or text and cannot use the [ ] operator."
             exit(0)
 
+#If an object is a class, this rule allows you to execute one of it's methods (the method must return a value).
 def p_expression_obj(t):
     '''expression : obj_expression DOT ID LPAREN function_run_args RPAREN'''
     temp1 = scan_classes.get(t[1][1],"")
@@ -868,6 +921,7 @@ def p_expression_assign(t):
     '''expression : assignment'''
     t[0] = t[1]
 
+#This rule allows you to call functions that return a value.
 def p_expression_call(t):
     '''expression : ID LPAREN function_run_args RPAREN'''
     sys_out = syscallret(t[1],t[3])
@@ -931,6 +985,7 @@ def p_expression_obje(t):
     '''expression : obj_expression'''
     t[0] = t[1]
 
+#This rule allows you to use the unary minus operator.
 def p_expression_uminus(t):
     '''expression : MINUS expression %prec UMINUS'''
     if t[2][1]=="num":
@@ -939,6 +994,7 @@ def p_expression_uminus(t):
         print "Cannot apply '"+t[1]+"' operator to "+t[2][1]+"."
         exit(0)
 
+#If something is boolean, you can use the not operator.
 def p_expression_not(t):
     '''expression : NOT expression'''
     if t[2][1]=="bool":
@@ -947,6 +1003,7 @@ def p_expression_not(t):
         print "Cannot apply '"+t[1]+"' operator to "+t[2][1]+"."
         exit(0)
 
+#If both arguments are boolean, you can use binary operators.
 def p_expression_bool(t):
     '''expression : expression AND expression
                   | expression OR expression'''
@@ -956,10 +1013,12 @@ def p_expression_bool(t):
         print "Cannot apply '"+t[2]+"' operator to "+t[1][1]+" and "+t[3][1]+"."
         exit(0)
 
+#Allow balanced parantheses anywhere in expressions.
 def p_expression_paren(t):
     '''expression : LPAREN expression RPAREN'''
     t[0] = t[2]
 
+#Equivalence operator on equivalent types.
 def p_expression_eq(t):
     '''expression : expression EQEQ expression'''
     if (t[1][1]==t[3][1]) and (t[1][1]=="num" or t[1][1]=="text" or t[1][1]=="bool"):
@@ -968,6 +1027,7 @@ def p_expression_eq(t):
         print "Cannot apply '"+t[2]+"' operator to "+t[1][1]+" and "+t[3][1]+"."
         exit(0)
 
+#Boolean operators for numbers.
 def p_expression_numeric_bool3(t):
     '''expression : expression GT expression
                   | expression LT expression'''
@@ -987,6 +1047,7 @@ def p_expression_numeric_bool4(t):
         print "Cannot apply '"+t[2]+"' operator to "+t[1][1]+" and "+t[4][1]+"."
         exit(0)
 
+#Common mathematic operators.
 def p_expression_numeric(t):
     '''expression : expression MINUS expression
                   | expression TIMES expression
@@ -998,6 +1059,7 @@ def p_expression_numeric(t):
         print "Cannot apply '"+t[2]+"' operator to "+t[1][1]+" and "+t[3][1]+"."
         exit(0)
 
+#Addition or concatonation operator.
 def p_expression_plus(t):
     '''expression : expression PLUS expression'''
     if t[1][1]=="num" and t[3][1]=="num":
@@ -1016,10 +1078,12 @@ def p_expression_plus(t):
         print "Cannot apply '+' operator to "+t[1][1]+" and "+t[3][1]+"."
         exit(0)
 
+#Allow constants as expressions.
 def p_expression_constant(t):
     '''expression : constant'''
     t[0] = t[1]
 
+#Assign class members when possible.
 def p_assignment(t):
     '''assignment : obj_expression EQ expression'''
     temp1 = check_type(t[1][1],t[3][1])
@@ -1029,6 +1093,7 @@ def p_assignment(t):
         print "'"+t[1][0]+"' does not have type '"+t[3][1]+"'."
         exit(0)
 
+#Access class members.
 def p_obj_expression(t):
     '''obj_expression : obj_expression DOT ID'''
     temp10 = scan_classes.get(t[1][1],"")
@@ -1042,6 +1107,7 @@ def p_obj_expression(t):
         exit(0)
     t[0] = [ "("+t[1][0]+"."+t[3]+")", temp ]
 
+#Find the object with a particular name.
 def p_obj_expression_id(t):
     '''obj_expression : ID'''
     temp1 = check_stack(t[1])
@@ -1054,6 +1120,7 @@ def p_obj_expression_id(t):
         print "Unknown variable '"+t[1]+"'."
         exit(0)
 
+#Allow variables to be initialized.
 def p_variable_def_expression(t):
     '''variable_def : var_type ID EQ expression'''
     if not above_is_class():
@@ -1080,6 +1147,7 @@ def p_variable_def_expression(t):
             print "Type conflict with '"+t[2]+"'."
             exit(0)
 
+#Allow variables to be defined.
 def p_variable_def_simple(t):
     '''variable_def : var_type ID'''
     inc = above_is_class()
@@ -1108,6 +1176,7 @@ def p_variable_def_simple(t):
     else:
         t[0] += "[ ]"
 
+#Determine variable type.
 def p_var_type(t):
     '''var_type : TEXT_TYPE
                 | NUM_TYPE
@@ -1119,6 +1188,7 @@ def p_var_type(t):
     else:
         t[0] = "list(" + t[3] + ")"
 
+#Allow different types of constants and lists of constants.
 def p_constant(t):
     '''constant : LBRACK constant_list RBRACK
                 | LBRACK RBRACK'''
@@ -1171,6 +1241,7 @@ import ply.yacc as yacc
 
 yacc.yacc()
 
+#Run the compiler.
 if len(sys.argv) > 1 :
     inputfile = open(sys.argv[1],'r')
     yacc.parse(inputfile.read())

@@ -80,6 +80,4 @@ Then compile it using "./gamec -o hello.game", and then you may run it with "pyt
 
 ###How do I learn more?
 
-We have written a tutorial (https://github.com/dylan-hicks/GAME/raw/master/Docs/LanguageTutorial.pdf) 
-and a reference manual (https://github.com/dylan-hicks/GAME/raw/master/Docs/LanguageReferenceManual.pdf) 
-so that you may learn all of GAME's wonderful features.
+We have written a tutorial and a reference manual (in the Docs folder) so that you may learn all of GAME's wonderful features.

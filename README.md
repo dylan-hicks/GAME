@@ -70,7 +70,7 @@ If you want more examples, replace mid\_range with avg\_aces,curry, or sykes to 
 
 ###How do I write the "Hello, World" program?
 
-Open up a good editor (we reccomend Vim) and save the following code as hello.game (in the GAME folder):
+Open up a good editor (we recomend Vim) and save the following code as hello.game (in the GAME folder):
 
     function main(){
         print("Hello, World")

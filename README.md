@@ -66,35 +66,20 @@ You can run this demo program yourself by going to the GAME directory and execut
 
     make mid_range
 
-####Initial Setup:
+If you want more examples, replace mid\_range with avg\_aces,curry, or sykes to see other example programs.
 
-When you are setting up a new GAME directory, if there is no ./gamec executable present, then please run the following command:
+###How do I write the "Hello, World" program?
 
-    make
+Open up a good editor (we reccomend Vim) and save the following code as hello.game (in the GAME folder):
 
-You will only need to run this command once for a directory as the ./gamec executable does not need updating.
+    function main(){
+        print("Hello, World")
+    }
 
-####To Run:
+Then compile it using "./gamec -o hello.game", and then you may run it with "python hello.game.py".
 
-    ./gamec [.game file]
-    python [.game.py file]
+###How do I learn more?
 
-####Compile Operation Flow:
-
-When you run the following command:
-    
-    ./gamec [.game file]
-
-The compiler sets -m and -o flags for moving and output and then executes
-
-    python include.py [.game file]
-
-and then creates a .game.temp file that has the include statements removed and the appropriate library code inserted.
-
-Then, the gamec executable runs
-
-    python game.py [.game.temp file]
-
-which will run the parser and other compile operations on the .game.temp file and write the resulting python code to a .game.py file.
-
-The gamec exectuable then cleans up the .game.temp file.
+We have written a tutorial (https://github.com/dylan-hicks/GAME/raw/master/Docs/LanguageTutorial.pdf) 
+and a reference manual (https://github.com/dylan-hicks/GAME/raw/master/Docs/LanguageReferenceManual.pdf) 
+so that you may learn all of GAME's wonderful features.

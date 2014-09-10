@@ -22,6 +22,16 @@ In order to clone the repository and run the compiler, you will need the followi
 
 Note that although this code has been written to be cross-platform, the majority of testing has been in Linux.
 
+####How do I set it up?
+
+Choose what directory you want the compiler in, then run the following commands:
+
+    git clone https://github.com/dylan-hicks/GAME.git
+    cd GAME
+    make
+
+If you aren't using Linux these commands may be slightly different.
+
 ####What is an example of a problem you can solve using GAME?
 
 One pressing question in Basketball is when should a player "take the shot", specifically in the mid-range. 
@@ -51,6 +61,10 @@ The following demo program analyzes the relationship between the percentage of m
         label("title", "Relationship between % of points scored from mid and total points")
         display()
     }
+
+You can run this demo program yourself by going to the GAME directory and executing:
+
+    make mid_range
 
 ####Initial Setup:
 

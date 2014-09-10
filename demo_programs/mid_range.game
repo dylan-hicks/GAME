@@ -6,7 +6,7 @@ class NBATeam{
 }
 function main(){
     list(NBATeam) teams
-    load teams from "nba_teams.json"
+    load teams from "demo_programs/nba_teams.json"
 
     list(num) perc_from_mid
     list(num) total_points

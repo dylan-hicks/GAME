@@ -1,7 +1,0 @@
-include "stdlib/basketball.game"
-
-function main() {
-list(BasketballPerformance) season
-load season from "sykes_season.json"
-print(season)
-}

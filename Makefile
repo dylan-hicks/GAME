@@ -1,54 +1,43 @@
 .PHONY:all
-all: test.game.py
-	python test.game.py
-
-test.game.py: test.game syscalls.py gamec game.py
-	./gamec -o test.game
+all: gamec
 
 .PHONY:serve
-serve: serve.game.py
-	python serve.game.py
+serve: demo_programs/serve.game.py
+	python demo_programs/serve.game.py
 
-serve.game.py: gamec
-	./gamec -o serve.game
+demo_programs/serve.game.py: demo_programs/serve.game gamec
+	./gamec -o demo_programs/serve.game
 
 .PHONY:mid_range
-mid_range: mid_range.game.py
-	python mid_range.game.py
+mid_range: demo_programs/mid_range.game.py
+	python demo_programs/mid_range.game.py
 
-mid_range.game.py: gamec
-	./gamec -o mid_range.game
+demo_programs/mid_range.game.py: demo_programs/mid_range.game gamec
+	./gamec -o demo_programs/mid_range.game
 
 .PHONY:avg_aces
-avg_aces: avg_aces.game.py
-	python avg_aces.game.py
+avg_aces: demo_programs/avg_aces.game.py
+	python demo_programs/avg_aces.game.py
 
-avg_aces.game.py: gamec
-	./gamec -o avg_aces.game
+demo_programs/avg_aces.game.py: demo_programs/avg_aces.game gamec
+	./gamec -o demo_programs/avg_aces.game
 
 .PHONY:sykes
-sykes: sykes.game.py
-	python sykes.game.py
+sykes: demo_programs/sykes.game.py
+	python demo_programs/sykes.game.py
 
-sykes.game.py: gamec
-	./gamec -o sykes.game
-
-.PHONY:sykes2
-sykes2: sykes2.game.py
-	python sykes2.game.py
-
-sykes2.game.py: gamec
-	./gamec -o sykes2.game
+demo_programs/sykes.game.py: demo_programs/sykes.game gamec
+	./gamec -o demo_programs/sykes.game
 
 .PHONY:curry
-curry: curry.game.py
-	python curry.game.py
+curry: demo_programs/curry.game.py
+	python demo_programs/curry.game.py
 
-curry.game.py: gamec
-	./gamec -o curry.game
+demo_programs/curry.game.py: demo_programs/curry.game gamec
+	./gamec -o demo_programs/curry.game
 
 gamec:
 	make -C DevOps
 
 clean:
-	rm -f parsetab.py *.out *.pyc ply/*.pyc test.game test.game.py *.game.py *.game.temp
+	rm -f parsetab.py *.out *.pyc ply/*.pyc test.game test.game.py *.game.py *.game.temp demo_programs/*.game.py

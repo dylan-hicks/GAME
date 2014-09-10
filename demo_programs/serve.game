@@ -12,7 +12,7 @@ class tPlayer {
 
 function main() {
     list(tPlayer) players
-    load players from "tennis_2011.json"
+    load players from "demo_programs/tennis_2011.json"
     
     list(num) win_clay 
     list(num) win_hard

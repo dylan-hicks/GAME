@@ -66,6 +66,7 @@ You can run this demo program yourself by going to the GAME directory and execut
 
     make mid_range
 
+Note: This should open up a new window, if you are remotely using a computer make sure to use the -Y option for ssh.
 If you want more examples, replace mid\_range with avg\_aces,curry, or sykes to see other example programs.
 
 ###How do I write the "Hello, World" program?

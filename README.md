@@ -51,7 +51,7 @@ The following demo program analyzes the relationship between the percentage of m
         foreach(NBATeam i in teams){
             num points_from_mid = i.points - i.in_paint - i.from_threes
             perc_from_mid.add(points_from_mid / i.points)
-             total_points.add(i.points)
+            total_points.add(i.points)
         }
         graph(perc_from_mid, total_points, "blue", "circle", "% Midrange vs. Total")
         bestfit(perc_from_mid, total_points, "green", "solid", "Best fit line")

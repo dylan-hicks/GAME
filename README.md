@@ -6,7 +6,7 @@ analysis, rather than stemming from purely qualitative assessments. This is impo
 athletes, coaches, and managers in improving their individual and team performance in addition
 to sports reporters seeking compelling data to back their stories. Thus, a lot of money and many
 careers are involved in the practice of data analytics in sports. Accessing, manipulating,
-updating, and analyzing data are essential in the pursuit of game­changing information ­­ GAME
+updating, and analyzing data are essential in the pursuit of game­changing information; GAME
 allows users to accomplish this objective.
 
 ####What do I need to run it?

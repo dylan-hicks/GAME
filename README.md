@@ -75,13 +75,16 @@ If you want more examples, try the following commands:
 
 ###How do I write the "Hello, World" program?
 
-Open up a good editor (we recomend Vim) and save the following code as hello.game (in the GAME folder):
+Open up a good editor (we recommend Vim) and save the following code as hello.game (in the GAME folder):
 
     function main(){
         print("Hello, World")
     }
 
-Then compile it using "./gamec -o hello.game", and then you may run it with "python hello.game.py".
+Then compile and run your program:
+
+    ./gamec -o hello.game    #compiles it to hello.game.py
+    python hello.game.py     #runs compiled code
 
 ###How do I learn more?
 

@@ -1,4 +1,4 @@
-####What is the purpose of the GAME programming language?
+#### What is the purpose of the GAME programming language?
 
 GAME is designed to solve problems related to sports statistics as well as sports management.
 Today, decisions in the world of sports increasingly need to be backed by data and quantitative
@@ -9,7 +9,7 @@ careers are involved in the practice of data analytics in sports. Accessing, man
 updating, and analyzing data are essential in the pursuit of game­changing information; GAME
 allows users to accomplish this objective.
 
-####What do I need to run it?
+#### What do I need to run it?
 
 In order to clone the repository and run the compiler, you will need the following packages:
 
@@ -22,7 +22,7 @@ In order to clone the repository and run the compiler, you will need the followi
 
 Note that although this code has been written to be cross-platform, the majority of testing has been in Linux.
 
-####How do I set it up?
+#### How do I set it up?
 
 Choose what directory you want the compiler in, then run the following commands:
 
@@ -32,7 +32,7 @@ Choose what directory you want the compiler in, then run the following commands:
 
 If you aren't using Linux these commands may be slightly different.
 
-####What is an example of a problem you can solve using GAME?
+#### What is an example of a problem you can solve using GAME?
 
 One pressing question in Basketball is when should a player "take the shot", specifically in the mid-range. 
 The following demo program analyzes the relationship between the percentage of mid-range shots and total point scored.
@@ -73,7 +73,7 @@ If you want more examples, try the following commands:
     make curry
     make sykes
 
-###How do I write the "Hello, World" program?
+### How do I write the "Hello, World" program?
 
 Open up a good editor (we recommend Vim) and save the following code as hello.game (in the GAME folder):
 
@@ -86,6 +86,6 @@ Then compile and run your program:
     ./gamec -o hello.game    #compiles it to hello.game.py
     python hello.game.py     #runs compiled code
 
-###How do I learn more?
+### How do I learn more?
 
 We have written a tutorial and a reference manual (in the Docs folder) so that you may learn all of GAME's wonderful features.
